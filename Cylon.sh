@@ -11,13 +11,15 @@ GREEN=$(printf "\033[32;1m")
 BLUE=$(printf "\033[36;1m")
 NORMAL=$(printf "\033[0m")
 
-
+#make the path for the logfiles/updates etc
+mkdir -p "$HOME/Documents/Tech/Linux/MyLinux/Cylon/"
 #path for my internal hard drive backup
 Dest1="/run/media/$USER/Linux_backup"
 #path for my external hard drive backup
 Dest2="/run/media/$USER/iomeaga_320"
 #set logfilepath + cower updates 
 Dest3="$HOME/Documents/Tech/Linux/MyLinux/Cylon/"
+
 
 #functions
 #Help function to display Help info
