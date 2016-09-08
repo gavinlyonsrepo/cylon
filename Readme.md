@@ -34,11 +34,23 @@ Make copy of package lists
 Also there is an option 
 for gdrive sync with remote documents directory on google drive requires netcat and gdrive(AUR) installed
 (6)Clean system with bleachbit
-Requires program bleachbit installed
-Clean Deep scan
-Clean Flash
-Clean libreoffice
-Clean System
+Requires program bleachbit installed menu options
+system
+ Deep scan
+ Flash
+libreoffice
+Cleabash
+GNOME
+Epiphany
+Evolution
+Rhythmbox
+Thumbnails
+Thunderbird
+Transmission
+X11
+VIM
+VLC media player
+X11
 (7)Delete firefox history by bleachbit
 (8)Deleting Trash and Downloads folder
 (9)ClamAv anti virus scan 

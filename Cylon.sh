@@ -47,8 +47,7 @@ Make tarball of all except tmp dev proc sys runMake copy of package
 lists, Also there is an option  for gdrive sync with remote documents 
 directory on google drive requires netcat and gdrive(AUR) installed
 (6)Clean system with bleachbit
-Requires program bleachbit installed
-Clean Deep scan Clean Flash Clean libreoffice Clean System
+Requires program bleachbit installed, menu option 15 settings.
 (7)Delete firefox history by bleachbit
 (8)Deleting Trash and Downloads folder
 (9)ClamAv anti virus scan 
@@ -286,23 +285,108 @@ function ClamAVFunc
 function SystemCleanFunc
 {
 		   #system clean with bleachbit
-		   printf '%s\n' "${GREEN}Clean Deep scan${NORMAL}"
-		   bleachbit --clean deepscan.*
-		   printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
-		   
-		   printf '%s\n' "${GREEN}Clean Flash${NORMAL}"
-		   bleachbit --clean flash.*
-		   printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
-		  
-		   
-		   printf '%s\n' "${GREEN}Clean libreoffice${NORMAL}"
-		   bleachbit --clean libreoffice.*
-		   printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
-		
-		   
-		   printf '%s\n' "${GREEN}Clean System${NORMAL}"
-		   sudo bleachbit --clean system.*
-		   printf '%s\n\n' "${GREEN}DONE!${NORMAL}"		  
+		   printf '%s\n' "${BLUE}System clean with bleachbit :- ${NORMAL}"
+			cat <<-EOF
+			(1)     bash
+			(2)     Epiphany
+			(3)     Evolution
+			(4)	GNOME
+			(5)     Rhythmbox
+			(6)     Thumbnails
+			(7)     Thunderbird
+			(8) 	Transmission
+			(9) 	VIM
+			(0) 	VLC media player
+			(a)     X11
+			(b)	deepscan
+			(c)     flash
+			(d)     libreoffice
+			(e)     System
+			(f) 	return to main menu
+			EOF
+			printf '%s\n' "${BLUE}Press option number followed by [ENTER] ${NORMAL}"
+			read -r choicebb
+			case "$choicebb" in
+				   
+				   1)printf '%s\n' "${GREEN}Clean bash${NORMAL}"
+				   bleachbit --clean bash.*
+				   printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+				   ;;
+				   
+				   2)printf '%s\n' "${GREEN}Clean Epiphany${NORMAL}"
+				   bleachbit --clean epiphany.*
+				   printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+				   ;;
+				   
+				   3)printf '%s\n' "${GREEN}Clean Evolution${NORMAL}"
+				   bleachbit --clean evolution.*
+				   printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+				   ;;
+				   
+				   4)printf '%s\n' "${GREEN}Clean GNOME${NORMAL}"
+				   bleachbit --clean gnome.*
+				   printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+				   ;;
+				   
+				   5)printf '%s\n' "${GREEN}Clean Rhythmbox${NORMAL}"
+				   bleachbit --clean rhythmbox.*
+				   printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+				   ;;
+				   
+				   6)printf '%s\n' "${GREEN}Clean Thumbnails${NORMAL}"
+				   bleachbit --clean thumbnails.*
+				   printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+				   ;;
+				   
+				   7)printf '%s\n' "${GREEN}Clean Thunderbird${NORMAL}"
+				   bleachbit --clean thunderbird.*
+				   printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+				   ;;
+				   
+				   8)printf '%s\n' "${GREEN}Transmission${NORMAL}"
+				   sudo bleachbit --clean transmission.*
+				   printf '%s\n\n' "${GREEN}DONE!${NORMAL}"	
+				   ;;
+				   
+				   9)printf '%s\n' "${GREEN}Clean VIM${NORMAL}"
+				   bleachbit --clean vim.*
+				   printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+				   ;;
+				   
+				   0)printf '%s\n' "${GREEN}Clean VLC media player${NORMAL}"
+				   bleachbit --clean vlc.*
+				   printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+				   ;;
+				   
+				   a)printf '%s\n' "${GREEN}Clean X11${NORMAL}"
+				   bleachbit --clean x11.*
+				   printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+				   ;;
+				   
+				   b)printf '%s\n' "${GREEN}Clean Deep scan${NORMAL}"
+				   bleachbit --clean deepscan.*
+				   printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+				   ;;
+				   
+				   c)printf '%s\n' "${GREEN}Clean Flash${NORMAL}"
+				   bleachbit --clean flash.*
+				   printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+				   ;;
+				   
+				   d)printf '%s\n' "${GREEN}Clean libreoffice${NORMAL}"
+				   bleachbit --clean libreoffice.*
+				   printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+				   ;;
+				   
+				   e)printf '%s\n' "${GREEN}Clean System${NORMAL}"
+				   sudo bleachbit --clean system.*
+				   printf '%s\n\n' "${GREEN}DONE!${NORMAL}"		
+				   ;;
+				    
+				    *)  #exit  
+					return
+					;;
+		esac
 }
 
 function exitHandlerFunc
@@ -332,7 +416,8 @@ function exitHandlerFunc
 				printf '%s\n\n' "${RED}Internet connectivity test to google.com failed${NORMAL}"
 			;;
 	 esac
-	printf '%s\n' "${BLUE}GOODBYE!!${NORMAL}"
+	 read -n 1 -s -p "Press any key to exit!"
+	printf '%s\n' "${BLUE}   GOODBYE!!${NORMAL}"
 	exit
 }
 
