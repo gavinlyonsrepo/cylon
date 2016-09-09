@@ -1,9 +1,10 @@
 #!/bin/bash
 
-#version 1.0
+#version 1.0 20-06-16
 #verions 1.1 replace echo with prtintf functions.
 #version 1.2 relative paths added 
 #version 1.3 google drive function added 
+#version 1.4 090916 extra cower options added
 
 #colours for printf
 RED=$(printf "\033[31;1m")
@@ -33,8 +34,8 @@ Funtions:
 (2)Pacman maintenance routine.
 Delete orphans + Prunes older packages from cache +
 Writes installed package lists to files 
-(3)Updates AUR packages using  Cower with optional install
-requires cower installed from AUR
+(3)AUR cower options search and optional install + Updates AUR package
+using  Cower with optional install requires cower  from AUR
 (4) system maintenance check
 All Failed Systemd Services All Failed Active Systemd Services
 Check log Journalctl for Errors Check log Journalctl for fstrim SSD trim
@@ -55,7 +56,7 @@ EOF
 
 printf '\033[36;1m%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' =
 printf '%s' "${GREEN} "
-read -n 1 -s -p "Press any key to continue!"
+read -n 1 -r -s -p "Press any key to continue!"
 clear
 }
 
@@ -85,39 +86,100 @@ function PacmanMantFunc
 			printf '%s\n\n' "${GREEN}DONE!${NORMAL}"    
 			
 }
+
 function CowerFunc
 {
-	            #update cower	            
-	            cd "$Dest3" || exitHandlerFunc dest3
-				TODAYSBACKUPDATE=$(date +%R-%d-%b-%Y)
-				mkdir "$TODAYSBACKUPDATE"
-				cd "$TODAYSBACKUPDATE" || exitHandlerFunc dest4
-				printf '%s\n\n' "${GREEN}Update AUR packages with cower ${NORMAL}"
-				printf '%s\n\n' "Directory made at pwd below for AUR updates"
-				pwd				
-				cower -vdu
-				ls -la
-				# look for empty dir (i.e. if no updates) 
-				if [ "$(ls -A .)" ] 
-				then
-					cat <<-EOF
-					Cower updates available for package build
-					Do you wish to build and install  them now?
-					1) Yes"
-					2) No"
-					Press option number followed by [ENTER]"
-					EOF
-					read -r choice
-					if [ "$choice" = "1" ]
+	         #AUR warning
+	         printf '%s\n' "${RED}"	
+	         cat <<-EOF
+			 AUR WARNING: User Beware
+			 The Arch User Repository (AUR) is a community-driven repository for Arch users
+			 It is possible for a package to contain dangerous commands through malice 
+			 or ignorance. Before installing packages or installing updates
+			 Please Read wiki First
+			 https://wiki.archlinux.org/index.php/Arch_User_Repository
+			EOF
+			printf '%s' "${GREEN} " 
+			read -n 1 -r -s -p "Press any key to continue!"
+			printf '%s\n' "${NORMAL}"
+            clear
+			
+	         #make cower directory
+	         cd "$Dest3" || exitHandlerFunc dest3
+		     
+		     printf '%s\n' "${GREEN}AUR by cower options${NORMAL}"
+			cat <<-EOF
+			(1)    Information for package with optional install
+			(2)    Check for updates with optional install
+			(*)    Return to main menu
+			Press option followed by [ENTER]
+			EOF
+			read -r choiceCower
+			#check that paths exist and change path to dest path
+			case "$choiceCower" in    
+						#search AUR with cower with optional install
+						1)printf '%s\n\n' "${GREEN}Search AUR with cower with optional install ${NORMAL}"
+						  printf '%s\n\n' "Type a AUR package name:-"
+					      read -r cowerPac		
+						  printf '%s\n' "$cowerPac" 
+						  cower -i -c "$cowerPac" || return
+						  #cower -cd optinal install 
+						  cat <<-EOF
+							Do you wish to download  build and install this package now?
+							1) Yes"
+							*) No"
+							Press option number followed by [ENTER]"
+							EOF
+							read -r choiceIUI
+								if [ "$choiceIUI" = "1" ]
+									then
+									printf '%s\n\n' "Building and installing cower package"	
+									#build and install packages
+									cower -d -c	 "$cowerPac"
+									cd "$cowerPac" || return
+									makepkg -si		
+								fi	
+						;;
+						
+						#check for updates cower and optional install            
+						2)printf '%s\n\n' "${GREEN}Update AUR packages with cower ${NORMAL}"		
+						TODAYSBACKUPDATE=$(date +%H-%d-%b-%Y)
+			             mkdir "$TODAYSBACKUPDATE"
+		                 cd "$TODAYSBACKUPDATE" || exitHandlerFunc dest4
+		                 printf '%s\n' "Directory made at pwd below for AUR updates"
+			             pwd		       
+						cower -d -vuc 
+						
+						# look for empty dir (i.e. if no updates) 
+						
+						if [ "$(ls -A .)" ] 
 						then
-						printf '%s\n\n' "Building and installing cower package updates"	
-						#build and install packages
-						find . -name PKGBUILD -execdir makepkg -si \;			
-					fi	
-				else
-					printf '%s\n\n' "No updates of AUR packages by Cower..."
-				fi	
-				printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+							printf '%s\n' "Package builds available"
+							ls 
+							printf '\n'
+							cat <<-EOF
+							Cower updates available for package build
+							Do you wish to build and install  them now?
+							1) Yes"
+							*) No"
+							Press option number followed by [ENTER]"
+							EOF
+							read -r choiceIU
+								if [ "$choiceIU" = "1" ]
+									then
+									printf '%s\n\n' "Building and installing cower package updates"	
+									#build and install packages
+									find . -name PKGBUILD -execdir makepkg -si \;			
+								fi	
+						  else
+							printf '%s\n\n' "No updates of AUR packages by Cower..."
+						  fi	
+						;;
+				 *)  #exit to main menu 
+					return
+				 ;;
+				 esac
+			     printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
 }
 
 function SystemMaintFunc
@@ -179,9 +241,9 @@ function SystemBackFunc
 			(*)    Exit
 			Press option followed by [ENTER]
 			EOF
-			read -r choice
+			read -r choiceBack
 			#check that paths exist and change path to dest path
-			case "$choice" in
+			case "$choiceBack" in
 			1)  printf '%s\n' "$Dest1"
 				  cd "$Dest1" || exitHandlerFunc dest1				
 			;;
@@ -223,7 +285,7 @@ function SystemBackFunc
 			esac
 
 			#make the backup directory
-			TODAYSBACKUPDATE=$(date +%R-%d-%b-%Y)
+			TODAYSBACKUPDATE=$(date +%H-%d-%b-%Y)
 			mkdir "$TODAYSBACKUPDATE"
 			cd "$TODAYSBACKUPDATE" || exitHandlerFunc dest4
 			printf '%s\n\n' "Backup Directory made at :- "
@@ -270,10 +332,8 @@ function ClamAVFunc
 			2) No
 			Press option number and [ENTER]
 			EOF
-			read -r choice1
-			printf '%s\n\n' "You picked option" "$choice1"  
-			
-			if [ "$choice1" = "1" ]
+			read -r choiceAV			
+			if [ "$choiceAV" = "1" ]
 				then
 					# scan entire system
 					cd "$Dest3" || exitHandlerFunc dest3
@@ -294,7 +354,7 @@ function SystemCleanFunc
 			(1)     bash
 			(2)     Epiphany
 			(3)     Evolution
-			(4)	GNOME
+			(4)     GNOME
 			(5)     Rhythmbox
 			(6)     Thumbnails
 			(7)     Thunderbird
@@ -302,7 +362,7 @@ function SystemCleanFunc
 			(9) 	VIM
 			(0) 	VLC media player
 			(a)     X11
-			(b)	deepscan
+			(b)     deepscan
 			(c)     flash
 			(d)     libreoffice
 			(e)     System
@@ -420,8 +480,10 @@ function exitHandlerFunc
 				printf '%s\n\n' "${RED}Internet connectivity test to google.com failed${NORMAL}"
 			;;
 	 esac
-	 read -n 1 -s -p "Press any key to exit!"
-	printf '%s\n' "${BLUE}   GOODBYE!!${NORMAL}"
+	printf '%s' "${GREEN} "      
+	read -n 1 -r -s -p "Press any key to exit!"
+	printf '\n' 
+	printf '%s\n' "${BLUE}GOODBYE $USER !!${NORMAL}"
 	exit
 }
 
@@ -430,7 +492,7 @@ function exitHandlerFunc
 #print horizonal line 
 printf '\033[36;1m%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' =
 cat <<-EOF
-Cylon.sh 25-06-16  Version 1.3 
+Cylon.sh 25-06-16  Version 1.4-2 (090916)
 Copyright (C) 2016  <whitelight999@live.ie>
 Aur package name = cylon
 Arch Linux distro Maintenance program written in Bash script.
@@ -448,7 +510,7 @@ while true; do
 	cat <<-EOF
 	(1)     Pacman updates
 	(2)     Pacman maintenance 
-	(3)     AUR updates by Cower
+	(3)     AUR by Cower options
 	(4)     System maintenance check
 	(5)     System backup 
 	(6)     System clean by Bleachbit
@@ -459,8 +521,8 @@ while true; do
 	(*) 	Exit
 	EOF
 	printf '%s\n' "${BLUE}Press option number followed by [ENTER] ${NORMAL}"
-    read -r choice
-    case "$choice" in
+    read -r choiceMain
+    case "$choiceMain" in
 		1)   #pacman update
 			 PacmanFunc 		
 		;;

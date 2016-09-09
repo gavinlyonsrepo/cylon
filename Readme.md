@@ -10,14 +10,17 @@ backups and system checks in a single menu driven optional script Command line p
 This script provides numerous tools 
 to Arch Linux for maintenance, system checks and backups.  
 
+Config:
+Cylon is a standalone bash scirpt installed to user/bin by package build type cylon to run 
+Some function require software installed as listed below. this is left to user discretion.
 
 Funtions:
 (1)Updates Offical Arch Repos with pacman
 (2)Pacman maintenance routine.
 Delete orphans + Prunes older packages from cache +
 Writes installed package lists to files 
-(3)Updates AUR packages using  Cower with optional install
-requires cower installed from AUR
+3)AUR cower options search and optional install + Updates AUR package
+using  Cower with optional install requires cower  from AUR
 (4) system maintenance check
 All Failed Systemd Services
 All Failed Active Systemd Services
