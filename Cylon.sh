@@ -44,8 +44,8 @@ Optional destination path as defined in script or custom path
 Make copy of first 512 bytes MBR with dd
 Make a copy of etc dir Make a copy of home dir
 Make tarball of all except tmp dev proc sys runMake copy of package 
-lists, Also there is an option  for gdrive sync with remote documents 
-directory on google drive requires netcat and gdrive(AUR) installed
+lists, Also there is an option  for gdrive sync with remote 
+directories on google drive requires netcat and gdrive(AUR) installed
 (6)Clean system with bleachbit
 Requires program bleachbit installed, menu option 15 settings.
 (7)Delete firefox history by bleachbit
@@ -174,7 +174,7 @@ function SystemBackFunc
 			(1)    "$Dest1"
 			(2)    "$Dest2"
 			(3)    "$Dest3"
-			(4)    gdrive connect and sync to google drive(Documents folder)
+			(4)    gdrive connect and sync to google drive
 		(5)    Specify a path 
 			(*)    Exit
 			Press option followed by [ENTER]
@@ -204,6 +204,10 @@ function SystemBackFunc
 						exitHandlerFunc gdrive
 					fi
 				   	gdrive sync upload ./Documents 0B3_RVJ50UWFAaGxJSXg3NGJBaXc
+				   	printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+				   	
+				   	printf '%s\n' "${GREEN}gdrive sync with remote pictures directory${NORMAL}"
+				   	gdrive sync upload  ./Pictures 0B3_RVJ50UWFAR3A2T3dZTU9TaTA
 				   	printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
 				   	return	
 				   				
