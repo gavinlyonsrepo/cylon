@@ -493,7 +493,7 @@ function exitHandlerFunc
 printf '\033[36;1m%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' =
 cat <<-EOF
 Cylon.sh 25-06-16  Version 1.4-2 (090916)
-Copyright (C) 2016  <glyons66@live.ie>
+Copyright (C) 2016  <glyons66@hotmail.com>
 Aur package name = cylon
 Arch Linux distro Maintenance program written in Bash script.
 This script is a  maintenance, 
