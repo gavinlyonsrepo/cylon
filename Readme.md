@@ -1,6 +1,6 @@
 Cylon.sh  
 25-06-16 
-Version 1.3
+Version 1.4-2
 Arch Linux distro maintenance  Bash script. 
 Aur package name = cylon
 
@@ -81,13 +81,12 @@ gnu-netcat to check for internet connection
 Bug reports
 -----------
 
-If you should find a bug, please send a report to <whitelight999@live.ie>.
-
+If you should find a bug, please send a report to glyons66@hotmail.com
 
 Copyright
 ---------
 
-Copyright (C) 2016 Gavin Lyons <whitelight999@live.ie>
+Copyright (C) 2016 Gavin Lyons <glyons66@hotmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
