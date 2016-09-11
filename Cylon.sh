@@ -5,7 +5,7 @@
 #version 1.2 relative paths added 
 #version 1.3 google drive function added 
 #version 1.4 090916 extra cower options added
-#version 1.5 options added for systme bakcup function(dd and gdrive)
+#version 1.5 options added for system backup function(dd and gdrive)
 
 #colours for printf
 RED=$(printf "\033[31;1m")
@@ -134,10 +134,15 @@ function CowerFunc
 							read -r choiceIUI
 								if [ "$choiceIUI" = "1" ]
 									then
-									printf '%s\n\n' "Building and installing cower package"	
 									#build and install packages
+									printf '%s\n\n' "Downloading Package $cowerPac"	
 									cower -d -c	 "$cowerPac"
 									cd "$cowerPac" || return
+									printf '%s\n' "${BLUE}$cowerPac PKGBUILD:${NORMAL}"
+									cat PKGBUILD
+									printf '%s' "${GREEN}" 
+									read -n 1 -r -s -p "Press any key to continue!"
+									printf '%s\n' "${NORMAL}"
 									makepkg -si		
 								fi	
 						;;
