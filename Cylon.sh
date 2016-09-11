@@ -5,6 +5,7 @@
 #version 1.2 relative paths added 
 #version 1.3 google drive function added 
 #version 1.4 090916 extra cower options added
+#version 1.5 options added for systme bakcup function(dd and gdrive)
 
 #colours for printf
 RED=$(printf "\033[31;1m")
@@ -261,18 +262,37 @@ function SystemBackFunc
 					#(-w 1 waits at most one second
 					#It checks Google on port 80 (HTTP).
 					if nc -zw1 google.com 80; then
-						printf '%s\n'  "we have connectivity to google.com"
+						printf '%s\n\n'  "**We have connectivity to google.com**"
 					else
 						exitHandlerFunc gdrive
 					fi
-				   	gdrive sync upload ./Documents 0B3_RVJ50UWFAaGxJSXg3NGJBaXc
-				   	printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
-				   	
-				   	printf '%s\n' "${GREEN}gdrive sync with remote pictures directory${NORMAL}"
-				   	gdrive sync upload  ./Pictures 0B3_RVJ50UWFAR3A2T3dZTU9TaTA
-				   	printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
-				   	return	
-				   				
+				   	cat <<-EOF 
+					Do you wish to use gdrive default paths or custom path?
+					1) Default
+					*) Custom
+					Press option number and [ENTER]
+					EOF
+					read -r choiceGD
+					
+						if  [ "$choiceGD" = "1" ]
+						then
+							printf '%s\n' "${GREEN}gdrive sync with remote documents directory${NORMAL}"
+							gdrive sync upload ./Documents 0B3_RVJ50UWFAaGxJSXg3NGJBaXc
+							printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+							printf '%s\n' "${GREEN}gdrive sync with remote pictures directory${NORMAL}"
+							gdrive sync upload  ./Pictures 0B3_RVJ50UWFAR3A2T3dZTU9TaTA
+							printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+				   		else 
+				   		#custom path
+							printf '%s\n' "Type a custom Source directory path:-"
+				            read -r gdriveS		            
+				            printf '%s\n' "Type a gdrive directory ID:-"
+				            read -r gdriveD		          
+							printf '%s\n' "${GREEN}gdrive sync with custom path${NORMAL}"
+							gdrive sync upload  "$gdriveS"	 "$gdriveD"
+							printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+				   		fi
+				   		return
 			;;				
 			5)  printf '%s\n\n' "Type a custom destination path:-"
 				read -r Path1		
@@ -293,20 +313,23 @@ function SystemBackFunc
 			
 			#begin the backup
 			printf '%s\n' "${GREEN}Make copy of first 512 bytes MBR with dd${NORMAL}"
-			sudo dd if=/dev/sdb1 of=hda-mbr.bin bs=512 count=1
+			#get /dev/sdxy where currenty filesystem is mounted 
+			myddpath="$(df /boot/ --output=source | tail -1)"
+			printf '%s\n' "$myddpath"
+			sudo dd if="$myddpath" of=hda-mbr.bin bs=512 count=1
 			printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
 			
             printf '%s\n' "${GREEN}Make a copy of etc dir${NORMAL}"
-			sudo cp -a -v -u /etc .
+			#sudo cp -a -v -u /etc .
 			printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
 			
             printf '%s\n' "${GREEN}Make a copy of home dir${NORMAL}"
-			sudo cp -a -v -u /home .
+			#sudo cp -a -v -u /home .
 			printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
 			sync
 
             printf '%s\n' "${GREEN}Make tarball of all except tmp dev proc sys run${NORMAL}"
-			sudo tar --one-file-system --exclude=/tmp/* --exclude=/dev/* --exclude=/proc/* --exclude=/sys/* --exclude=/run/* -pzcvf RootFS_backup.tar.gz /
+			#sudo tar --one-file-system --exclude=/tmp/* --exclude=/dev/* --exclude=/proc/* --exclude=/sys/* --exclude=/run/* -pzcvf RootFS_backup.tar.gz /
 			printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
 			sync
 
@@ -492,7 +515,7 @@ function exitHandlerFunc
 #print horizonal line 
 printf '\033[36;1m%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' =
 cat <<-EOF
-Cylon.sh 25-06-16  Version 1.4-2 (090916)
+Cylon.sh 25-06-16  Version 1.5-3 (110916)
 Copyright (C) 2016  <glyons66@hotmail.com>
 Aur package name = cylon
 Arch Linux distro Maintenance program written in Bash script.

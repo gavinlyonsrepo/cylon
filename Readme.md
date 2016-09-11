@@ -14,8 +14,8 @@ Config:
 Cylon is a standalone bash scirpt installed to user/bin by package build type cylon to run 
 Some function require software installed as listed below. this is left to user discretion.
 
-Funtions:
-(1)Updates Offical Arch Repos with pacman
+Functions:
+(1)Updates main Arch Repos with pacman
 (2)Pacman maintenance routine.
 Delete orphans + Prunes older packages from cache +
 Writes installed package lists to files 
@@ -35,7 +35,7 @@ Make a copy of home dir
 Make tarball of all except tmp dev proc sys run
 Make copy of package lists
 Also there is an option 
-for gdrive sync with remote documents directory on google drive requires netcat and gdrive(AUR) installed
+for gdrive sync with remote directorys on google drive requires netcat and gdrive(AUR) installed
 (6)Clean system with bleachbit
 Requires program bleachbit installed menu options
 system
@@ -61,9 +61,9 @@ X11
 
 11 main menu options currently
     (1)     Get updates with Pacman
-    (2)     Pacman maintence
+    (2)     Pacman maintenance
     (3)     Get updates from AUR with cower
-    (4)     System maintence check
+    (4)     System maintenance check
     (5)     System backup
     (6)     System Clean by Bleachbit
     (7)     Delete Firefox history
