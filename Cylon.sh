@@ -320,16 +320,16 @@ function SystemBackFunc
 			printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
 			
             printf '%s\n' "${GREEN}Make a copy of etc dir${NORMAL}"
-			#sudo cp -a -v -u /etc .
+			sudo cp -a -v -u /etc .
 			printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
 			
             printf '%s\n' "${GREEN}Make a copy of home dir${NORMAL}"
-			#sudo cp -a -v -u /home .
+			sudo cp -a -v -u /home .
 			printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
 			sync
 
             printf '%s\n' "${GREEN}Make tarball of all except tmp dev proc sys run${NORMAL}"
-			#sudo tar --one-file-system --exclude=/tmp/* --exclude=/dev/* --exclude=/proc/* --exclude=/sys/* --exclude=/run/* -pzcvf RootFS_backup.tar.gz /
+			sudo tar --one-file-system --exclude=/tmp/* --exclude=/dev/* --exclude=/proc/* --exclude=/sys/* --exclude=/run/* -pzcvf RootFS_backup.tar.gz /
 			printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
 			sync
 
