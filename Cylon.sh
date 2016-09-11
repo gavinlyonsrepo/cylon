@@ -122,7 +122,7 @@ function CowerFunc
 						1)printf '%s\n\n' "${GREEN}Search AUR with cower with optional install ${NORMAL}"
 						  printf '%s\n\n' "Type a AUR package name:-"
 					      read -r cowerPac		
-						  printf '%s\n' "$cowerPac" 
+						  printf '%s\n' " " 
 						  cower -i -c "$cowerPac" || return
 						  #cower -cd optinal install 
 						  cat <<-EOF
@@ -131,19 +131,22 @@ function CowerFunc
 							*) No"
 							Press option number followed by [ENTER]"
 							EOF
-							read -r choiceIUI
-								if [ "$choiceIUI" = "1" ]
+							read -r choiceIU4
+								if [ "$choiceIU4" = "1" ]
 									then
 									#build and install packages
 									printf '%s\n\n' "Downloading Package $cowerPac"	
 									cower -d -c	 "$cowerPac"
 									cd "$cowerPac" || return
-									printf '%s\n' "${BLUE}$cowerPac PKGBUILD:${NORMAL}"
+									printf '%s\n' "${GREEN}$cowerPac PKGBUILD: Please read${NORMAL}"
 									cat PKGBUILD
-									printf '%s' "${GREEN}" 
-									read -n 1 -r -s -p "Press any key to continue!"
-									printf '%s\n' "${NORMAL}"
-									makepkg -si		
+									printf '%s\n' "${GREEN}Press 1 to install any other key to quit${NORMAL}" 
+									read -r choiceIU3
+									if [ "$choiceIU3" = "1" ]
+										then
+										printf '%s\n' "Installing package $cowerPac"
+										makepkg -si		
+									fi
 								fi	
 						;;
 						
@@ -170,12 +173,22 @@ function CowerFunc
 							*) No"
 							Press option number followed by [ENTER]"
 							EOF
-							read -r choiceIU
-								if [ "$choiceIU" = "1" ]
+							read -r choiceIU2
+								if [ "$choiceIU2" = "1" ]
 									then
-									printf '%s\n\n' "Building and installing cower package updates"	
-									#build and install packages
-									find . -name PKGBUILD -execdir makepkg -si \;			
+									printf '%s\n' "${GREEN}PKGBUILDS :-${NORMAL}" 
+									#cat PKGBUILDs to screen
+									find . -name PKGBUILD -exec cat {} \; | more
+									read -n 1 -r -s -p "Press any key to continue!"
+									printf '%s\n' "${GREEN}PKGBUILDS outputed to screen above${NORMAL}" 
+									printf '%s\n' "${GREEN}Press 1 to install any other key to quit${NORMAL}" 
+									read -r choiceIU1
+									if [ "$choiceIU1" = "1" ]
+										then
+											#build and install all donwloaded PKGBUILD files 
+											printf '%s\n' "Installing packages"
+											find . -name PKGBUILD -execdir makepkg -si \;
+									fi			
 								fi	
 						  else
 							printf '%s\n\n' "No updates of AUR packages by Cower..."
