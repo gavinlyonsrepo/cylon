@@ -317,7 +317,7 @@ function SystemBackFunc
 					#(-w 1 waits at most one second
 					#It checks Google on port 80 (HTTP).
 					if nc -zw1 google.com 80; then
-						msgFunc norm '%s\n'  "**We have connectivity to google.com**"
+						msgFunc norm   "**We have connectivity to google.com**"
 					else
 						exitHandlerFunc gdrive
 					fi
