@@ -1,11 +1,15 @@
 #!/bin/bash
 
+# G lyons
+#see cat displays further below for more info
+#version control:
 #version 1.0 20-06-16
-#verions 1.1 replace echo with prtintf functions.
+#verions 1.1 replace echo with printf functions.
 #version 1.2 relative paths added 
-#version 1.3 google drive function added 
-#version 1.4 090916 extra cower options added
-#version 1.5 options added for system backup function(dd and gdrive)
+#version 1.3-1 google drive function added 
+#version 1.4-2 090916 extra cower options added
+#version 1.5-3 options added for system backup function(dd and gdrive)
+#version 1.6-4  120916 Msgfunc added, PKGBUILD display added 
 
 #colours for printf
 RED=$(printf "\033[31;1m")
@@ -13,8 +17,12 @@ GREEN=$(printf "\033[32;1m")
 BLUE=$(printf "\033[36;1m")
 NORMAL=$(printf "\033[0m")
 
-#make the path for the logfiles/updates etc
+clear 
+
+#make the path for the logfiles/AUR downloads and updates etc
 mkdir -p "$HOME/Documents/Tech/Linux/MyLinux/Cylon/"
+
+#define some variables 
 #path for my internal hard drive backup
 Dest1="/run/media/$USER/Linux_backup"
 #path for my external hard drive backup
@@ -22,109 +30,127 @@ Dest2="/run/media/$USER/iomeaga_320"
 #set logfilepath + cower updates 
 Dest3="$HOME/Documents/Tech/Linux/MyLinux/Cylon/"
 
-
 #functions
+#function for printing output also creates dirs for output
+function msgFunc
+{
+	case "$1" in 
+		line) #print horizontal line
+			printf '\033[36;1m%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' =
+		;;
+		anykey) #any key prompt
+		    printf '%s' "${GREEN}" 
+			read -n 1 -r -s -p "Press any key to continue!"
+			printf '%s\n' "${NORMAL}"
+		;;
+		green) #green text
+			printf '%s\n' "${GREEN}$2${NORMAL}" 
+		;;
+		red) #red text
+			printf '%s\n' "${RED}$2${NORMAL}"
+		;;
+		blue) #blue text
+			printf '%s\n' "${BLUE}$2${NORMAL}"
+		;;
+		norm) #normal text
+			if [ "$2" = "" ]
+				then
+				#just change colour
+				printf '%s' "${NORMAL}"
+				return
+			fi
+			printf '%s\n' "${NORMAL}$2"
+		;;
+		dir) #makes dirs for ouput
+			TODAYSDIR=$(date +%H-%d-%b-%Y)"$2"
+			mkdir "$TODAYSDIR"
+			cd "$TODAYSDIR" || exitHandlerFunc dest4
+			msgFunc norm "Directory for output made at:-"
+			pwd	
+		;;
+	esac
+}
+
 #Help function to display Help info
 function HelpFunc 
 {
-#print horizonal line 
-printf '\033[36;1m%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' =
-cat <<-EOF
-Funtions:
-(1)Updates Offical Arch Repos with pacman
-(2)Pacman maintenance routine.
-Delete orphans + Prunes older packages from cache +
-Writes installed package lists to files 
-(3)AUR cower options search and optional install + Updates AUR package
-using  Cower with optional install requires cower  from AUR
-(4) system maintenance check
-All Failed Systemd Services All Failed Active Systemd Services
-Check log Journalctl for Errors Check log Journalctl for fstrim SSD trim
-Check for broken symlinks, 
-(5)System backup
-Optional destination path as defined in script or custom path
-Make copy of first 512 bytes MBR with dd
-Make a copy of etc dir Make a copy of home dir
-Make tarball of all except tmp dev proc sys runMake copy of package 
-lists, Also there is an option  for gdrive sync with remote 
-directories on google drive requires netcat and gdrive(AUR) installed
-(6)Clean system with bleachbit
-Requires program bleachbit installed, menu option 15 settings.
-(7)Delete firefox history by bleachbit
-(8)Deleting Trash and Downloads folder
-(9)ClamAv anti virus scan 
-EOF
-
-printf '\033[36;1m%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' =
-printf '%s' "${GREEN} "
-read -n 1 -r -s -p "Press any key to continue!"
 clear
-}
+#print horizonal line 
+msgFunc line
+msgFunc green "Displaying readme file"
+cd "$HOME"/.config/  || exitHandlerFunc dest3
+more cylonReadme.md 
+msgFunc green "Done!" 
+msgFunc line
+msgFunc anykey
+clear
+} 
 
 function PacmanFunc 
 {
 	#update pacman
-	printf '%s\n\n' "${GREEN}Update Pacman ${NORMAL}"
+	msgFunc green "Update system with Pacman"
 	sudo pacman -Syu
-	printf '%s\n\n' "${GREEN}DONE!${NORMAL}" 
+	msgFunc green "Done!" 
 }
 
 function PacmanMantFunc
 {
 	        #pacman maintenance
-	        printf '%s\n\n' "${GREEN}Pacman Maintenance${NORMAL}"
-			printf '%s\n' "Delete orphans!"
+	        msgFunc green "Pacman Maintenance"
+			msgFunc green "Delete orphans!"
+			#Remove all packages not required as dependencies (orphans)
 			sudo pacman -Rns "$(pacman -Qtdq)"
-			printf '%s\n\n' "${GREEN}DONE!${NORMAL}"			
-			printf '%s\n' "Prune older packages from cache!"
+			msgFunc green "Done!"
+			
+			msgFunc green  "Prune older packages from cache!"
+			#The paccache script, deletes all cached  package 
+			#regardless of whether they're installed or not, 
+			#except for the most recent 3, 
 			sudo paccache -r
-			printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
-			printf '%s\n' "Writing installed package lists to files at :- "
+			msgFunc green "Done!"
+			
+			msgFunc green "Writing installed package lists to files at :"
 			cd "$Dest3" || exitHandlerFunc dest3
-			pwd
+			msgFunc dir "-INFO"
 			pacman -Qqen > pkglist.txt
 			pacman -Qm > pkglistAUR.txt
-			printf '%s\n\n' "${GREEN}DONE!${NORMAL}"    
-			
+			msgFunc green "Done!"   
 }
 
 function CowerFunc
 {
+			clear
 	         #AUR warning
-	         printf '%s\n' "${RED}"	
+	         msgFunc red  "AUR WARNING: User Beware"	
 	         cat <<-EOF
-			 AUR WARNING: User Beware
 			 The Arch User Repository (AUR) is a community-driven repository for Arch users
 			 It is possible for a package to contain dangerous commands through malice 
 			 or ignorance. Before installing packages or installing updates
-			 Please Read wiki First
+			 Please Read wiki First and learn the AUR system.
 			 https://wiki.archlinux.org/index.php/Arch_User_Repository
 			EOF
-			printf '%s' "${GREEN} " 
-			read -n 1 -r -s -p "Press any key to continue!"
-			printf '%s\n' "${NORMAL}"
-            clear
-			
-	         #make cower directory
+			msgFunc anykey
+			msgFunc line
+	         #check that paths exist and change path to dest path
 	         cd "$Dest3" || exitHandlerFunc dest3
-		     
-		     printf '%s\n' "${GREEN}AUR by cower options${NORMAL}"
+		     msgFunc green "AUR package install and updates by cower, options:-"
 			cat <<-EOF
-			(1)    Information for package with optional install
-			(2)    Check for updates with optional install
+			(1)    Get Information for package with optional install
+			(2)    Check for updates to installed packages with optional install
 			(*)    Return to main menu
 			Press option followed by [ENTER]
 			EOF
 			read -r choiceCower
-			#check that paths exist and change path to dest path
+			
 			case "$choiceCower" in    
 						#search AUR with cower with optional install
-						1)printf '%s\n\n' "${GREEN}Search AUR with cower with optional install ${NORMAL}"
-						  printf '%s\n\n' "Type a AUR package name:-"
+						1)msgFunc green "${GREEN}Search AUR with cower with optional install"
+						  msgFunc norm "Type a AUR package name:-"
 					      read -r cowerPac		
-						  printf '%s\n' " " 
+						  msgFunc norm " " 
 						  cower -i -c "$cowerPac" || return
-						  #cower -cd optinal install 
+						  #cower -cd optional install 
 						  cat <<-EOF
 							Do you wish to download  build and install this package now?
 							1) Yes"
@@ -134,38 +160,43 @@ function CowerFunc
 							read -r choiceIU4
 								if [ "$choiceIU4" = "1" ]
 									then
+									#TODAYSAURDL=$(date +%H-%d-%b-%Y)"-AUR-Download"
+									 #mkdir "$TODAYSAURDL"
+									 #cd "$TODAYSAURDL" || exitHandlerFunc dest4
+									 #msgFunc norm "Directory made at pwd below for AUR Download"
+									 #pwd	
+									 msgFunc dir "-AUR-DOWNLOAD"
 									#build and install packages
-									printf '%s\n\n' "Downloading Package $cowerPac"	
+									msgFunc norm "Downloading Package $cowerPac"	
 									cower -d -c	 "$cowerPac"
 									cd "$cowerPac" || return
-									printf '%s\n' "${GREEN}$cowerPac PKGBUILD: Please read${NORMAL}"
+									msgFunc green "$cowerPac PKGBUILD: Please read"
 									cat PKGBUILD
-									printf '%s\n' "${GREEN}Press 1 to install any other key to quit${NORMAL}" 
+									msgFunc green "PKGBUILD displayed above" 
+									msgFunc norm "Press 1 to install any other key to quit" 
 									read -r choiceIU3
 									if [ "$choiceIU3" = "1" ]
 										then
-										printf '%s\n' "Installing package $cowerPac"
+										msgFunc norm  "Installing package $cowerPac"
 										makepkg -si		
 									fi
 								fi	
 						;;
 						
-						#check for updates cower and optional install            
-						2)printf '%s\n\n' "${GREEN}Update AUR packages with cower ${NORMAL}"		
-						TODAYSBACKUPDATE=$(date +%H-%d-%b-%Y)
-			             mkdir "$TODAYSBACKUPDATE"
-		                 cd "$TODAYSBACKUPDATE" || exitHandlerFunc dest4
-		                 printf '%s\n' "Directory made at pwd below for AUR updates"
-			             pwd		       
+						#check for updates cower and optional install 
+						           
+						2)msgFunc green "Update AUR packages with cower "		
+						#make cower update directory
+						msgFunc dir "-AUR-UPDATES" 
 						cower -d -vuc 
 						
 						# look for empty dir (i.e. if no updates) 
 						
 						if [ "$(ls -A .)" ] 
 						then
-							printf '%s\n' "Package builds available"
+							msgFunc norm  "Package builds available"
 							ls 
-							printf '\n'
+							msgFunc norm " "
 							cat <<-EOF
 							Cower updates available for package build
 							Do you wish to build and install  them now?
@@ -176,68 +207,69 @@ function CowerFunc
 							read -r choiceIU2
 								if [ "$choiceIU2" = "1" ]
 									then
-									printf '%s\n' "${GREEN}PKGBUILDS :-${NORMAL}" 
+									msgFunc green " Viewing  PKGBUILDS of updates :-" 
 									#cat PKGBUILDs to screen
 									find . -name PKGBUILD -exec cat {} \; | more
-									read -n 1 -r -s -p "Press any key to continue!"
-									printf '%s\n' "${GREEN}PKGBUILDS outputed to screen above${NORMAL}" 
-									printf '%s\n' "${GREEN}Press 1 to install any other key to quit${NORMAL}" 
+									msgFunc anykey
+									msgFunc line
+									msgFunc green "PKGBUILDS displayed above$" 
+									msgFunc norm "Press 1 to install ALL, any other key to quit" 
 									read -r choiceIU1
 									if [ "$choiceIU1" = "1" ]
 										then
 											#build and install all donwloaded PKGBUILD files 
-											printf '%s\n' "Installing packages"
+											msgFunc norm  "Installing packages"
 											find . -name PKGBUILD -execdir makepkg -si \;
 									fi			
 								fi	
 						  else
-							printf '%s\n\n' "No updates of AUR packages by Cower..."
+							msgFunc norm "No updates  found for installed AUR packages by Cower..."
 						  fi	
 						;;
 				 *)  #exit to main menu 
 					return
 				 ;;
 				 esac
-			     printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+			     msgFunc green "Done!"
 }
 
 function SystemMaintFunc
 {
 	#system maintenance
-	        # -systemd --failed:
-			printf '%s\n' "${GREEN}All Failed Systemd Services${NORMAL}"
-			systemctl --failed --all
-			printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+	        #change dir for log files
+	        cd "$Dest3" || exitHandlerFunc dest3
+			msgFunc dir "-INFO"
 			
-			printf '%s\n' "${GREEN}All Failed Active Systemd Services${NORMAL}"
+	        # -systemd --failed:
+			msgFunc green "All Failed Systemd Services"
+			systemctl --failed --all
+			msgFunc green "Done!"
+			
+			msgFunc green "All Failed Active Systemd Services"
 			systemctl --failed
-			printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+			msgFunc green "Done!"
 			
 			# -Logfiles:
-			printf '%s\n' "${GREEN}Check log Journalctl for Errors${NORMAL}"
-			cd "$Dest3" || exitHandlerFunc dest3
-			printf '%s\n' "Errorfile written to :-"
+			msgFunc green "Check log Journalctl for Errors"
+			msgFunc norm "Errorfile written to :-"
 			pwd
-			journalctl -p 3 -xb >Journalctlerrlog
-			printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+			journalctl -p 3 -xb > Journalctlerrlog
+			msgFunc green "Done!"
 			
 			#check ssd trim ok
-			printf '%s\n' "${GREEN}Check Journalctl for fstrim SSD trim${NORMAL}"
-			cd "$Dest3" || exitHandlerFunc dest3
-			printf '%s\n' "SSD trim report written to -"
+			msgFunc green "Check Journalctl for fstrim SSD trim"
+			msgFunc norm "SSD trim report written to -"
 			pwd
-			echo "SSD trim" >> Journalctlerrlog
-			journalctl -u fstrim >> Journalctlerrlog
-			printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+			echo "SSD trim" > JournalctlerrSDDlog
+			journalctl -u fstrim > JournalctlerrSDDlog
+			msgFunc green "Done!"
 			
 			# Checking for broken symlinks:
-			printf '%s\n' "${GREEN}Checking for Broken Symlinks${NORMAL}"
-			cd "$Dest3" || exitHandlerFunc dest3
-			printf '%s\n' "log.txt written to -"
+			msgFunc green "Checking for Broken Symlinks"
+			msgFunc norm "log.txt written to -"
 			pwd
-			cd ~ || exitHandlerFunc dest4
-            find . -type l -! -exec test -e {} \; -print > "$Dest3"symlinkerr
-			printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+            find /"$HOME" -type l -! -exec test -e {} \; -print > symlinkerr
+			msgFunc green "Done!"
 			
 }
 
@@ -250,37 +282,42 @@ function SystemBackFunc
 			#	exitHandlerFunc exitout
 			#fi
 			#get user input for backup
-			printf '%s\n' "${GREEN}Pick destination directory for backup${NORMAL}"
+			msgFunc green "Pick destination directory for system backup or gdrive option"
 			cat <<-EOF
 			(1)    "$Dest1"
 			(2)    "$Dest2"
 			(3)    "$Dest3"
-			(4)    gdrive connect and sync to google drive
-		(5)    Specify a path 
+			(4)    Specify a path 
+			(5)    gdrive connect and sync to google drive
 			(*)    Exit
 			Press option followed by [ENTER]
 			EOF
+			
 			read -r choiceBack
 			#check that paths exist and change path to dest path
 			case "$choiceBack" in
-			1)  printf '%s\n' "$Dest1"
+			1)  
 				  cd "$Dest1" || exitHandlerFunc dest1				
 			;;
-			2)  printf '%s\n'  "$Dest2"
+			2)  
 				 cd "$Dest2"   || exitHandlerFunc dest2
 						
 			;;
-			3)  printf '%s\n'  "$Dest3"
+			3)  
 				  cd "$Dest3" || exitHandlerFunc dest3						
 			;;
-			4)  printf '%s\n' "${GREEN}gdrive sync with remote documents directory${NORMAL}"
+			4)  msgFunc norm "Type a custom destination path:-"
+				read -r Path1		
+				  cd "$Path1" || exitHandlerFunc dest4				
+			;;
+			5)  msgFunc green "gdrive sync with remote documents directory"
 					#This uses netcat (nc) in its port scan mode, 
 					#a quick poke (-z is zero-I/O mode [used for 
 					#scanning]) with a quick timeout 
 					#(-w 1 waits at most one second
 					#It checks Google on port 80 (HTTP).
 					if nc -zw1 google.com 80; then
-						printf '%s\n\n'  "**We have connectivity to google.com**"
+						msgFunc norm '%s\n'  "**We have connectivity to google.com**"
 					else
 						exitHandlerFunc gdrive
 					fi
@@ -294,79 +331,66 @@ function SystemBackFunc
 					
 						if  [ "$choiceGD" = "1" ]
 						then
-							printf '%s\n' "${GREEN}gdrive sync with remote documents directory${NORMAL}"
+							msgFunc green "gdrive sync with remote documents directory"
 							gdrive sync upload ./Documents 0B3_RVJ50UWFAaGxJSXg3NGJBaXc
-							printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
-							printf '%s\n' "${GREEN}gdrive sync with remote pictures directory${NORMAL}"
+							msgFunc green "Done!"
+							msgFunc green "gdrive sync with remote pictures directory"
 							gdrive sync upload  ./Pictures 0B3_RVJ50UWFAR3A2T3dZTU9TaTA
-							printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+							msgFunc green "Done!"
 				   		else 
 				   		#custom path
-							printf '%s\n' "Type a custom Source directory path:-"
+							msgFunc norm "Type a custom Source directory path:-"
 				            read -r gdriveS		            
-				            printf '%s\n' "Type a gdrive directory ID:-"
+				            msgFunc norm "Type a gdrive directory ID:-"
 				            read -r gdriveD		          
-							printf '%s\n' "${GREEN}gdrive sync with custom path${NORMAL}"
+							msgFunc green "gdrive sync with custom path"
 							gdrive sync upload  "$gdriveS"	 "$gdriveD"
-							printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+							msgFunc green "Done!"
 				   		fi
 				   		return
 			;;				
-			5)  printf '%s\n\n' "Type a custom destination path:-"
-				read -r Path1		
-				  printf '%s\n' "$Path1"
-				  cd "$Path1" || exitHandlerFunc dest4				
-			;;
-
 			*) exitHandlerFunc exitout
 			  ;;
 			esac
 
 			#make the backup directory
-			TODAYSBACKUPDATE=$(date +%H-%d-%b-%Y)
-			mkdir "$TODAYSBACKUPDATE"
-			cd "$TODAYSBACKUPDATE" || exitHandlerFunc dest4
-			printf '%s\n\n' "Backup Directory made at :- "
-			pwd
-			
+			msgFunc dir "-BACKUP"
 			#begin the backup
-			printf '%s\n' "${GREEN}Make copy of first 512 bytes MBR with dd${NORMAL}"
+			msgFunc green "Make copy of first 512 bytes MBR with dd"
 			#get /dev/sdxy where currenty filesystem is mounted 
 			myddpath="$(df /boot/ --output=source | tail -1)"
-			printf '%s\n' "$myddpath"
+			msgFunc norm "$myddpath"
 			sudo dd if="$myddpath" of=hda-mbr.bin bs=512 count=1
-			printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+			msgFunc green "Done!"
 			
-            printf '%s\n' "${GREEN}Make a copy of etc dir${NORMAL}"
+            msgFunc green "Make a copy of etc dir"
 			sudo cp -a -v -u /etc .
-			printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+			msgFunc green "Done!"
 			
-            printf '%s\n' "${GREEN}Make a copy of home dir${NORMAL}"
+            msgFunc green "Make a copy of home dir"
 			sudo cp -a -v -u /home .
-			printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+			msgFunc green "Done!"
 			sync
 
-            printf '%s\n' "${GREEN}Make tarball of all except tmp dev proc sys run${NORMAL}"
+            msgFunc green "Make tarball of all except tmp dev proc sys run"
 			sudo tar --one-file-system --exclude=/tmp/* --exclude=/dev/* --exclude=/proc/* --exclude=/sys/* --exclude=/run/* -pzcvf RootFS_backup.tar.gz /
-			printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+			msgFunc green "Done!"
 			sync
 
-            printf '%s\n' "${GREEN}Make copy of package lists${NORMAL}"
+            msgFunc green "Make copy of package lists"
 			pacman -Qqen > pkglist.txt
 			pacman -Qm > pkglistAUR.txt
-			printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+			msgFunc green "Done!"
 }
 
 function ClamAVFunc
 {
 	       #anti virus with clamscan
            # update clamscan virus definitions:
-			
-			printf '%s\n' "${GREEN}Updating clamavscan Databases${NORMAL}"
+			msgFunc green "Updating clamavscan Databases"
 			sudo freshclam
-			printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
-			
-			printf '%s\n' "${GREEN}Scanning with Clamav${NORMAL}"
+			msgFunc green "Done!"
+			msgFunc green "Scanning with Clamav$"
 			cat <<-EOF
 			Do you wish to run anti-virus check with clamAv at this point?
 			1) Yes
@@ -378,19 +402,19 @@ function ClamAVFunc
 				then
 					# scan entire system
 					cd "$Dest3" || exitHandlerFunc dest3
-					printf '%s\n' "Clamavlogfile  at"
-					pwd
+					msgFunc dir "-INFO"
 					sudo clamscan -l clamavlogfile --recursive=yes --infected --exclude-dir='^/sys|^/proc|^/dev|^/lib|^/bin|^/sbin' /
-					printf '%s\n\n' "${GREEN}DONE!${NORMAL}"			
+					msgFunc green "Done!"			
 				else
-					printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+					msgFunc green "Done!"
 			fi
 }
 
 function SystemCleanFunc
 {
+		  clear
 		   #system clean with bleachbit
-		   printf '%s\n' "${BLUE}System clean with bleachbit :- ${NORMAL}"
+		   msgFunc blue "System clean with bleachbit:-"
 			cat <<-EOF
 			(1)     bash
 			(2)     Epiphany
@@ -409,83 +433,83 @@ function SystemCleanFunc
 			(e)     System
 			(f) 	return to main menu
 			EOF
-			printf '%s\n' "${BLUE}Press option number followed by [ENTER] ${NORMAL}"
+			msgFunc blue "Press option number followed by [ENTER]"
 			read -r choicebb
 			case "$choicebb" in
 				   
-				   1)printf '%s\n' "${GREEN}Clean bash${NORMAL}"
+				   1)msgFunc green "Clean bash"
 				   bleachbit --clean bash.*
-				   printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+				   msgFunc green "Done!"
 				   ;;
 				   
-				   2)printf '%s\n' "${GREEN}Clean Epiphany${NORMAL}"
+				   2)msgFunc green "Clean Epiphany"
 				   bleachbit --clean epiphany.*
-				   printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+				   msgFunc green "Done!"
 				   ;;
 				   
-				   3)printf '%s\n' "${GREEN}Clean Evolution${NORMAL}"
+				   3)msgFunc green "Clean Evolution"
 				   bleachbit --clean evolution.*
-				   printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+				   msgFunc green "Done!"
 				   ;;
 				   
-				   4)printf '%s\n' "${GREEN}Clean GNOME${NORMAL}"
+				   4)msgFunc green "Clean GNOME"
 				   bleachbit --clean gnome.*
-				   printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+				   msgFunc green "Done!"
 				   ;;
 				   
-				   5)printf '%s\n' "${GREEN}Clean Rhythmbox${NORMAL}"
+				   5)msgFunc green "Clean Rhythmbox"
 				   bleachbit --clean rhythmbox.*
-				   printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+				   msgFunc green "Done!"
 				   ;;
 				   
-				   6)printf '%s\n' "${GREEN}Clean Thumbnails${NORMAL}"
+				   6)msgFunc green "Clean Thumbnails"
 				   bleachbit --clean thumbnails.*
-				   printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+				   msgFunc green "Done!"
 				   ;;
 				   
-				   7)printf '%s\n' "${GREEN}Clean Thunderbird${NORMAL}"
+				   7)msgFunc green "Clean Thunderbird"
 				   bleachbit --clean thunderbird.*
-				   printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+				   msgFunc green "Done!"
 				   ;;
 				   
-				   8)printf '%s\n' "${GREEN}Transmission${NORMAL}"
+				   8)msgFunc green "Transmission"
 				   sudo bleachbit --clean transmission.*
-				   printf '%s\n\n' "${GREEN}DONE!${NORMAL}"	
+				   msgFunc green "Done!"
 				   ;;
 				   
-				   9)printf '%s\n' "${GREEN}Clean VIM${NORMAL}"
+				   9)msgFunc green "Clean VIM"
 				   bleachbit --clean vim.*
-				   printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+				   msgFunc green "Done!"
 				   ;;
 				   
-				   0)printf '%s\n' "${GREEN}Clean VLC media player${NORMAL}"
+				   0)msgFunc green "Clean VLC media player"
 				   bleachbit --clean vlc.*
-				   printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+				   msgFunc green "Done!"
 				   ;;
 				   
-				   a)printf '%s\n' "${GREEN}Clean X11${NORMAL}"
+				   a)msgFunc green "Clean X11"
 				   bleachbit --clean x11.*
-				   printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+				   msgFunc green "Done!"
 				   ;;
 				   
-				   b)printf '%s\n' "${GREEN}Clean Deep scan${NORMAL}"
+				   b)msgFunc green "Clean Deep scan"
 				   bleachbit --clean deepscan.*
-				   printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+				   msgFunc green "Done!"
 				   ;;
 				   
-				   c)printf '%s\n' "${GREEN}Clean Flash${NORMAL}"
+				   c)msgFunc green "Clean Flash"
 				   bleachbit --clean flash.*
-				   printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+				   msgFunc green "Done!"
 				   ;;
 				   
-				   d)printf '%s\n' "${GREEN}Clean libreoffice${NORMAL}"
+				   d)msgFunc green "Clean libreoffice"
 				   bleachbit --clean libreoffice.*
-				   printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+				   msgFunc green "Done!"
 				   ;;
 				   
-				   e)printf '%s\n' "${GREEN}Clean System${NORMAL}"
+				   e)msgFunc green "Clean System"
 				   sudo bleachbit --clean system.*
-				   printf '%s\n\n' "${GREEN}DONE!${NORMAL}"		
+				   msgFunc green "Done!"	
 				   ;;
 				    
 				    *)  #exit  
@@ -497,57 +521,55 @@ function SystemCleanFunc
 function exitHandlerFunc
 {
 	#deal with user exists and path not found errors
-	
 	case "$1" in
 	        exitout)              	
-				printf '\n' 
+				msgFunc norm " "
 			;;
 			dest1)  
-				  printf '%s\n\n' "${RED}Path not found to destination directory NOTE : The Hard drives  internal must be mounted${NORMAL}"	
-				  printf '%s\n\n' "$Dest1"
+				  msgFunc red "Path not found to destination directory, The internal HDD must be mounted"	
+				  msgFunc norm "$Dest1"
 			;;
 			dest2)  
-			      printf '%s\n\n' "${RED}Path not found to destination directory NOTE : The Hard drives  external must be mounted${NORMAL}"	
-				  printf '%s\n\n' "$Dest2"
+			      msgFunc red "Path not found to destination directory, The external HDD must be mounted"
+				  msgFunc norm "$Dest2"
 			;;			
 			dest3)  
-			     printf '%s\n\n' "${RED}Path not found to destination directory${NORMAL}"
-			     printf '%s\n\n' "$Dest3"
+			     msgFunc red "Path not found to destination directory"
+			     msgFunc norm "$Dest3"
 			;;
 			dest4)
-				printf '%s\n\n' "${RED}Path not found to destination Custom directory${NORMAL}"
+				msgFunc red "Path not found to custom destination directory"
 			;;
 			 gdrive)
-				printf '%s\n\n' "${RED}Internet connectivity test to google.com failed${NORMAL}"
+				msgFunc red "Internet connectivity test to google.com failed"
 			;;
 	 esac
-	printf '%s' "${GREEN} "      
-	read -n 1 -r -s -p "Press any key to exit!"
-	printf '\n' 
-	printf '%s\n' "${BLUE}GOODBYE $USER !!${NORMAL}"
+	msgFunc anykey
+	msgFunc blue "GOODBYE $USER!!"
 	exit
 }
 
 
-#Program details print
+
 #print horizonal line 
-printf '\033[36;1m%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' =
+msgFunc line
+msgFunc norm 
+#Program details print
 cat <<-EOF
-Cylon.sh 25-06-16  Version 1.5-3 (110916)
-Copyright (C) 2016  <glyons66@hotmail.com>
-Aur package name = cylon
+Cylon.sh 25-06-16  Version 1.6-4 (13-09-16)
+Copyright (C) 2016  Reports to  <glyons66@hotmail.com>
+Aur package name="cylon" , repo="github.com/whitelight999/cylon"
 Arch Linux distro Maintenance program written in Bash script.
-This script is a  maintenance, 
-backup and system check menu driven optional script Command line program  
-This script provides numerous tools 
+This script is a  maintenance, backup and system check menu driven 
+optional script Command line program  This script provides numerous tools 
 to Arch Linux for maintenance, system checks and backups. 
 EOF
-printf '\033[36;1m%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' =
+msgFunc line
 
 #main program loop    
 while true; do
     cd ~ || exitHandlerFunc dest4
-    printf '%s\n' "${BLUE}Main Menu :- ${NORMAL}"
+    msgFunc blue "Main Menu :-"
 	cat <<-EOF
 	(1)     Pacman updates
 	(2)     Pacman maintenance 
@@ -561,57 +583,51 @@ while true; do
 	(0)     Display Help Info
 	(*) 	Exit
 	EOF
-	printf '%s\n' "${BLUE}Press option number followed by [ENTER] ${NORMAL}"
+	msgFunc blue "Press option number followed by [ENTER] "
     read -r choiceMain
     case "$choiceMain" in
 		1)   #pacman update
 			 PacmanFunc 		
 		;;
-		2)  printf '\n'
-			#pacman maintenance
+		2)  #pacman maintenance
 			PacmanMantFunc		
 		;;
-		3) printf '\n'
-			#cower AUR
+		3) #cower AUR helper
 		    CowerFunc
 		;;
-		4) printf '\n'
-			#system maintenance
+		4) #system maintenance
 			SystemMaintFunc			 
 		;;
-		5)  printf '%s\n' ""
-		   	#Full system backup
+		5)  #Full system backup
 		   	SystemBackFunc
 		;;
-		6) 	printf '\n'  
-		   #system clean with bleachbit
+		6) #system clean with bleachbit
 		   SystemCleanFunc							  
 		;;
 		
-		7)  printf '%s\n' "${GREEN}Deleting firefox history${NORMAL}"
+		7)  msgFunc green "Deleting firefox history"
 			bleachbit --clean firefox.*
-			printf '%s\n\n' "${GREEN}DONE!${NORMAL}"			
+			msgFunc green "Done!"			
 		;;
 		
-		8)  printf '%s\n' "${GREEN}Deleting Trash and Downloads folder${NORMAL}"
-			rm -rv /home/gavin/.local/share/Trash/files
-			rm -rv /home/gavin/Downloads
-			mkdir /home/gavin/Downloads
-			printf '%s\n\n' "${GREEN}DONE!${NORMAL}"
+		8)  msgFunc green "Deleting Trash and Downloads folder"
+			rm -rv "$HOME"/.local/share/Trash/files
+			rm -rv "$HOME"/Downloads
+			mkdir "$HOME"/Downloads
+			msgFunc green "Done!"
 		;;
 		
-		9) 	printf '\n'
-			#Anti-virus clam Av
+		9) 	#Anti-virus clam Av
 			ClamAVFunc  			
 		;;
 		0)  #Help  
-		HelpFunc
+			HelpFunc
 		;;
 		
 		*)  #exit  
 		exitHandlerFunc exitout
 		;;
-esac
+	esac
 
 done
 

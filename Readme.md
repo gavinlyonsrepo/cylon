@@ -1,18 +1,29 @@
-Cylon.sh  
-25-06-16 
-Version 1.4-2
-Arch Linux distro maintenance  Bash script. 
+Cylon.sh  25-06-16 
+Version 1.6-4 Arch Linux distro maintenance  Bash script. 
 Aur package name = cylon
+
+#version control:
+#version 1.0 20-06-16
+#verions 1.1 replace echo with printf functions.
+#version 1.2 relative paths added 
+#version 1.3-1 google drive function added 
+#version 1.4-2 090916 extra cower options added
+#version 1.5-3 options added for system backup function(dd and gdrive)
+#version 1.6-4  120916 Msgfunc added PKGBUILD display added, 
+readme install added
 
 What is Cylon?
 The goal was to create a script to do as much maintenance, 
-backups and system checks in a single menu driven optional script Command line program for an Arch as possible
+backups and system checks in a single menu driven optional script 
+Command line program for an Arch as possible
 This script provides numerous tools 
 to Arch Linux for maintenance, system checks and backups.  
 
 Config:
-Cylon is a standalone bash scirpt installed to user/bin by package build type cylon to run 
-Some function require software installed as listed below. this is left to user discretion.
+Cylon is a standalone bash scirpt installed to user/bin by package 
+build type cylon to run Some function require software installed 
+as listed below. this is left to user discretion.
+Readme.md is installed to "$HOME"/.config/cylonReadme.md
 
 Functions:
 (1)Updates main Arch Repos with pacman
@@ -35,7 +46,8 @@ Make a copy of home dir
 Make tarball of all except tmp dev proc sys run
 Make copy of package lists
 Also there is an option 
-for gdrive sync with remote directorys on google drive requires netcat and gdrive(AUR) installed
+for gdrive sync with remote directorys on google drive requires netcat 
+and gdrive(AUR) installed
 (6)Clean system with bleachbit
 Requires program bleachbit installed menu options
 system
@@ -86,7 +98,7 @@ If you should find a bug, please send a report to glyons66@hotmail.com
 Copyright
 ---------
 
-Copyright (C) 2016 Gavin Lyons <glyons66@hotmail.com>
+Copyright (C) 2016 g Lyons <glyons66@hotmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
