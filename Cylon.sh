@@ -10,6 +10,7 @@
 #version 1.4-2 090916 extra cower options added
 #version 1.5-3 options added for system backup function(dd and gdrive)
 #version 1.6-4  120916 Msgfunc added, PKGBUILD display added 
+#version 1.7-5  140916 Config file added for custom backup paths
 
 #colours for printf
 RED=$(printf "\033[31;1m")
@@ -18,18 +19,12 @@ BLUE=$(printf "\033[36;1m")
 NORMAL=$(printf "\033[0m")
 
 clear 
-
 #make the path for the logfiles/AUR downloads and updates etc
 mkdir -p "$HOME/Documents/Tech/Linux/MyLinux/Cylon/"
-
-#define some variables 
-#path for my internal hard drive backup
-Dest1="/run/media/$USER/Linux_backup"
-#path for my external hard drive backup
-Dest2="/run/media/$USER/iomeaga_320"
-#set logfilepath + cower updates 
+#set logfilepath + cower updates + conf file + custom backup
 Dest3="$HOME/Documents/Tech/Linux/MyLinux/Cylon/"
-
+Dest5="$HOME/.config/"
+ 
 #functions
 #function for printing output also creates dirs for output
 function msgFunc
@@ -77,8 +72,8 @@ function HelpFunc
 clear
 #print horizonal line 
 msgFunc line
-msgFunc green "Displaying readme file"
-cd "$HOME"/.config/  || exitHandlerFunc dest3
+msgFunc green "Displaying cylonReadme.md file at $Dest5"
+cd "$Dest5"  || exitHandlerFunc dest4
 more cylonReadme.md 
 msgFunc green "Done!" 
 msgFunc line
@@ -116,6 +111,40 @@ function PacmanMantFunc
 			pacman -Qqen > pkglist.txt
 			pacman -Qm > pkglistAUR.txt
 			msgFunc green "Done!"   
+}
+#read cylon.conf for system back up paths 
+function readconfigFunc
+{
+	msgFunc green "Reading config file cylonCfg.conf at:-"
+	msgFunc norm "$Dest5"
+	#check if file there if not use defaults.
+	if [ ! -f "$Dest5/cylonCfg.conf" ]
+		then
+		msgFunc red "No config found: Use the default paths"
+		#path for an internal hard drive backup
+		Dest1="/run/media/$USER/Linux_backup"
+		#path for an external hard drive backup
+		Dest2="/run/media/$USER/iomeaga_320"
+		#default paths for gdrive 
+		gdriveSource1="$HOME/Documents"
+		gdriveSource2="$HOME/Pictures"
+		gdriveDest1="0B3_RVJ50UWFAaGxJSXg3NGJBaXc"
+		gdriveDest2="0B3_RVJ50UWFAR3A2T3dZTU9TaTA"
+		return
+	fi
+	cd "$Dest5"  || exitHandlerFunc dest4
+	source ./cylonCfg.conf
+	Dest1="$Destination1"
+	Dest2="$Destination2"
+	msgFunc norm "Custom paths read from file"
+	#msgFunc norm "Custom path backup 1: $Destination1" 
+	#msgFunc norm "Custom path backup 2: $Destination2" 
+	#msgFunc norm "Custom gdrive source directory 1: $gdriveSource1"
+	#msgFunc norm "Custom gdrive source directory 2: $gdriveSource2"
+	#msgFunc norm "Custom gdrive destination directory ID 1: $gdriveDest1"
+	#msgFunc norm "Custom gdrive destination directory ID 2: $gdriveDest2"
+	
+	
 }
 
 function CowerFunc
@@ -276,11 +305,11 @@ function SystemMaintFunc
 function SystemBackFunc
 {
 			#Full system backup
-			#Check that user ran as sudo (obsolete version 1.2)
-			#if (( EUID != 0 )); then
-			#	printf '%s\n\n' "${RED}Please run as root for system backup${NORMAL}"	
-			#	exitHandlerFunc exitout
-			#fi
+			#get paths form config file if exists
+			clear
+			readconfigFunc
+			msgFunc green "Done!"
+			
 			#get user input for backup
 			msgFunc green "Pick destination directory for system backup or gdrive option"
 			cat <<-EOF
@@ -301,7 +330,6 @@ function SystemBackFunc
 			;;
 			2)  
 				 cd "$Dest2"   || exitHandlerFunc dest2
-						
 			;;
 			3)  
 				  cd "$Dest3" || exitHandlerFunc dest3						
@@ -322,22 +350,24 @@ function SystemBackFunc
 						exitHandlerFunc gdrive
 					fi
 				   	cat <<-EOF 
-					Do you wish to use gdrive default paths or custom path?
-					1) Default
-					*) Custom
+					Do you wish to use gdrive current paths or type a custom path?
+					1) Continue 
+					2) Type a Custom path 
 					Press option number and [ENTER]
 					EOF
 					read -r choiceGD
 					
 						if  [ "$choiceGD" = "1" ]
 						then
-							msgFunc green "gdrive sync with remote documents directory"
-							gdrive sync upload ./Documents 0B3_RVJ50UWFAaGxJSXg3NGJBaXc
+							msgFunc green "gdrive sync with  remote directory path number one:-"
+							gdrive sync upload "$gdriveSource1" "$gdriveDest1"
 							msgFunc green "Done!"
-							msgFunc green "gdrive sync with remote pictures directory"
-							gdrive sync upload  ./Pictures 0B3_RVJ50UWFAR3A2T3dZTU9TaTA
+							msgFunc green "gdrive sync with remote remote directory path number two:-"
+							gdrive sync upload  "$gdriveSource2" "$gdriveDest2"
 							msgFunc green "Done!"
-				   		else 
+				   		fi
+				   		if [ "$choiceGD" = "2" ]
+				   		then
 				   		#custom path
 							msgFunc norm "Type a custom Source directory path:-"
 				            read -r gdriveS		            
@@ -526,11 +556,11 @@ function exitHandlerFunc
 				msgFunc norm " "
 			;;
 			dest1)  
-				  msgFunc red "Path not found to destination directory, The internal HDD must be mounted"	
+				  msgFunc red "Path not found to destination directory"	
 				  msgFunc norm "$Dest1"
 			;;
 			dest2)  
-			      msgFunc red "Path not found to destination directory, The external HDD must be mounted"
+			      msgFunc red "Path not found to destination directory"
 				  msgFunc norm "$Dest2"
 			;;			
 			dest3)  
@@ -538,7 +568,7 @@ function exitHandlerFunc
 			     msgFunc norm "$Dest3"
 			;;
 			dest4)
-				msgFunc red "Path not found to custom destination directory"
+				msgFunc red "Path not found to directory"
 			;;
 			 gdrive)
 				msgFunc red "Internet connectivity test to google.com failed"
@@ -556,7 +586,7 @@ msgFunc line
 msgFunc norm 
 #Program details print
 cat <<-EOF
-Cylon.sh 25-06-16  Version 1.6-4 (13-09-16)
+Cylon.sh 25-06-16  Version 1.7-5 (14-09-16)
 Copyright (C) 2016  Reports to  <glyons66@hotmail.com>
 Aur package name="cylon" , repo="github.com/whitelight999/cylon"
 Arch Linux distro Maintenance program written in Bash script.
