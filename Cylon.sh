@@ -57,7 +57,7 @@ function msgFunc
 			printf '%s\n' "${NORMAL}$2"
 		;;
 		dir) #makes dirs for ouput
-			TODAYSDIR=$(date +%H-%d-%b-%Y)"$2"
+			TODAYSDIR=$(date +%X-%d-%b-%Y)"$2"
 			mkdir "$TODAYSDIR"
 			cd "$TODAYSDIR" || exitHandlerFunc dest4
 			msgFunc norm "Directory for output made at:-"
