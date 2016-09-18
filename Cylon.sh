@@ -487,7 +487,6 @@ function SystemCleanFunc
 				   
 				   4)msgFunc green "Clean GNOME"
 				   bleachbit --clean gnome.*
-				   msgFunc green "Done!"
 				   ;;
 				   
 				   5)msgFunc green "Clean Rhythmbox"
@@ -504,7 +503,7 @@ function SystemCleanFunc
 				   
 				   8)msgFunc green "Transmission"
 				   sudo bleachbit --clean transmission.*
-				   	;;
+				   ;;
 				   
 				   9)msgFunc green "Clean VIM"
 				   bleachbit --clean vim.*
@@ -520,7 +519,6 @@ function SystemCleanFunc
 				   
 				   b)msgFunc green "Clean Deep scan"
 				   bleachbit --clean deepscan.*
-				   msgFunc green "Done!"
 				   ;;
 				   
 				   c)msgFunc green "Clean Flash"
@@ -547,6 +545,9 @@ function SystemCleanFunc
 #function for  ROOTKIT HUNTER software
 function rootKitFunc
 {
+	msgFunc green "Checking rkhunter data files"
+	sudo rkhunter --update
+	msgFunc green "Done!"
 	msgFunc green "Fill the file properties database"
 	sudo rkhunter --propupd
 	msgFunc green "Done!"
