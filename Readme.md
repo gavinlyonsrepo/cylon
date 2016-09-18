@@ -12,6 +12,7 @@ Aur package name = cylon
 #version 1.6-4  120916 Msgfunc added PKGBUILD display added, 
 readme install added
 #version 1.7-5  140916 Config file added for custom backup paths
+#version 1.8-6  180916 added rootkithunter option + update counters
 
 What is Cylon:
 The goal was to create a script to do as much maintenance, 
@@ -25,6 +26,7 @@ Cylon is a bash script installed to user/bin by package
 build. type cylon to run. Some function require software installed 
 as listed below. this is left to user discretion.
 Readme.md is installed to "$HOME"/.config/cylonReadme.md
+this is displayed to screen by a menu option
 You can create an optional config file for custom system backup
 Name: cylonCfg.conf
 Location:"$HOME/.config/"
@@ -69,10 +71,11 @@ Evolution Rhythmbox Thumbnails
 Thunderbird Transmission X11 VIM VLC media player X11
 (7)Delete firefox history by bleachbit
 (8)Deleting Trash and Downloads folder
-(9)ClamAv anti virus scan 
-(0) displays help info
+(9)ClamAv anti virus scan  needs clamav SW
+(0)Rootkithunter
+(h) displays help info installed readme catted to screen
 
-11 main menu options currently
+12 main menu options currently
     (1)     Get updates with Pacman
     (2)     Pacman maintenance
     (3)     Get updates from AUR with cower
@@ -82,7 +85,8 @@ Thunderbird Transmission X11 VIM VLC media player X11
     (7)     Delete Firefox history
     (8)     Empty Trash and Downloads folder
     (9)     ClamAv anti-virus check
-    (10)    Display Help
+    (0)     Rootkithunter
+    (h)    Display Help
     (*)     Exit
     
 Needs installed for certain functions:
@@ -92,7 +96,7 @@ bleachbit for system clean
 clamAV for virus check
 gdrive to sync to google drive
 gnu-netcat to check for internet connection
-
+rootkithunter
 
 Bug reports
 -----------

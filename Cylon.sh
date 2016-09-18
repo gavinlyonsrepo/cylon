@@ -11,6 +11,7 @@
 #version 1.5-3 options added for system backup function(dd and gdrive)
 #version 1.6-4  120916 Msgfunc added, PKGBUILD display added 
 #version 1.7-5  140916 Config file added for custom backup paths
+#version 1.8-6  180916 added rootkithunter option + update counters
 
 #colours for printf
 RED=$(printf "\033[31;1m")
@@ -85,6 +86,9 @@ function PacmanFunc
 {
 	#update pacman
 	msgFunc green "Update system with Pacman"
+	msgFunc norm "Number of Package updates ready ...."
+	checkupdates | wc -l
+	msgFunc anykey
 	sudo pacman -Syu
 	msgFunc green "Done!" 
 }
@@ -162,11 +166,13 @@ function CowerFunc
 			msgFunc anykey
 			msgFunc line
 	         #check that paths exist and change path to dest path
+	         msgFunc norm "Number of updates available for installed AUR packages :-"
+		     cower -u | wc -l
 	         cd "$Dest3" || exitHandlerFunc dest3
 		     msgFunc green "AUR package install and updates by cower, options:-"
 			cat <<-EOF
-			(1)    Get Information for package with optional install
-			(2)    Check for updates to installed packages with optional install
+			(1)    Get Information for AUR package with optional install
+			(2)    Fetch  updates to installed AUR packages with optional install
 			(*)    Return to main menu
 			Press option followed by [ENTER]
 			EOF
@@ -548,6 +554,17 @@ function SystemCleanFunc
 		esac
 }
 
+#function for  ROOTKIT HUNTER software
+function rootKitFunc
+{
+	msgFunc green "Fill the file properties database"
+	sudo rkhunter --propupd
+	msgFunc green "Done!"
+	msgFunc green "Running Rootkit hunter"
+	sudo rkhunter --check
+	msgFunc green "Done!"
+	msgFunc anyline
+}
 function exitHandlerFunc
 {
 	#deal with user exists and path not found errors
@@ -586,16 +603,14 @@ msgFunc line
 msgFunc norm 
 #Program details print
 cat <<-EOF
-Cylon.sh 25-06-16  Version 1.7-5 (14-09-16)
+Cylon.sh (25-06-16)  Version 1.8-6 (19-09-16)
 Copyright (C) 2016  Reports to  <glyons66@hotmail.com>
 Aur package name="cylon" , repo="github.com/whitelight999/cylon"
 Arch Linux distro Maintenance program written in Bash script.
-This script is a  maintenance, backup and system check menu driven 
-optional script Command line program  This script provides numerous tools 
-to Arch Linux for maintenance, system checks and backups. 
+This Command line program provides numerous tools 
+to Arch Linux users to carry out  maintenance, system checks and backups. 
 EOF
 msgFunc line
-
 #main program loop    
 while true; do
     cd ~ || exitHandlerFunc dest4
@@ -610,7 +625,8 @@ while true; do
 	(7) 	Delete Firefox history
 	(8) 	Delete Trash and Downloads folder
 	(9) 	ClamAv anti-virus check
-	(0)     Display Help Info
+	(0) 	RootKit check    
+	(h)     Display readme file to screen
 	(*) 	Exit
 	EOF
 	msgFunc blue "Press option number followed by [ENTER] "
@@ -650,7 +666,10 @@ while true; do
 		9) 	#Anti-virus clam Av
 			ClamAVFunc  			
 		;;
-		0)  #Help  
+		0)  #rootkit hunter 
+			rootKitFunc
+		;;
+		h)  #cat readme file to screen 
 			HelpFunc
 		;;
 		
