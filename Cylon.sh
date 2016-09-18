@@ -475,17 +475,14 @@ function SystemCleanFunc
 				   
 				   1)msgFunc green "Clean bash"
 				   bleachbit --clean bash.*
-				   msgFunc green "Done!"
 				   ;;
 				   
 				   2)msgFunc green "Clean Epiphany"
 				   bleachbit --clean epiphany.*
-				   msgFunc green "Done!"
 				   ;;
 				   
 				   3)msgFunc green "Clean Evolution"
 				   bleachbit --clean evolution.*
-				   msgFunc green "Done!"
 				   ;;
 				   
 				   4)msgFunc green "Clean GNOME"
@@ -495,37 +492,30 @@ function SystemCleanFunc
 				   
 				   5)msgFunc green "Clean Rhythmbox"
 				   bleachbit --clean rhythmbox.*
-				   msgFunc green "Done!"
 				   ;;
 				   
 				   6)msgFunc green "Clean Thumbnails"
 				   bleachbit --clean thumbnails.*
-				   msgFunc green "Done!"
 				   ;;
 				   
 				   7)msgFunc green "Clean Thunderbird"
-				   bleachbit --clean thunderbird.*
-				   msgFunc green "Done!"
+				   bleachbit --clean thunderbird.*  
 				   ;;
 				   
 				   8)msgFunc green "Transmission"
 				   sudo bleachbit --clean transmission.*
-				   msgFunc green "Done!"
-				   ;;
+				   	;;
 				   
 				   9)msgFunc green "Clean VIM"
 				   bleachbit --clean vim.*
-				   msgFunc green "Done!"
 				   ;;
 				   
 				   0)msgFunc green "Clean VLC media player"
 				   bleachbit --clean vlc.*
-				   msgFunc green "Done!"
 				   ;;
 				   
 				   a)msgFunc green "Clean X11"
 				   bleachbit --clean x11.*
-				   msgFunc green "Done!"
 				   ;;
 				   
 				   b)msgFunc green "Clean Deep scan"
@@ -535,23 +525,23 @@ function SystemCleanFunc
 				   
 				   c)msgFunc green "Clean Flash"
 				   bleachbit --clean flash.*
-				   msgFunc green "Done!"
 				   ;;
 				   
 				   d)msgFunc green "Clean libreoffice"
 				   bleachbit --clean libreoffice.*
-				   msgFunc green "Done!"
 				   ;;
 				   
 				   e)msgFunc green "Clean System"
 				   sudo bleachbit --clean system.*
-				   msgFunc green "Done!"	
 				   ;;
 				    
 				    *)  #exit  
+				     msgFunc green "Done!"	
 					return
 					;;
+					 
 		esac
+		msgFunc green "Done!"	
 }
 
 #function for  ROOTKIT HUNTER software
@@ -563,7 +553,7 @@ function rootKitFunc
 	msgFunc green "Running Rootkit hunter"
 	sudo rkhunter --check
 	msgFunc green "Done!"
-	msgFunc anyline
+	msgFunc anykey
 }
 function exitHandlerFunc
 {
