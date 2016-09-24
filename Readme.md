@@ -13,6 +13,7 @@ Aur package name = cylon
 readme install added
 #version 1.7-5  140916 Config file added for custom backup paths
 #version 1.8-6  180916 added rootkithunter option + update counters
+#version 1.9-7  250916 added rmlint option. consolidated menu layout , added more pacman options
 
 What is Cylon:
 The goal was to create a script to do as much maintenance, 
@@ -40,20 +41,29 @@ gdriveDest2="0B3_RVJ50UWFAR3A2T3dZTU9TaTA"
 
 
 
-Functions:
-(1)Updates main Arch Repos with pacman
-(2)Pacman maintenance routine.
-Delete orphans + Prunes older packages from cache +
-Writes installed package lists to files 
-3)AUR cower options search and optional install + Updates AUR package
-using  Cower with optional install requires cower  from AUR
-(4) system maintenance check
+Functions/menu options:
+(1)pacman options
+			(1)     pacman -Syu Upgrade packages
+			(2)     pacman -Rs Delete Package
+			(3)     pacman -S Install Package
+			(4)     pacman -Si Display extensive information 
+			(5)     pacman -Qs Search for already installed packages
+			(6)     pacman -Ss Search for packages in the database
+			(7)     paccache -r Prune older packages from cache
+			(8) 	Write installed package lists to files
+			(9)     Remove all packages not required as dependencies 
+			(0) 	Back-up the local pacman database  
+2)AUR cower options 
+search and optional install + 
+Updates AUR packages  with optional install 
+requires cower  from AUR
+(3) system maintenance check
 All Failed Systemd Services
 All Failed Active Systemd Services
 Check log Journalctl for Errors
 Check log Journalctl for fstrim SSD trim
 Check for broken symlinks, 
-(5)System backup
+(4)System backup
 Optional destination path as defined in script or custom path
 Make copy of first 512 bytes MBR with dd
 Make a copy of etc dir
@@ -63,31 +73,20 @@ Make copy of package lists
 Also there is an option 
 for gdrive sync with remote directory's on google drive requires netcat 
 and gdrive(AUR) installed
-(6)Clean system with bleachbit
+(5)Clean system with bleachbit
 Requires program bleachbit installed menu options
 system
 Deep scan Flash libreoffice Cleabash GNOME Epiphany
 Evolution Rhythmbox Thumbnails
 Thunderbird Transmission X11 VIM VLC media player X11
-(7)Delete firefox history by bleachbit
-(8)Deleting Trash and Downloads folder
-(9)ClamAv anti virus scan  needs clamav SW
-(0)Rootkithunter
-(h) displays help info installed readme catted to screen
+Delete firefox history by bleachbit
+Deleting Trash and Downloads folder
+6)     Rmlint remove duplicates and other lint needs rmlint installed
+(7)ClamAv anti virus scan  needs clamav SW
+(8)Rootkithunter needs rkhunter installed
+(9) displays help info installed readme catted to screen
 
-12 main menu options currently
-    (1)     Get updates with Pacman
-    (2)     Pacman maintenance
-    (3)     Get updates from AUR with cower
-    (4)     System maintenance check
-    (5)     System backup
-    (6)     System Clean by Bleachbit
-    (7)     Delete Firefox history
-    (8)     Empty Trash and Downloads folder
-    (9)     ClamAv anti-virus check
-    (0)     Rootkithunter
-    (h)    Display Help
-    (*)     Exit
+
     
 Needs installed for certain functions:
 Firefox for browser , 
@@ -97,6 +96,7 @@ clamAV for virus check
 gdrive to sync to google drive
 gnu-netcat to check for internet connection
 rootkithunter
+rmlint 
 
 Bug reports
 -----------
