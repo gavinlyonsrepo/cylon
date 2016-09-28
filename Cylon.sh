@@ -89,11 +89,11 @@ function PacmanFunc
 	clear
 		   #Pacman package manager options:
 		   msgFunc line
-		   msgFunc norm "Number of Package updates ready ...."
-		   checkupdates | wc -l
+		   msgFunc green "Pacman"
 		   msgFunc line
 		   msgFunc blue "Pacman package manager options:-"
 			cat <<-EOF
+			(a)     Check for updates
 			(1)     pacman -Syu Upgrade packages
 			(2)     pacman -Rs Delete Package
 			(3)     pacman -S Install Package
@@ -109,6 +109,10 @@ function PacmanFunc
 			msgFunc blue "Press option number followed by [ENTER]"
 			read -r choicep
 			case "$choicep" in
+					a)msgFunc norm "Pacman updates ready:- "
+						checkupdates | wc -l
+						checkupdates
+					;;
 					
 					1) #update pacman
 						msgFunc green "Update system with Pacman."
@@ -182,6 +186,7 @@ function PacmanFunc
 					;;
 			esac
 			msgFunc green "Done!"	
+			msgFunc anykey 
 }
 
 
@@ -226,14 +231,14 @@ function CowerFunc
 			EOF
 			msgFunc anykey
 			msgFunc line
-	         #check that paths exist and change path to dest path
-	         msgFunc norm "Number of updates available for installed AUR packages :-"
-		     cower -u | wc -l
+	         
 	         cd "$Dest3" || exitHandlerFunc dest3
 		     msgFunc green "AUR package install and updates by cower, options:-"
 			cat <<-EOF
 			(1)    Get Information for AUR package with optional install
 			(2)    Fetch  updates to installed AUR packages with optional install
+			(3)    Check for updates ( NO downloads)
+			(4)    Write installed AUR package list to file.
 			(*)    Return to main menu
 			Press option followed by [ENTER]
 			EOF
@@ -317,6 +322,20 @@ function CowerFunc
 							msgFunc norm "No updates  found for installed AUR packages by Cower..."
 						  fi	
 						;;
+				 3) #check for updates 
+					#check that paths exist and change path to dest path
+						msgFunc norm "Number of updates available for installed AUR packages :-"
+						cower -u | wc -l
+						msgFunc norm " "
+						cower -uc
+						msgFunc anykey
+				 ;;
+				 4)msgFunc green "Writing installed AUR package lists to files at :"
+						cd "$Dest3" || exitHandlerFunc dest3
+						msgFunc dir "-INFO"
+						pacman -Qm > pkglistAUR.txt
+					;;
+				 
 				 *)  #exit to main menu 
 					return
 				 ;;
@@ -723,8 +742,9 @@ function exitHandlerFunc
 				msgFunc red "Internet connectivity test to google.com failed"
 			;;
 	 esac
-	msgFunc anykey
 	msgFunc blue "GOODBYE $USER!!"
+	msgFunc anykey
+	
 	exit
 }
 
@@ -740,7 +760,7 @@ Copyright (C) 2016  Reports to  <glyons66@hotmail.com>
 Aur package name="cylon" , repo="github.com/whitelight999/cylon"
 Arch Linux distro maintenance CLI program written in Bash script.
 This  program provides numerous tools to Arch Linux users to carry 
-out updates maintenance, system checks and backups. 
+out updates, maintenance, system checks and backups. 
 EOF
 msgFunc line
 #main program loop    
