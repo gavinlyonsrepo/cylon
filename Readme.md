@@ -1,5 +1,5 @@
 Cylon.sh  25-06-16 glyons glyons66@hotmail.com
-Version 1.7-5(140916)  Arch Linux distro maintenance  Bash script. 
+Version 2.0-8 Arch Linux distro maintenance  Bash script. 
 Aur package name = cylon
 
 #version control:
@@ -14,6 +14,7 @@ readme install added
 #version 1.7-5  140916 Config file added for custom backup paths
 #version 1.8-6  180916 added rootkithunter option + update counters
 #version 1.9-7  250916 added rmlint option. consolidated menu layout , added more pacman options
+#version 2.0-8  011016 added option for lostfiles, system info page,various minor optimisations
 
 What is Cylon:
 The goal was to create a script to do as much maintenance, 
@@ -26,11 +27,11 @@ Config:
 Cylon is a bash script installed to user/bin by package 
 build. type cylon to run. Some function require software installed 
 as listed below. this is left to user discretion.
-Readme.md is installed to "$HOME"/.config/cylonReadme.md
+cylonReadme.md is installed to "$HOME"/.config/cylonReadme.md
 this is displayed to screen by a menu option
 You can create an optional config file for custom system backup
 Name: cylonCfg.conf
-Location:"$HOME/.config/"
+Location:"$HOME/.config/cylon"
 File setup example:
 Destination1="/run/media/$USER/Linux_backup"
 Destination2="/run/media/$USER/iomeaga_320"
@@ -39,24 +40,29 @@ gdriveSource2="$HOME/Pictures"
 gdriveDest1="0B3_RVJ50UWFAaGxJSXg3NGJBaXc"
 gdriveDest2="0B3_RVJ50UWFAR3A2T3dZTU9TaTA"
 
-
+All backups outputs downloads and updates are placed in $HOME/Documents/Cylon
 
 Functions/menu options:
 (1)pacman options
-			(1)     pacman -Syu Upgrade packages
-			(2)     pacman -Rs Delete Package
-			(3)     pacman -S Install Package
-			(4)     pacman -Si Display extensive information 
-			(5)     pacman -Qs Search for already installed packages
-			(6)     pacman -Ss Search for packages in the database
-			(7)     paccache -r Prune older packages from cache
-			(8) 	Write installed package lists to files
-			(9)     Remove all packages not required as dependencies 
-			(0) 	Back-up the local pacman database  
+			(1)     Check for updates (no download)
+			(2)     pacman -Syu Upgrade packages
+			(3)     pacman -Si Display extensive information about a given package
+			(4)     pacman -S Install Package
+			(5)     pacman -Ss Search for packages in the database
+			(6)     pacman -Rs Delete Package
+			(7)     pacman -Qs Search for already installed packages
+			(8)     pacman -Qi  Display extensive information for locally installed packages
+			(9)     paccache -r Prune older packages from cache
+			(0) 	Write installed package lists to files
+			(a)     Remove all packages not required as dependencies (orphans)
+			(b) 	Back-up the local pacman database  
 2)AUR cower options 
-search and optional install + 
-Updates AUR packages  with optional install 
-requires cower  from AUR
+			(1)    Get Information for AUR package with optional install
+			(2)    Fetch  updates to installed AUR packages with optional install
+			(3)    Check for updates ( NO downloads)
+			(4)    Write installed AUR/foreign package list to file.
+			(*)    Return to main menu
+requires package cower(AUR)
 (3) system maintenance check
 All Failed Systemd Services
 All Failed Active Systemd Services
@@ -81,22 +87,22 @@ Evolution Rhythmbox Thumbnails
 Thunderbird Transmission X11 VIM VLC media player X11
 Delete firefox history by bleachbit
 Deleting Trash and Downloads folder
-6)     Rmlint remove duplicates and other lint needs rmlint installed
-(7)ClamAv anti virus scan  needs clamav SW
-(8)Rootkithunter needs rkhunter installed
-(9) displays help info installed readme catted to screen
+(6)     System and cylon information dispaly
+(7)     Rmlint remove duplicates and other lint
+(8)     Lostfiles scan
+(9) 	ClamAv anti-malware scan
+(0) 	RootKit hunter scan
+h)     Display this readme file to screen 
 
-
-    
 Needs installed for certain functions:
-Firefox for browser , 
-cower for the AUR , 
 bleachbit for system clean
 clamAV for virus check
-gdrive to sync to google drive
 gnu-netcat to check for internet connection
 rootkithunter
 rmlint 
+cower(AUR) for AUR functions
+gdrive(AUR) to sync to google drive
+lostfiles(AUR) to scan for lostfiles
 
 Bug reports
 -----------

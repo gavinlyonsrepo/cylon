@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # G lyons
-#see cat displays further below for more info
+#see cat displays/readme further below for more info
 #version control:
 #version 1.0 20-06-16
-#verions 1.1 replace echo with printf functions.
+#version 1.1 replace echo with printf functions.
 #version 1.2 relative paths added 
 #version 1.3-1 google drive function added 
 #version 1.4-2 090916 extra cower options added
@@ -13,6 +13,8 @@
 #version 1.7-5  140916 Config file added for custom backup paths
 #version 1.8-6  180916 added rootkithunter option + update counters
 #version 1.9-7  250916 added option for rmlint , menu layout option 
+#version 2.0-8  011016 added option for lostfiles, system info,optimisations
+ 
 
 #colours for printf
 RED=$(printf "\033[31;1m")
@@ -22,10 +24,10 @@ NORMAL=$(printf "\033[0m")
 
 clear 
 #make the path for the logfiles/AUR downloads and updates etc
-mkdir -p "$HOME/Documents/Tech/Linux/MyLinux/Cylon/"
+mkdir -p "$HOME/Documents/Cylon/"
 #set logfilepath + cower updates + conf file + custom backup
-Dest3="$HOME/Documents/Tech/Linux/MyLinux/Cylon/"
-Dest5="$HOME/.config/"
+Dest3="$HOME/Documents/Cylon/"
+Dest5="$HOME/.config/cylon"
  
 #functions
 #function for printing output also creates dirs for output
@@ -52,7 +54,7 @@ function msgFunc
 		norm) #normal text
 			if [ "$2" = "" ]
 				then
-				#just change colour
+				#just change colour to norm if no text sent
 				printf '%s' "${NORMAL}"
 				return
 			fi
@@ -65,7 +67,9 @@ function msgFunc
 			msgFunc norm "Directory for output made at:-"
 			pwd	
 		;;
-
+		*)
+			printf '%s\n' "Error bad input to msgFunc"
+		;;
 	esac
 }
 
@@ -89,91 +93,107 @@ function PacmanFunc
 	clear
 		   #Pacman package manager options:
 		   msgFunc line
-		   msgFunc green "Pacman"
+		   msgFunc green "Pacman package manager. Number of packages installed = $(pacman -Q | wc -l) "
 		   msgFunc line
 		   msgFunc blue "Pacman package manager options:-"
 			cat <<-EOF
-			(a)     Check for updates
-			(1)     pacman -Syu Upgrade packages
-			(2)     pacman -Rs Delete Package
-			(3)     pacman -S Install Package
-			(4)     pacman -Si Display extensive information about a given package
-			(5)     pacman -Qs Search for already installed packages
-			(6)     pacman -Ss Search for packages in the database
-			(7)     paccache -r Prune older packages from cache
-			(8) 	Write installed package lists to files
-			(9)     Remove all packages not required as dependencies (orphans)
-			(0) 	Back-up the local pacman database  
+			(1)     Check for updates (no download)
+			(2)     pacman -Syu Upgrade packages
+			(3)     pacman -Si Display extensive information about a given package
+			(4)     pacman -S Install Package
+			(5)     pacman -Ss Search for packages in the database
+			(6)     pacman -Rs Delete Package
+			(7)     pacman -Qs Search for already installed packages
+			(8)     pacman -Qi  Display extensive information for locally installed packages
+			(9)     paccache -r Prune older packages from cache
+			(0) 	Write installed package lists to files
+			(a)     Remove all packages not required as dependencies (orphans)
+			(b) 	Back-up the local pacman database  
 			(*) 	return to main menu
 			EOF
 			msgFunc blue "Press option number followed by [ENTER]"
 			read -r choicep
 			case "$choicep" in
-					a)msgFunc norm "Pacman updates ready:- "
+					1)
+					msgFunc norm "Pacman updates ready:-.... "
+						
 						checkupdates | wc -l
 						checkupdates
 					;;
 					
-					1) #update pacman
+					2) #update pacman
 						msgFunc green "Update system with Pacman."
 						sudo pacman -Syu
 					;;
-					2) #pacman -Rs Delete Package
-						msgFunc green "Delete Package."
-						msgFunc norm "Please enter package name"
-						read -r pacString
-                        sudo pacman -Rs "$pacString"
-					;;
 					
-					3) #pacman -S Install Package
-						msgFunc green "Install package."
-						msgFunc norm "Please enter package name"
-						read -r pacString
-                        sudo pacman -S "$pacString"
-					;;
-					
-					4) #pacman -Si Display extensive information about a given package
+					3) #pacman -Si Display extensive information about a given package
 						msgFunc green "Display information  for Package."
 						msgFunc norm "Please enter package name"
 						read -r pacString
                         pacman -Si "$pacString"
 					;;
 					
-					5)   #pacman -Qs Search for already installed packages
+					
+					4) #pacman -S Install Package
+						msgFunc green "Install package."
+						msgFunc norm "Please enter package name"
+						read -r pacString
+                        sudo pacman -S "$pacString"
+					;;
+					
+					5)   #pacman -Ss Search Repos for Package
+						msgFunc green "Search for packages in the database."
+						msgFunc norm "Please enter package name"
+						read -r pacString
+                        pacman -Ss "$pacString"
+					;;
+					6) #pacman -Rs Delete Package
+						msgFunc green "Delete Package."
+						msgFunc norm "Please enter package name"
+						read -r pacString
+                        sudo pacman -Rs "$pacString"
+					;;
+					
+					7)   #pacman -Qs Search for already installed packages
 						msgFunc green "Search for already installed packages."
 						msgFunc norm "Please enter package name"
 						read -r pacString
                         pacman -Qs "$pacString"
 					;;
 					
-					6)   #pacman -Ss Search Repos for Package
-						msgFunc green "Search for packages in the database."
+					8) #pacman -Qi Display extensive information about a given package(local install)
+						msgFunc green "Display information  for Package."
 						msgFunc norm "Please enter package name"
 						read -r pacString
-                        pacman -Ss "$pacString"
+                        pacman -Qi "$pacString"
 					;;
 					
-					7)  msgFunc green  "Prune older packages from cache."
-						#The paccache script, deletes all cached  package 
+					
+					9)  msgFunc green  "Prune older packages from cache."
+					#The paccache script, deletes all cached  package 
 						#regardless of whether they're installed or not, 
 						#except for the most recent 3, 
 							sudo paccache -r
 					;;
 					
-					8)msgFunc green "Writing installed package lists to files at :"
+					0)msgFunc green "Writing installed package lists to files at :"
 						cd "$Dest3" || exitHandlerFunc dest3
 						msgFunc dir "-INFO"
-						pacman -Qqen > pkglist.txt
-						pacman -Qm > pkglistAUR.txt
+						#all packages 
+						pacman -Q  > pkglistQ.txt
+						#native, explicitly installed package
+						pacman -Qqen > pkglistQgen.txt
+						#foreign installed (AUR etc))
+						pacman -Qm > pkglistQm.txt
 					;;
 					
-					9)   #delete orphans
+					a)   #delete orphans
 						msgFunc green "Delete orphans!"
 						#Remove all packages not required as dependencies (orphans)
 						sudo pacman -Rns "$(pacman -Qtdq)"
 					;;
 
-					0) #backup the pacman database
+					b) #backup the pacman database
 						msgFunc green "Back-up the pacman database to :"
 						cd "$Dest3" || exitHandlerFunc dest3
 						msgFunc dir "-BACKUPPACMAN"
@@ -189,7 +209,32 @@ function PacmanFunc
 			msgFunc anykey 
 }
 
-
+#function LF uses lostfiles package from AUR 
+#Search for files which are not part of installed Arch Linux packages
+function lfFunc
+{
+	clear
+	msgFunc line
+	msgFunc green "Lostfiles :-Search for files which are not part of installed Arch Linux packages"
+	cd "$Dest3" || exitHandlerFunc dest3
+	msgFunc dir "-INFO"
+	cat <<-EOF
+	Do you wish Use strict or relaxed mode?
+	s) Strict
+	r) Relaxed
+	*) return
+	Press option number followed by [ENTER]
+	EOF
+	read -r choiceIU4
+	if [ "$choiceIU4" = "s" ]
+	then
+			sudo bash -c "lostfiles strict  > lostfilesStrictlist.txt" 
+	elif [ "$choiceIU4" = "r" ]
+	then
+			sudo bash -c  "lostfiles relaxed > lostfilesRelaxedlist.txt" 
+	fi
+	msgFunc green "Done!"
+}
 #read cylon.conf for system back up paths 
 function readconfigFunc
 {
@@ -200,9 +245,9 @@ function readconfigFunc
 		then
 		msgFunc red "No config found: Use the default paths"
 		#path for an internal hard drive backup
-		Dest1="/run/media/$USER/Linux_backup"
+		Destination1="/run/media/$USER/Linux_backup"
 		#path for an external hard drive backup
-		Dest2="/run/media/$USER/iomeaga_320"
+		Destination2="/run/media/$USER/iomeaga_320"
 		#default paths for gdrive 
 		gdriveSource1="$HOME/Documents"
 		gdriveSource2="$HOME/Pictures"
@@ -212,8 +257,6 @@ function readconfigFunc
 	fi
 	cd "$Dest5"  || exitHandlerFunc dest4
 	source ./cylonCfg.conf
-	Dest1="$Destination1"
-	Dest2="$Destination2"
 	msgFunc norm "Custom paths read from file"
 }
 
@@ -231,17 +274,17 @@ function CowerFunc
 			EOF
 			msgFunc anykey
 			msgFunc line
-	         
-	         cd "$Dest3" || exitHandlerFunc dest3
-		     msgFunc green "AUR package install and updates by cower, options:-"
+	        msgFunc norm "Number of foreign packages installed = $(pacman -Qm | wc -l)"
+	        cd "$Dest3" || exitHandlerFunc dest3
+		    msgFunc blue "AUR package install and updates by cower, options:-"
 			cat <<-EOF
 			(1)    Get Information for AUR package with optional install
 			(2)    Fetch  updates to installed AUR packages with optional install
 			(3)    Check for updates ( NO downloads)
-			(4)    Write installed AUR package list to file.
+			(4)    Write installed AUR/foreign package list to file.
 			(*)    Return to main menu
-			Press option followed by [ENTER]
 			EOF
+			msgFunc blue "Press option followed by [ENTER]"
 			read -r choiceCower
 			
 			case "$choiceCower" in    
@@ -268,8 +311,7 @@ function CowerFunc
 									cd "$cowerPac" || return
 									msgFunc green "$cowerPac PKGBUILD: Please read"
 									cat PKGBUILD
-									msgFunc green "PKGBUILD displayed above" 
-									msgFunc norm "Press n to quit, press y to install" 
+									msgFunc green "PKGBUILDS displayed above. Install  [Y/n]"
 									read -r choiceIU3
 									if [ "$choiceIU3" != "n" ]
 										then
@@ -285,9 +327,7 @@ function CowerFunc
 						#make cower update directory
 						msgFunc dir "-AUR-UPDATES" 
 						cower -d -vuc 
-						
 						# look for empty dir (i.e. if no updates) 
-						
 						if [ "$(ls -A .)" ] 
 						then
 							msgFunc norm  "Package builds available"
@@ -308,8 +348,7 @@ function CowerFunc
 									find . -name PKGBUILD -exec cat {} \; | more
 									msgFunc anykey
 									msgFunc line
-									msgFunc green "PKGBUILDS displayed above. ^" 
-									msgFunc norm "Press n to quit, press y to install all" 
+									msgFunc green "PKGBUILDS displayed above. Install all [Y/n]"  
 									read -r choiceIU1
 									if [ "$choiceIU1" != "n" ]
 										then
@@ -319,21 +358,21 @@ function CowerFunc
 									fi			
 								fi	
 						  else
-							msgFunc norm "No updates  found for installed AUR packages by Cower..."
+							msgFunc norm "No updates found for installed AUR packages by Cower."
 						  fi	
 						;;
 				 3) #check for updates 
 					#check that paths exist and change path to dest path
-						msgFunc norm "Number of updates available for installed AUR packages :-"
+						msgFunc norm "Number of updates available for installed AUR packages :..."
 						cower -u | wc -l
 						msgFunc norm " "
 						cower -uc
 						msgFunc anykey
 				 ;;
-				 4)msgFunc green "Writing installed AUR package lists to files at :"
+				 4)msgFunc green "Writing installed AUR/foreign package lists to files at :"
 						cd "$Dest3" || exitHandlerFunc dest3
 						msgFunc dir "-INFO"
-						pacman -Qm > pkglistAUR.txt
+						pacman -Qm > pkglistAURF.txt
 					;;
 				 
 				 *)  #exit to main menu 
@@ -392,25 +431,24 @@ function SystemBackFunc
 			msgFunc green "Done!"
 			
 			#get user input for backup
-			msgFunc green "Pick destination directory for system backup or gdrive option"
+			msgFunc blue "Pick destination directory for system backup or gdrive option"
 			cat <<-EOF
-			(1)    "$Dest1"
-			(2)    "$Dest2"
+			(1)    "$Destination1"
+			(2)    "$Destination2"
 			(3)    "$Dest3"
 			(4)    Specify a path 
 			(5)    gdrive connect and sync to google drive
 			(*)    Exit
-			Press option followed by [ENTER]
 			EOF
-			
+			msgFunc blue "Press option followed by [ENTER]"
 			read -r choiceBack
 			#check that paths exist and change path to dest path
 			case "$choiceBack" in
 			1)  
-				  cd "$Dest1" || exitHandlerFunc dest1				
+				  cd "$Destination1" || exitHandlerFunc dest1				
 			;;
 			2)  
-				 cd "$Dest2"   || exitHandlerFunc dest2
+				 cd "$Destination2"   || exitHandlerFunc dest2
 			;;
 			3)  
 				  cd "$Dest3" || exitHandlerFunc dest3						
@@ -467,45 +505,107 @@ function SystemBackFunc
 			#make the backup directory
 			msgFunc dir "-BACKUP"
 			#begin the backup
+			msgFunc green "Pick a Backup option"
+			cat <<-EOF
+			(1)    Copy of 512 bytes of MBR 
+			(2)    Copy of Etc folder
+			(3)    Copy of Home folder
+			(4)    Copies of installed package lists
+			(5)    Make tarball of all except tmp dev proc sys run
+			(6)    ALL (options 1-5)
+			(0)    Return
+			EOF
+			msgFunc green "Press option followed by [ENTER]"
+			read -r  choiceBackup
+			case  "$choiceBackup" in
 			
-			
-			msgFunc green "Make copy of first 512 bytes MBR with dd"
-			#get /dev/sdxy where currenty filesystem is mounted 
-			myddpath="$(df /boot/ --output=source | tail -1)"
-			msgFunc norm "$myddpath"
-			sudo dd if="$myddpath" of=hda-mbr.bin bs=512 count=1
-			msgFunc green "Done!"
-			
-			msgFunc anykey
-			
-            msgFunc green "Make a copy of etc dir"
-			sudo cp -a -v -u /etc .
-			msgFunc green "Done!"
-			
-			msgFunc anykey
-			
-            msgFunc green "Make a copy of home dir"
-			sudo cp -a -v -u /home .
-			msgFunc green "Done!"
-			
-			msgFunc anykey
-			
-			sync
-			msgFunc green "Make copy of package lists"
-			pacman -Qqen > pkglist.txt
-			pacman -Qm > pkglistAUR.txt
-			msgFunc green "Done!"
+			1|6) #MBR
+				msgFunc green "Make copy of first 512 bytes MBR with dd"
+				#get /dev/sdxy where currenty filesystem is mounted 
+				myddpath="$(df /boot/ --output=source | tail -1)"
+				msgFunc norm "$myddpath"
+				sudo dd if="$myddpath" of=hda-mbr.bin bs=512 count=1
+				msgFunc green "Done!"
+            ;;&
             
-            msgFunc anykey
+			2|6)#etc
+				msgFunc green "Make a copy of etc dir"
+				sudo cp -a -v -u /etc .
+				msgFunc green "Done!"
+            ;;&
             
-            msgFunc green "Make tarball of all except tmp dev proc sys run"
-			sudo tar --one-file-system --exclude=/tmp/* --exclude=/dev/* --exclude=/proc/* --exclude=/sys/* --exclude=/run/* -pzcvf RootFS_backup.tar.gz /
-			msgFunc green "Done!"
-			sync
-
-        
+            3|6)#home
+				msgFunc green "Make a copy of home dir"
+				sudo cp -a -v -u /home .
+				msgFunc green "Done!"
+				sync
+			;;&
+			
+			4|6)#packages
+				msgFunc green "Make copy of package lists"
+				pacman -Qqen > pkglist.txt
+				pacman -Qm > pkglistAUR.txt
+				msgFunc green "Done!"
+            ;;&
+            
+            5|6)#tar
+				msgFunc green "Make tarball of all except tmp dev proc sys run"
+				sudo tar --one-file-system --exclude=/tmp/* --exclude=/dev/* --exclude=/proc/* --exclude=/sys/* --exclude=/run/* -pzcvf RootFS_backup.tar.gz /
+				msgFunc green "Done!"
+				sync
+			;;
+			
+			0)#quit
+				msgFunc green "Done!"
+				return
+				
+			;;
+			esac
+			
 }
 
+#function to display various information
+function SysinfoFunc
+{
+clear
+msgFunc line
+msgFunc red "System and cylon Information"
+msgFunc line
+msgFunc norm  #set colour back
+date +%A-Week%U-%d-%B-%Y--%T
+msgFunc norm "Uptime = $(uptime -p)"
+msgFunc norm "Operating System = $(uname -mo)"
+msgFunc norm "Kernel = $(uname -sr)"
+msgFunc norm "Network node name = $(uname -n)"
+msgFunc norm "Shell = $SHELL"
+msgFunc norm "Screen Resolution = $(xrandr |grep "\*" | cut -c 1-15)"
+msgFunc norm "CPU $(grep name /proc/cpuinfo  | tail -1)"
+mem=($(awk -F ':| kB' '/MemTotal|MemAvail/ {printf $2}' /proc/meminfo))
+memused="$((mem[0] - mem[1]))"
+memused="$((memused / 1024))"
+memtotal="$((mem[0] / 1024))"
+memory="${memused}MB / ${memtotal}MB"
+msgFunc norm "RAM used/total = ($memory)"
+msgFunc norm  " "
+msgFunc norm "Written by G. lyons Reports to  <glyons66@hotmail.com>"
+msgFunc norm "Version=$(pacman -Qs cylon | head -1 | cut -c 7-20)"
+msgFunc norm "Cylon program location =  $(which cylon)"
+msgFunc norm "Destination folder for Cylon data = $Dest3"
+msgFunc norm "Location of cylonCfg.conf and cylonReadme.md files = $Dest5"
+msgFunc norm "Number of All installed  packages = $(pacman -Q | wc -l)"
+msgFunc norm "Number of native, explicitly installed packages  = $(pacman -Qgen | wc -l)"
+msgFunc norm "Number of foreign installed packages  = $(pacman -Qm | wc -l)"
+#check network connectivity 
+if nc -zw1 archlinux.org 80; 
+	then
+		msgFunc norm   "Number of Pacman updates ready...> $(checkupdates | wc -l)"
+fi
+if	 nc -zw1 aur.archlinux.org 80;
+	then
+		msgFunc norm "Number of updates for installed AUR packages ready ...> $(cower -u | wc -l)"
+fi
+msgFunc anykey
+}
 function ClamAVFunc
 {
 	       #anti virus with clamscan
@@ -517,7 +617,7 @@ function ClamAVFunc
 			cat <<-EOF
 			Do you wish to run anti-virus check with clamAv at this point?
 			1) Yes
-			2) No
+			*) No
 			Press option number and [ENTER]
 			EOF
 			read -r choiceAV			
@@ -555,84 +655,88 @@ function SystemCleanFunc
 			(d)     libreoffice
 			(e)     System
 			(f)     Firefox
-			(g)     Trash + Download folder clean (non bleachbit)     
-			(*) 	return to main menu
+			(A)     ALL - Full Bleachbit clean options 1-f
+			(T)     Trash + Download folder clean (non bleachbit)     
+			(q) 	return to main menu
 			EOF
 			msgFunc blue "Press option number followed by [ENTER]"
 			read -r choicebb
 			case "$choicebb" in
 				   
-				   1)msgFunc green "Clean bash"
+				   A)msgFunc green "ALL - Full Bleachbit clean"
+				   ;;&
+				   
+				   1|A)msgFunc green "Clean bash"
 				   bleachbit --clean bash.*
-				   ;;
+				   ;;&
 				   
-				   2)msgFunc green "Clean Epiphany"
+				   2|A)msgFunc green "Clean Epiphany"
 				   bleachbit --clean epiphany.*
-				   ;;
+				   ;;&
 				   
-				   3)msgFunc green "Clean Evolution"
+				   3|A)msgFunc green "Clean Evolution"
 				   bleachbit --clean evolution.*
-				   ;;
+				   ;;&
 				   
-				   4)msgFunc green "Clean GNOME"
+				   4|A)msgFunc green "Clean GNOME"
 				   bleachbit --clean gnome.*
-				   ;;
+				   ;;&
 				   
-				   5)msgFunc green "Clean Rhythmbox"
+				   5|A)msgFunc green "Clean Rhythmbox"
 				   bleachbit --clean rhythmbox.*
-				   ;;
+				   ;;&
 				   
-				   6)msgFunc green "Clean Thumbnails"
+				   6|A)msgFunc green "Clean Thumbnails"
 				   bleachbit --clean thumbnails.*
-				   ;;
+				   ;;&
 				   
-				   7)msgFunc green "Clean Thunderbird"
+				   7|A)msgFunc green "Clean Thunderbird"
 				   bleachbit --clean thunderbird.*  
-				   ;;
+				   ;;&
 				   
-				   8)msgFunc green "Transmission"
+				   8|A)msgFunc green "Clean Transmission"
 				   sudo bleachbit --clean transmission.*
-				   ;;
+				   ;;&
 				   
-				   9)msgFunc green "Clean VIM"
+				   9|A)msgFunc green "Clean VIM"
 				   bleachbit --clean vim.*
-				   ;;
+				   ;;&
 				   
-				   0)msgFunc green "Clean VLC media player"
+				   0|A)msgFunc green "Clean VLC media player"
 				   bleachbit --clean vlc.*
-				   ;;
+				   ;;&
 				   
-				   a)msgFunc green "Clean X11"
+				   a|A)msgFunc green "Clean X11"
 				   bleachbit --clean x11.*
-				   ;;
+				   ;;&
 				   
-				   b)msgFunc green "Clean Deep scan"
+				   b|A)msgFunc green "Clean Deep scan"
 				   bleachbit --clean deepscan.*
-				   ;;
+				   ;;&
 				   
-				   c)msgFunc green "Clean Flash"
+				   c|A)msgFunc green "Clean Flash"
 				   bleachbit --clean flash.*
-				   ;;
+				   ;;&
 				   
-				   d)msgFunc green "Clean libreoffice"
+				   d|A)msgFunc green "Clean libreoffice"
 				   bleachbit --clean libreoffice.*
-				   ;;
+				   ;;&
 				   
-				   e)msgFunc green "Clean System"
+				   e|A)msgFunc green "Clean System"
 				   sudo bleachbit --clean system.*
+				   ;;&
+				    
+				   f|A)msgFunc green "Clean Firefox"
+					bleachbit --clean firefox.*
 				   ;;
 				    
-				   f)msgFunc green "Deleting firefox history"
-					  bleachbit --clean firefox.*
-				    ;;
 				    
-				    g)  msgFunc green "Deleting  Trash + downloads folder"
-						 rm -rv /home/gavin/.local/share/Trash/files
-						 rm -rv "$HOME"/Downloads
-						 mkdir "$HOME"/Downloads
+				    T)  msgFunc green "Deleting  Trash + downloads folder"
+						 rm -rvf /home/gavin/.local/share/Trash/*
+						 rm -rvf "$HOME"/Downloads/*
 					;;
 					
-				    *)  #exit  
+				    q)  #exit  
 				     msgFunc green "Done!"	
 					return
 					;;
@@ -663,7 +767,12 @@ function RmLintFunc
 			read -r rmlintPath	            
 		     cd "$rmlintPath" || exitHandlerFunc dest4
 			msgFunc norm " "
-			msgFunc green "Press g to Run Rmlint with progress bar, any other key for file list" 
+			cat <<-EOF
+			How do you wish to view output of rmlint scan?
+			g) progress bar
+			*) file list
+			Press option  and [ENTER]
+			EOF
 			read -r choicermlint
 			if [ "$choicermlint" = "g" ]
 				then
@@ -672,8 +781,15 @@ function RmLintFunc
 				else
 					rmlint
 			fi
+			msgFunc line
+			msgFunc anykey
 			#display the results file option? 
-			msgFunc green "Press r to display result file  to screen, any other key quit" 
+			cat <<-EOF
+			Do you wish to display result file  to screen?
+			r) Display results file
+			*) quit
+			Press option  and [ENTER]
+			EOF
 			read -r choicermlint1
 			if [ "$choicermlint1" = "r" ]
 			then
@@ -682,7 +798,13 @@ function RmLintFunc
 				msgFunc line
 				msgFunc anykey
 				#run the shell option?
-				msgFunc red "Press e to execute rmlint.sh file, any other key to quit " 
+				cat <<-EOF
+				Do you wish to execute rmlint.sh file?
+				e) Yes
+				*) quit
+				Press option and [ENTER]
+				EOF
+				msgFunc red "This file will change your system based on results of the previous scan"
 			    read -r choicermlint2
 					if [ "$choicermlint2" = "e" ]
 					then
@@ -725,11 +847,11 @@ function exitHandlerFunc
 			;;
 			dest1)  
 				  msgFunc red "Path not found to destination directory"	
-				  msgFunc norm "$Dest1"
+				  msgFunc norm "$Destination1"
 			;;
 			dest2)  
 			      msgFunc red "Path not found to destination directory"
-				  msgFunc norm "$Dest2"
+				  msgFunc norm "$Destination2"
 			;;			
 			dest3)  
 			     msgFunc red "Path not found to destination directory"
@@ -741,6 +863,7 @@ function exitHandlerFunc
 			 gdrive)
 				msgFunc red "Internet connectivity test to google.com failed"
 			;;
+	
 	 esac
 	msgFunc blue "GOODBYE $USER!!"
 	msgFunc anykey
@@ -752,17 +875,19 @@ function exitHandlerFunc
 
 #print horizontal line 
 msgFunc line
-msgFunc norm 
+msgFunc red "***** CYLON (CYbernetic LifefOrm Node) (version 2.0-8) (25-09-16) *****" 
+msgFunc line
+msgFunc norm
 #Program details print
 cat <<-EOF
-****** cylon version 1.9-7 (25-09-16) ******
-Copyright (C) 2016  Reports to  <glyons66@hotmail.com>
-Aur package name="cylon" , repo="github.com/whitelight999/cylon"
-Arch Linux distro maintenance CLI program written in Bash script.
-This  program provides numerous tools to Arch Linux users to carry 
+Cylon is an Arch Linux  maintenance CLI program written in Bash script.
+This program provides numerous tools to Arch Linux users to carry 
 out updates, maintenance, system checks and backups. 
+AUR package name="cylon" at aur.archlinux.org by glyons.
 EOF
-msgFunc line
+#msgFunc line
+msgFunc norm
+date +%A-Week%U-%d-%B-%Y--%T
 #main program loop    
 while true; do
     cd ~ || exitHandlerFunc dest4
@@ -773,10 +898,12 @@ while true; do
 	(3)     System maintenance check
 	(4)     System backup 
 	(5)     System clean by Bleachbit
-	(6)     Rmlint remove duplicates and other lint
-	(7) 	ClamAv anti-malware scan
-	(8) 	RootKit hunter scan
-	(9)     Display readme file to screen
+	(6)     System information
+	(7)     Rmlint remove duplicates and other lint
+	(8)     Lostfiles scan
+	(9) 	ClamAv anti-malware scan
+	(0) 	RootKit hunter scan
+	(h)     Display readme file to screen
 	(*) 	Exit
 	EOF
 	msgFunc blue "Press option number followed by [ENTER] "
@@ -798,23 +925,27 @@ while true; do
 		5) #system clean with bleachbit
 		   SystemCleanFunc							  
 		;;
-		
-		6) #rmlint 
+		6) #system info
+		   SysinfoFunc							  
+		;;
+		7) #rmlint 
 		   RmLintFunc
 		;;
-		
-		7) 	#Anti-virus clam Av
+		8)#lostfiles(AUR))
+		   lfFunc
+		;;
+		9) 	#Anti-virus clam Av
 			ClamAVFunc  			
 		;;
-		8)  #rootkit hunter 
+		0)  #rootkit hunter 
 			rootKitFunc
 		;;
-		9)  #cat readme file to screen 
+		h)  #cat readme file to screen 
 			HelpFunc
 		;;
 		
 		*)  #exit  
-		exitHandlerFunc exitout
+			exitHandlerFunc exitout
 		;;
 	esac
 
