@@ -137,7 +137,7 @@ function genChoices
 	#Sort array
 	IFS=$'\n' sorted=($(sort <<<"${choices[*]}"))
 	unset IFS
-	printf '%s\n' "${choices[@]}"
+	printf '%s\n' "${sorted[@]}"
 
 }
 
