@@ -88,13 +88,17 @@ function HelpFunc
 	clear
 }
 
-function checkRequirement
+checkRequirement()
 {
+
+	echo "checking $1"
 	#!/bin/bash
 	x=`pacman -Qs $1`
 	if [ -n "$x" ]
-	then return 1
-	else return 0
+	then 
+		return 0
+	else 
+		return 1
 	fi
 
 }
@@ -104,7 +108,6 @@ function genChoices
 
 	# Without requiremenrs
 	choices=(
-	"01 - Pacman options "
 	"03 - System maintenance check"
 	"04 - System backup "
 	"05 - System clean by Bleachbit"
@@ -118,19 +121,23 @@ function genChoices
 	)
 
 
+
 	#TODO check all  other choices in this way
+
+
+
+	if checkRequirement "pacman"; then
+		choices+=( "01 - Pacman options ")
+	fi
+
 	if [[ `checkRequirement "cower"` ]]; then
-		ARRAY+=( "Cower options (AUR)")
+		choices+=( "02 - Cower options (AUR)")
 	fi
 
 	#Sort array
 	IFS=$'\n' sorted=($(sort <<<"${choices[*]}"))
-unset IFS
-
-	for i in "${sorted[@]}"
-	do
-		echo $i
-	done
+	unset IFS
+	printf '%s\n' "${choices[@]}"
 
 }
 
@@ -198,18 +205,6 @@ function exitHandlerFunc
 	}
 
 	source ./modules/*
-	#source ./modules/cower_module
-	#source ./modules/system_maint_module
-	#source ./modules/system_back_module
-	#source ./modules/pacman_module
-	#source ./modules/lostfiles_module
-	#source ./modules/sysinfo_module
-	#source ./modules/clamav_module
-	#source ./modules/rmlint_function
-	#source ./modules/sysclean_module
-	#source ./modules/rootkit_module
-
-
 
 	#print horizontal line
 	msgFunc line
@@ -230,20 +225,6 @@ function exitHandlerFunc
 	while true; do
 		cd ~ || exitHandlerFunc dest4
 		msgFunc blue "Main Menu :-"
-		#cat <<-EOF
-		#(1)     Pacman options
-		#(2)     Cower options (AUR)
-		#(3)     System maintenance check
-		#(4)     System backup
-		#(5)     System clean by Bleachbit
-		#(6)     System information
-		#(7)     Rmlint remove duplicates and other lint
-		#(8)     Lostfiles scan
-		#(9)	ClamAv anti-malware scan
-		#(0)	RootKit hunter scan
-		#(h)     Display readme file to screen
-		#(*)	Exit
-		#EOF
 		genChoices
 		msgFunc blue "Press option number followed by [ENTER] "
 		read -r choiceMain
@@ -291,4 +272,3 @@ function exitHandlerFunc
 	done
 
 
-	1.2 relatiñ
