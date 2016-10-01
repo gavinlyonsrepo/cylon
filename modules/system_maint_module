@@ -1,0 +1,39 @@
+function SystemMaintFunc
+{
+	#system maintenance
+	        #change dir for log files
+	        cd "$Dest3" || exitHandlerFunc dest3
+			msgFunc dir "-INFO"
+			
+	        # -systemd --failed:
+			msgFunc green "All Failed Systemd Services"
+			systemctl --failed --all
+			msgFunc green "Done!"
+			
+			msgFunc green "All Failed Active Systemd Services"
+			systemctl --failed
+			msgFunc green "Done!"
+			
+			# -Logfiles:
+			msgFunc green "Check log Journalctl for Errors"
+			msgFunc norm "Errorfile written to :-"
+			pwd
+			journalctl -p 3 -xb > Journalctlerrlog
+			msgFunc green "Done!"
+			
+			#check ssd trim ok
+			msgFunc green "Check Journalctl for fstrim SSD trim"
+			msgFunc norm "SSD trim report written to -"
+			pwd
+			echo "SSD trim" > JournalctlerrSDDlog
+			journalctl -u fstrim > JournalctlerrSDDlog
+			msgFunc green "Done!"
+			
+			# Checking for broken symlinks:
+			msgFunc green "Checking for Broken Symlinks"
+			msgFunc norm "log.txt written to -"
+			pwd
+            find /"$HOME" -type l -! -exec test -e {} \; -print > symlinkerr
+			msgFunc green "Done!"
+			
+}

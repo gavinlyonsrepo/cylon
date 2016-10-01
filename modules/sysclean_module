@@ -1,0 +1,114 @@
+
+function SystemCleanFunc
+{
+		  clear
+		   #system clean with bleachbit
+		   msgFunc blue "System clean with bleachbit:-"
+			cat <<-EOF
+			(1)     bash
+			(2)     Epiphany
+			(3)     Evolution
+			(4)     GNOME
+			(5)     Rhythmbox
+			(6)     Thumbnails
+			(7)     Thunderbird
+			(8) 	Transmission
+			(9) 	VIM
+			(0) 	VLC media player
+			(a)     X11
+			(b)     deepscan
+			(c)     flash
+			(d)     libreoffice
+			(e)     System
+			(f)     Firefox
+			(A)     ALL - Full Bleachbit clean options 1-f
+			(T)     Trash + Download folder clean (non bleachbit)     
+			(q) 	return to main menu
+			EOF
+			msgFunc blue "Press option number followed by [ENTER]"
+			read -r choicebb
+			case "$choicebb" in
+				   
+				   A)msgFunc green "ALL - Full Bleachbit clean"
+				   ;;&
+				   
+				   1|A)msgFunc green "Clean bash"
+				   bleachbit --clean bash.*
+				   ;;&
+				   
+				   2|A)msgFunc green "Clean Epiphany"
+				   bleachbit --clean epiphany.*
+				   ;;&
+				   
+				   3|A)msgFunc green "Clean Evolution"
+				   bleachbit --clean evolution.*
+				   ;;&
+				   
+				   4|A)msgFunc green "Clean GNOME"
+				   bleachbit --clean gnome.*
+				   ;;&
+				   
+				   5|A)msgFunc green "Clean Rhythmbox"
+				   bleachbit --clean rhythmbox.*
+				   ;;&
+				   
+				   6|A)msgFunc green "Clean Thumbnails"
+				   bleachbit --clean thumbnails.*
+				   ;;&
+				   
+				   7|A)msgFunc green "Clean Thunderbird"
+				   bleachbit --clean thunderbird.*  
+				   ;;&
+				   
+				   8|A)msgFunc green "Clean Transmission"
+				   sudo bleachbit --clean transmission.*
+				   ;;&
+				   
+				   9|A)msgFunc green "Clean VIM"
+				   bleachbit --clean vim.*
+				   ;;&
+				   
+				   0|A)msgFunc green "Clean VLC media player"
+				   bleachbit --clean vlc.*
+				   ;;&
+				   
+				   a|A)msgFunc green "Clean X11"
+				   bleachbit --clean x11.*
+				   ;;&
+				   
+				   b|A)msgFunc green "Clean Deep scan"
+				   bleachbit --clean deepscan.*
+				   ;;&
+				   
+				   c|A)msgFunc green "Clean Flash"
+				   bleachbit --clean flash.*
+				   ;;&
+				   
+				   d|A)msgFunc green "Clean libreoffice"
+				   bleachbit --clean libreoffice.*
+				   ;;&
+				   
+				   e|A)msgFunc green "Clean System"
+				   sudo bleachbit --clean system.*
+				   ;;&
+				    
+				   f|A)msgFunc green "Clean Firefox"
+					bleachbit --clean firefox.*
+				   ;;
+				    
+				    
+				    T)  msgFunc green "Deleting  Trash + downloads folder"
+						 rm -rvf /home/gavin/.local/share/Trash/*
+						 rm -rvf "$HOME"/Downloads/*
+					;;
+					
+				    q)  #exit  
+				     msgFunc green "Done!"	
+					return
+					;;
+					 
+		esac
+		msgFunc green "Done!"	
+}
+
+

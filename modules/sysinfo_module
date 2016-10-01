@@ -1,0 +1,43 @@
+
+#function to display various information
+function SysinfoFunc
+{
+clear
+msgFunc line
+msgFunc red "System and cylon Information"
+msgFunc line
+msgFunc norm  #set colour back
+date +%A-Week%U-%d-%B-%Y--%T
+msgFunc norm "Uptime = $(uptime -p)"
+msgFunc norm "Operating System = $(uname -mo)"
+msgFunc norm "Kernel = $(uname -sr)"
+msgFunc norm "Network node name = $(uname -n)"
+msgFunc norm "Shell = $SHELL"
+msgFunc norm "Screen Resolution = $(xrandr |grep "\*" | cut -c 1-15)"
+msgFunc norm "CPU $(grep name /proc/cpuinfo  | tail -1)"
+mem=($(awk -F ':| kB' '/MemTotal|MemAvail/ {printf $2}' /proc/meminfo))
+memused="$((mem[0] - mem[1]))"
+memused="$((memused / 1024))"
+memtotal="$((mem[0] / 1024))"
+memory="${memused}MB / ${memtotal}MB"
+msgFunc norm "RAM used/total = ($memory)"
+msgFunc norm  " "
+msgFunc norm "Written by G. lyons Reports to  <glyons66@hotmail.com>"
+msgFunc norm "Version=$(pacman -Qs cylon | head -1 | cut -c 7-20)"
+msgFunc norm "Cylon program location =  $(which cylon)"
+msgFunc norm "Destination folder for Cylon data = $Dest3"
+msgFunc norm "Location of cylonCfg.conf and cylonReadme.md files = $Dest5"
+msgFunc norm "Number of All installed  packages = $(pacman -Q | wc -l)"
+msgFunc norm "Number of native, explicitly installed packages  = $(pacman -Qgen | wc -l)"
+msgFunc norm "Number of foreign installed packages  = $(pacman -Qm | wc -l)"
+#check network connectivity 
+if nc -zw1 archlinux.org 80; 
+	then
+		msgFunc norm   "Number of Pacman updates ready...> $(checkupdates | wc -l)"
+fi
+if	 nc -zw1 aur.archlinux.org 80;
+	then
+		msgFunc norm "Number of updates for installed AUR packages ready ...> $(cower -u | wc -l)"
+fi
+msgFunc anykey
+}

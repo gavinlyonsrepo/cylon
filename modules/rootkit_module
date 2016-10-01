@@ -1,0 +1,15 @@
+
+#function for  ROOTKIT HUNTER software
+function rootKitFunc
+{
+	msgFunc green "Checking rkhunter data files"
+	sudo rkhunter --update
+	msgFunc green "Done!"
+	msgFunc green "Fill the file properties database"
+	sudo rkhunter --propupd
+	msgFunc green "Done!"
+	msgFunc green "Running Rootkit hunter"
+	sudo rkhunter --check
+	msgFunc green "Done!"
+	msgFunc anykey
+}
