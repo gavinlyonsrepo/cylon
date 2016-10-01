@@ -32,19 +32,23 @@ Functions/menu options:
 (1)pacman options
 			(1)     Check for updates (no download)
 			(2)     pacman -Syu Upgrade packages
-			(3)     pacman -Si Display extensive information about a given package
+			(3)     pacman -Si Display extensive information 
+			about a given package
 			(4)     pacman -S Install Package
 			(5)     pacman -Ss Search for packages in the database
 			(6)     pacman -Rs Delete Package
 			(7)     pacman -Qs Search for already installed packages
-			(8)     pacman -Qi  Display extensive information for locally installed packages
+			(8)     pacman -Qi  Display extensive information for 
+			locally installed packages
 			(9)     paccache -r Prune older packages from cache
 			(0) 	Write installed package lists to files
-			(a)     Remove all packages not required as dependencies (orphans)
+			(a)     Remove all packages not required as dependencies 
+			(orphans)
 			(b) 	Back-up the local pacman database  
 2)AUR cower options 
 			(1)    Get Information for AUR package with optional install
-			(2)    Fetch  updates to installed AUR packages with optional install
+			(2)    Fetch  updates to installed AUR packages with 
+			optional install
 			(3)    Check for updates ( NO downloads)
 			(4)    Write installed AUR/foreign package list to file.
 			(*)    Return to main menu
@@ -93,7 +97,8 @@ lostfiles(AUR) to scan for lostfiles
 Bug reports
 -----------
 
-If you should find a bug or any other query , please send a report to glyons66@hotmail.com
+If you should find a bug or any other query , 
+please send a report to glyons66@hotmail.com
 
 Copyright
 ---------
