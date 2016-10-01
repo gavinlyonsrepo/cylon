@@ -88,6 +88,44 @@ msgFunc anykey
 clear
 } 
 
+function checkRequirement
+{
+	#!/bin/bash
+x=`pacman -Qs $1`
+if [ -n "$x" ]
+ then return true
+ else return false
+ fi
+
+}
+
+function genChoices
+{
+	# Without requiremenrs
+	declare -A choices
+	choices=(
+	["1"]="Pacman options "
+	["3"]="System maintenance check"
+	["4"]="System backup "
+	["5"]="System clean by Bleachbit"
+	["6"]="System information"
+	["7"]="Rmlint remove duplicates and other lint"
+	["8"]="Lostfiles scan"
+	["9"]="mAv anti-malware scan"
+	["0"]="tKit hunter scan"
+	["h"]="Display readme file to screen"
+	["*"]="Exit"
+	)
+
+
+	#TODO check all  other choices in this way 
+	if [[ `checkRequirement "cower"` ]]; then
+		ARRAY+=( ["2"]="Cower options (AUR)")
+	fi
+}
+
+
+
 function PacmanFunc 
 {
 	clear
@@ -952,3 +990,4 @@ while true; do
 done
 
 
+ 1.2 relatiñ
