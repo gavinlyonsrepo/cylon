@@ -1,0 +1,141 @@
+function SystemBackFunc
+{
+			#Full system backup
+			#get paths form config file if exists
+			clear
+			readconfigFunc
+			msgFunc green "Done!"
+			
+			#get user input for backup
+			msgFunc blue "Pick destination directory for system backup or gdrive option"
+			cat <<-EOF
+			(1)    "$Destination1"
+			(2)    "$Destination2"
+			(3)    "$Dest3"
+			(4)    Specify a path 
+			(5)    gdrive connect and sync to google drive
+			(*)    Exit
+			EOF
+			msgFunc blue "Press option followed by [ENTER]"
+			read -r choiceBack
+			#check that paths exist and change path to dest path
+			case "$choiceBack" in
+			1)  
+				  cd "$Destination1" || exitHandlerFunc dest1				
+			;;
+			2)  
+				 cd "$Destination2"   || exitHandlerFunc dest2
+			;;
+			3)  
+				  cd "$Dest3" || exitHandlerFunc dest3						
+			;;
+			4)  msgFunc norm "Type a custom destination path:-"
+				read -r Path1		
+				  cd "$Path1" || exitHandlerFunc dest4				
+			;;
+			5)  msgFunc green "gdrive sync with remote documents directory"
+					#This uses netcat (nc) in its port scan mode, 
+					#a quick poke (-z is zero-I/O mode [used for 
+					#scanning]) with a quick timeout 
+					#(-w 1 waits at most one second
+					#It checks Google on port 80 (HTTP).
+					if nc -zw1 google.com 80; then
+						msgFunc norm   "**We have connectivity to google.com**"
+					else
+						exitHandlerFunc gdrive
+					fi
+				   	cat <<-EOF 
+					Do you wish to use gdrive current paths or type a custom path?
+					1) Continue 
+					2) Type a Custom path 
+					Press option number and [ENTER]
+					EOF
+					read -r  choiceGD
+					
+						if  [ "$choiceGD" = "1" ]
+						then
+							msgFunc green "gdrive sync with  remote directory path number one:-"
+							gdrive sync upload "$gdriveSource1" "$gdriveDest1"
+							msgFunc green "Done!"
+							msgFunc green "gdrive sync with remote remote directory path number two:-"
+							gdrive sync upload  "$gdriveSource2" "$gdriveDest2"
+							msgFunc green "Done!"
+				   		fi
+				   		if [ "$choiceGD" = "2" ]
+				   		then
+				   		#custom path
+							msgFunc norm "Type a custom Source directory path:-"
+				            read -r gdriveS		            
+				            msgFunc norm "Type a gdrive directory ID:-"
+				            read -r gdriveD		          
+							msgFunc green "gdrive sync with custom path"
+							gdrive sync upload  "$gdriveS"	 "$gdriveD"
+							msgFunc green "Done!"
+				   		fi
+				   		return
+			;;				
+			*) exitHandlerFunc exitout
+			  ;;
+			esac
+
+			#make the backup directory
+			msgFunc dir "-BACKUP"
+			#begin the backup
+			msgFunc green "Pick a Backup option"
+			cat <<-EOF
+			(1)    Copy of 512 bytes of MBR 
+			(2)    Copy of Etc folder
+			(3)    Copy of Home folder
+			(4)    Copies of installed package lists
+			(5)    Make tarball of all except tmp dev proc sys run
+			(6)    ALL (options 1-5)
+			(0)    Return
+			EOF
+			msgFunc green "Press option followed by [ENTER]"
+			read -r  choiceBackup
+			case  "$choiceBackup" in
+			
+			1|6) #MBR
+				msgFunc green "Make copy of first 512 bytes MBR with dd"
+				#get /dev/sdxy where currenty filesystem is mounted 
+				myddpath="$(df /boot/ --output=source | tail -1)"
+				msgFunc norm "$myddpath"
+				sudo dd if="$myddpath" of=hda-mbr.bin bs=512 count=1
+				msgFunc green "Done!"
+            ;;&
+            
+			2|6)#etc
+				msgFunc green "Make a copy of etc dir"
+				sudo cp -a -v -u /etc .
+				msgFunc green "Done!"
+            ;;&
+            
+            3|6)#home
+				msgFunc green "Make a copy of home dir"
+				sudo cp -a -v -u /home .
+				msgFunc green "Done!"
+				sync
+			;;&
+			
+			4|6)#packages
+				msgFunc green "Make copy of package lists"
+				pacman -Qqen > pkglist.txt
+				pacman -Qm > pkglistAUR.txt
+				msgFunc green "Done!"
+            ;;&
+            
+            5|6)#tar
+				msgFunc green "Make tarball of all except tmp dev proc sys run"
+				sudo tar --one-file-system --exclude=/tmp/* --exclude=/dev/* --exclude=/proc/* --exclude=/sys/* --exclude=/run/* -pzcvf RootFS_backup.tar.gz /
+				msgFunc green "Done!"
+				sync
+			;;
+			
+			0)#quit
+				msgFunc green "Done!"
+				return
+				
+			;;
+			esac
+			
+}

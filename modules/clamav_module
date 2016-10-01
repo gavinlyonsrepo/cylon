@@ -1,0 +1,27 @@
+function ClamAVFunc
+{
+	       #anti virus with clamscan
+           # update clamscan virus definitions:
+			msgFunc green "Updating clamavscan Databases"
+			sudo freshclam
+			msgFunc green "Done!"
+			msgFunc green "Scanning with Clamav$"
+			cat <<-EOF
+			Do you wish to run anti-virus check with clamAv at this point?
+			1) Yes
+			*) No
+			Press option number and [ENTER]
+			EOF
+			read -r choiceAV			
+			if [ "$choiceAV" = "1" ]
+				then
+					# scan entire system
+					cd "$Dest3" || exitHandlerFunc dest3
+					msgFunc dir "-INFO"
+					sudo clamscan -l clamavlogfile --recursive=yes --infected --exclude-dir='^/sys|^/proc|^/dev|^/lib|^/bin|^/sbin' /
+					msgFunc green "Done!"			
+				else
+					msgFunc green "Done!"
+			fi
+}
+

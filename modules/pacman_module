@@ -1,0 +1,121 @@
+
+function PacmanFunc 
+{
+	clear
+		   #Pacman package manager options:
+		   msgFunc line
+		   msgFunc green "Pacman package manager. Number of packages installed = $(pacman -Q | wc -l) "
+		   msgFunc line
+		   msgFunc blue "Pacman package manager options:-"
+			cat <<-EOF
+			(1)     Check for updates (no download)
+			(2)     pacman -Syu Upgrade packages
+			(3)     pacman -Si Display extensive information about a given package
+			(4)     pacman -S Install Package
+			(5)     pacman -Ss Search for packages in the database
+			(6)     pacman -Rs Delete Package
+			(7)     pacman -Qs Search for already installed packages
+			(8)     pacman -Qi  Display extensive information for locally installed packages
+			(9)     paccache -r Prune older packages from cache
+			(0) 	Write installed package lists to files
+			(a)     Remove all packages not required as dependencies (orphans)
+			(b) 	Back-up the local pacman database  
+			(*) 	return to main menu
+			EOF
+			msgFunc blue "Press option number followed by [ENTER]"
+			read -r choicep
+			case "$choicep" in
+					1)
+					msgFunc norm "Pacman updates ready:-.... "
+						
+						checkupdates | wc -l
+						checkupdates
+					;;
+					
+					2) #update pacman
+						msgFunc green "Update system with Pacman."
+						sudo pacman -Syu
+					;;
+					
+					3) #pacman -Si Display extensive information about a given package
+						msgFunc green "Display information  for Package."
+						msgFunc norm "Please enter package name"
+						read -r pacString
+                        pacman -Si "$pacString"
+					;;
+					
+					
+					4) #pacman -S Install Package
+						msgFunc green "Install package."
+						msgFunc norm "Please enter package name"
+						read -r pacString
+                        sudo pacman -S "$pacString"
+					;;
+					
+					5)   #pacman -Ss Search Repos for Package
+						msgFunc green "Search for packages in the database."
+						msgFunc norm "Please enter package name"
+						read -r pacString
+                        pacman -Ss "$pacString"
+					;;
+					6) #pacman -Rs Delete Package
+						msgFunc green "Delete Package."
+						msgFunc norm "Please enter package name"
+						read -r pacString
+                        sudo pacman -Rs "$pacString"
+					;;
+					
+					7)   #pacman -Qs Search for already installed packages
+						msgFunc green "Search for already installed packages."
+						msgFunc norm "Please enter package name"
+						read -r pacString
+                        pacman -Qs "$pacString"
+					;;
+					
+					8) #pacman -Qi Display extensive information about a given package(local install)
+						msgFunc green "Display information  for Package."
+						msgFunc norm "Please enter package name"
+						read -r pacString
+                        pacman -Qi "$pacString"
+					;;
+					
+					
+					9)  msgFunc green  "Prune older packages from cache."
+					#The paccache script, deletes all cached  package 
+						#regardless of whether they're installed or not, 
+						#except for the most recent 3, 
+							sudo paccache -r
+					;;
+					
+					0)msgFunc green "Writing installed package lists to files at :"
+						cd "$Dest3" || exitHandlerFunc dest3
+						msgFunc dir "-INFO"
+						#all packages 
+						pacman -Q  > pkglistQ.txt
+						#native, explicitly installed package
+						pacman -Qqen > pkglistQgen.txt
+						#foreign installed (AUR etc))
+						pacman -Qm > pkglistQm.txt
+					;;
+					
+					a)   #delete orphans
+						msgFunc green "Delete orphans!"
+						#Remove all packages not required as dependencies (orphans)
+						sudo pacman -Rns "$(pacman -Qtdq)"
+					;;
+
+					b) #backup the pacman database
+						msgFunc green "Back-up the pacman database to :"
+						cd "$Dest3" || exitHandlerFunc dest3
+						msgFunc dir "-BACKUPPACMAN"
+						tar -v -cjf pacman_database.tar.bz2 /var/lib/pacman/local
+					;;
+					
+					*)  #exit  
+				    msgFunc green "Done!"	
+					return
+					;;
+			esac
+			msgFunc green "Done!"	
+			msgFunc anykey 
+}

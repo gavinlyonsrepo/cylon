@@ -1,0 +1,26 @@
+#function LF uses lostfiles package from AUR 
+#Search for files which are not part of installed Arch Linux packages
+function lfFunc
+{
+	clear
+	msgFunc line
+	msgFunc green "Lostfiles :-Search for files which are not part of installed Arch Linux packages"
+	cd "$Dest3" || exitHandlerFunc dest3
+	msgFunc dir "-INFO"
+	cat <<-EOF
+	Do you wish Use strict or relaxed mode?
+	s) Strict
+	r) Relaxed
+	*) return
+	Press option number followed by [ENTER]
+	EOF
+	read -r choiceIU4
+	if [ "$choiceIU4" = "s" ]
+	then
+			sudo bash -c "lostfiles strict  > lostfilesStrictlist.txt" 
+	elif [ "$choiceIU4" = "r" ]
+	then
+			sudo bash -c  "lostfiles relaxed > lostfilesRelaxedlist.txt" 
+	fi
+	msgFunc green "Done!"
+}

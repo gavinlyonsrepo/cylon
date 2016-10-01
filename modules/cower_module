@@ -1,0 +1,121 @@
+function CowerFunc
+{
+			clear
+	         #AUR warning
+	         msgFunc red  "AUR WARNING: User Beware"	
+	         cat <<-EOF
+			 The Arch User Repository (AUR) is a community-driven repository for Arch users
+			 It is possible for a package to contain dangerous commands through malice 
+			 or ignorance. Before installing packages or installing updates
+			 Please Read wiki First and learn the AUR system.
+			 https://wiki.archlinux.org/index.php/Arch_User_Repository
+			EOF
+			msgFunc anykey
+			msgFunc line
+	        msgFunc norm "Number of foreign packages installed = $(pacman -Qm | wc -l)"
+	        cd "$Dest3" || exitHandlerFunc dest3
+		    msgFunc blue "AUR package install and updates by cower, options:-"
+			cat <<-EOF
+			(1)    Get Information for AUR package with optional install
+			(2)    Fetch  updates to installed AUR packages with optional install
+			(3)    Check for updates ( NO downloads)
+			(4)    Write installed AUR/foreign package list to file.
+			(*)    Return to main menu
+			EOF
+			msgFunc blue "Press option followed by [ENTER]"
+			read -r choiceCower
+			
+			case "$choiceCower" in    
+						#search AUR with cower with optional install
+						1)msgFunc green "${GREEN}Search AUR with cower with optional install"
+						  msgFunc norm "Type a AUR package name:-"
+					      read -r cowerPac		
+						  msgFunc norm " " 
+						  cower -i -c "$cowerPac" || return
+						  #cower -cd optional install 
+						  cat <<-EOF
+							Do you wish to download  build and install this package now?
+							1) Yes"
+							*) No"
+							Press option number followed by [ENTER]"
+							EOF
+							read -r choiceIU4
+								if [ "$choiceIU4" = "1" ]
+									then
+									 msgFunc dir "-AUR-DOWNLOAD"
+									#build and install packages
+									msgFunc norm "Downloading Package $cowerPac"	
+									cower -d -c	 "$cowerPac"
+									cd "$cowerPac" || return
+									msgFunc green "$cowerPac PKGBUILD: Please read"
+									cat PKGBUILD
+									msgFunc green "PKGBUILDS displayed above. Install  [Y/n]"
+									read -r choiceIU3
+									if [ "$choiceIU3" != "n" ]
+										then
+										msgFunc norm  "Installing package $cowerPac"
+										makepkg -si		
+									fi
+								fi	
+						;;
+						
+						#check for updates cower and optional install 
+						           
+						2)msgFunc green "Update AUR packages with cower "		
+						#make cower update directory
+						msgFunc dir "-AUR-UPDATES" 
+						cower -d -vuc 
+						# look for empty dir (i.e. if no updates) 
+						if [ "$(ls -A .)" ] 
+						then
+							msgFunc norm  "Package builds available"
+							ls 
+							msgFunc norm " "
+							cat <<-EOF
+							Cower updates available for package build
+							Do you wish to build and install  them now?
+							1) Yes"
+							*) No"
+							Press option number followed by [ENTER]"
+							EOF
+							read -r choiceIU2
+								if [ "$choiceIU2" = "1" ]
+									then
+									msgFunc green " Viewing  PKGBUILDS of updates :-" 
+									#cat PKGBUILDs to screen
+									find . -name PKGBUILD -exec cat {} \; | more
+									msgFunc anykey
+									msgFunc line
+									msgFunc green "PKGBUILDS displayed above. Install all [Y/n]"  
+									read -r choiceIU1
+									if [ "$choiceIU1" != "n" ]
+										then
+											#build and install all donwloaded PKGBUILD files 
+											msgFunc norm  "Installing packages"
+											find . -name PKGBUILD -execdir makepkg -si \;
+									fi			
+								fi	
+						  else
+							msgFunc norm "No updates found for installed AUR packages by Cower."
+						  fi	
+						;;
+				 3) #check for updates 
+					#check that paths exist and change path to dest path
+						msgFunc norm "Number of updates available for installed AUR packages :..."
+						cower -u | wc -l
+						msgFunc norm " "
+						cower -uc
+						msgFunc anykey
+				 ;;
+				 4)msgFunc green "Writing installed AUR/foreign package lists to files at :"
+						cd "$Dest3" || exitHandlerFunc dest3
+						msgFunc dir "-INFO"
+						pacman -Qm > pkglistAURF.txt
+					;;
+				 
+				 *)  #exit to main menu 
+					return
+				 ;;
+				 esac
+			     msgFunc green "Done!"
+}

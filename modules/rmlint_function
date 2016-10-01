@@ -1,0 +1,79 @@
+
+#function for rmlint software
+#download with pacman
+function RmLintFunc
+{
+	clear
+	msgFunc green "Running rmlint"
+			cat <<-EOF
+			rmlint finds space waste and other broken things on 
+			your filesystem and offers to remove it.
+			Despite its name, rmlint just finds suspicious files, 
+			but never modifies the filesystem itself . 
+			Instead it gives you detailed reports in different formats 
+			to get rid of them yourself. These reports are called outputs. 
+			By default a shellscript will be written to rmlint.sh that 
+			contains readily prepared shell commands to remove 
+			duplicates and other finds.
+			EOF
+			msgFunc line
+			msgFunc norm "Type a  directory path you wish to scan:-"
+			read -r rmlintPath	            
+		     cd "$rmlintPath" || exitHandlerFunc dest4
+			msgFunc norm " "
+			cat <<-EOF
+			How do you wish to view output of rmlint scan?
+			g) progress bar
+			*) file list
+			Press option  and [ENTER]
+			EOF
+			read -r choicermlint
+			if [ "$choicermlint" = "g" ]
+				then
+					# run with progress bar 
+					rmlint -g
+				else
+					rmlint
+			fi
+			msgFunc line
+			msgFunc anykey
+			#display the results file option? 
+			cat <<-EOF
+			Do you wish to display result file  to screen?
+			r) Display results file
+			*) quit
+			Press option  and [ENTER]
+			EOF
+			read -r choicermlint1
+			if [ "$choicermlint1" = "r" ]
+			then
+				msgFunc green  "rmlint output file"
+				more rmlint.json		
+				msgFunc line
+				msgFunc anykey
+				#run the shell option?
+				cat <<-EOF
+				Do you wish to execute rmlint.sh file?
+				e) Yes
+				*) quit
+				Press option and [ENTER]
+				EOF
+				msgFunc red "This file will change your system based on results of the previous scan"
+			    read -r choicermlint2
+					if [ "$choicermlint2" = "e" ]
+					then
+						msgFunc green  "running rmlint.sh output file"
+						./rmlint.sh -d
+					else
+						msgFunc green "Done!"
+						return
+					fi
+						
+			else
+				msgFunc green "Done!"
+				return
+			fi
+			
+			
+	msgFunc green "Done!"
+}
