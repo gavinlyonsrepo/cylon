@@ -21,36 +21,36 @@ You can create an optional config file for custom system backup
 cylonCfg.conf
 Location"$HOME/.config/cylon"
 File setup example
-*Destination1="/run/media/$USER/Linux_backup"
-*Destination2="/run/media/$USER/iomeaga_320"
-*gdriveSource1="$HOME/Documents"
-*gdriveSource2="$HOME/Pictures"
-*gdriveDest1="0B3_RVJ50UWFAaGxJSXg3NGJBaXc"
-*gdriveDest2="0B3_RVJ50UWFAR3A2T3dZTU9TaTA"
+* Destination1="/run/media/$USER/Linux_backup"
+* Destination2="/run/media/$USER/iomeaga_320"
+* gdriveSource1="$HOME/Documents"
+* gdriveSource2="$HOME/Pictures"
+* gdriveDest1="0B3_RVJ50UWFAaGxJSXg3NGJBaXc"
+* gdriveDest2="0B3_RVJ50UWFAR3A2T3dZTU9TaTA"
 
 All backups outputs downloads and updates are placed in $HOME/Documents/Cylon
 
 Functions/menu options
 ----------------------
 * pacman options
-		* Check for updates (no download)
-		* pacman -Syu Upgrade packages
-		* pacman -Si Display extensive information 
-		* pacman -S Install Package
-		* pacman -Ss Search for packages in the database
-		* pacman -Rs Delete Package
-		* pacman -Qs Search for already installed packages
-		* pacman -Qi  Display extensive information for 
-		* paccache -r Prune older packages from cache
-		* Write installed package lists to files
-		* Remove all packages not required as dependencies 
-		* Back-up the local pacman database  
+	* Check for updates (no download)
+	* pacman -Syu Upgrade packages
+	* pacman -Si Display extensive information 
+	* pacman -S Install Package
+	* pacman -Ss Search for packages in the database
+	* pacman -Rs Delete Package
+	* pacman -Qs Search for already installed packages
+	* pacman -Qi  Display extensive information for 
+	* paccache -r Prune older packages from cache
+	* Write installed package lists to files
+	* Remove all packages not required as dependencies 
+	* Back-up the local pacman database  
 * AUR cower options 
-		* Get Information for AUR package with optional install
-		* Fetch  updates to installed AUR packages with 
-		* optional install
-		* Check for updates ( NO downloads)
-		* Write installed AUR/foreign package list to file.
+	* Get Information for AUR package with optional install
+	* Fetch  updates to installed AUR packages with 
+	* optional install
+	* Check for updates ( NO downloads)
+	* Write installed AUR/foreign package list to file.
 * system maintenance check
 	* All Failed Systemd Services
 	* All Failed Active Systemd Services
@@ -66,7 +66,7 @@ Functions/menu options
 	* Make copy of package lists
 	* Also there is an option for gdrive sync 
 * Clean system with bleachbit
-* System and cylon information dispaly
+* System and cylon information display
 * Rmlint remove duplicates and other lint
 * Lostfiles scan
 * ClamAv anti-malware scan
@@ -75,14 +75,14 @@ Functions/menu options
 
 Needs installed for certain functions
 -------------------------------------
-*bleachbit for system clean
-*clamAV for virus check
-*gnu-netcat to check for internet connection
-*rootkithunter
-*rmlint 
-*cower(AUR) for AUR functions
-*gdrive(AUR) to sync to google drive
-*lostfiles(AUR) to scan for lostfiles
+* bleachbit for system clean
+* clamAV for virus check
+* gnu-netcat to check for internet connection
+* rootkithunter
+* rmlint 
+* cower(AUR) for AUR functions
+* gdrive(AUR) to sync to google drive
+* lostfiles(AUR) to scan for lostfiles
 
 Bug reports
 -----------
