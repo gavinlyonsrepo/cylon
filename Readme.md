@@ -1,7 +1,7 @@
 ﻿Cylon
 -----
 25-06-16 glyons glyons66@hotmail.com
-Version 2.0-8 
+Version 2.0-8 see changlog.md for version control.
 Arch Linux distro maintenance  Bash script. 
 Aur package name = cylon
 The goal was to create a script to do as much maintenance, 
@@ -76,10 +76,10 @@ Functions/menu options
 Needs installed for certain functions
 -------------------------------------
 * bleachbit for system clean
-* clamAV for virus check
+* clamav for virus check
 * gnu-netcat to check for internet connection
-* rootkithunter
-* rmlint 
+* rkhunter to check for rootkits
+* rmlint  to check for lint and duplicates 
 * cower(AUR) for AUR functions
 * gdrive(AUR) to sync to google drive
 * lostfiles(AUR) to scan for lostfiles
@@ -97,13 +97,7 @@ Copyright (C) 2016 g Lyons <glyons66@hotmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
+the Free Software Foundation, see license.md. 
 
 
 
