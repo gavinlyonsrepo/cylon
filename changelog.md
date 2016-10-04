@@ -11,3 +11,6 @@ readme install added
 #version 1.8-6  180916 added rootkithunter option + update counters
 #version 1.9-7  250916 added rmlint option. consolidated menu layout , added more pacman options
 #version 2.0-8  011016 added option for lostfiles, system info page,various minor optimisations
+#version 2.19-9 051016 added cylon info page with check for optdepends, added error handling for 
+missing optdepends in the functions ,changed menus from cat displays to select arrays with prompt. 
+Added licence.md and changlog.md, added optdepends array to PKGBUILD. 

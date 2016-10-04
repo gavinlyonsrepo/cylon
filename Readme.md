@@ -1,7 +1,7 @@
 ﻿Cylon
 -----
 25-06-16 glyons glyons66@hotmail.com
-Version 2.0-8 see changlog.md for version control.
+See changlog.md for version control.
 Arch Linux distro maintenance  Bash script. 
 Aur package name = cylon
 The goal was to create a script to do as much maintenance, 
@@ -14,19 +14,20 @@ Config
 ------
 Cylon is a bash script installed to user/bin by package 
 build. type cylon to run. Some function require software installed 
-as listed below. this is left to user discretion.
+as listed below see optdepends also. this is left to user discretion.
+software will display installed packages on cylon info page.
 cylonReadme.md is installed to "$HOME"/.config/cylonReadme.md
 this is displayed to screen by a menu option
 You can create an optional config file for custom system backup
-cylonCfg.conf
+cylonCfg.conf, "gdrivedest" is google drive target directory ID.
 Location"$HOME/.config/cylon"
 File setup example
 * Destination1="/run/media/$USER/Linux_backup"
 * Destination2="/run/media/$USER/iomeaga_320"
 * gdriveSource1="$HOME/Documents"
 * gdriveSource2="$HOME/Pictures"
-* gdriveDest1="0B3_RVJ50UWFAaGxJSXg3NGJBaXc"
-* gdriveDest2="0B3_RVJ50UWFAR3A2T3dZTU9TaTA"
+* gdriveDest1="foo123456789"
+* gdriveDest2="foo123456789"
 
 All backups outputs downloads and updates are placed in $HOME/Documents/Cylon
 
@@ -47,15 +48,16 @@ Functions/menu options
 	* Back-up the local pacman database  
 * AUR cower options 
 	* Get Information for AUR package with optional install
-	* Fetch  updates to installed AUR packages with 
-	* optional install
+	* search for AUR package
+	* Download AUR  package
+	* Fetch and install AUR packages
 	* Check for updates ( NO downloads)
 	* Write installed AUR/foreign package list to file.
 * system maintenance check
 	* All Failed Systemd Services
 	* All Failed Active Systemd Services
 	* Check log Journalctl for Errors
-	* Check log Journalctl for fstrim SSD trim
+	* Check log Journalctl for fstrim SSD trim (check for SSD)
 	* Check for broken symlinks, 
 * System backup
 	* Optional destination path as defined in script or custom path
@@ -66,12 +68,12 @@ Functions/menu options
 	* Make copy of package lists
 	* Also there is an option for gdrive sync 
 * Clean system with bleachbit
-* System and cylon information display
+* System and package information displays 
 * Rmlint remove duplicates and other lint
 * Lostfiles scan
 * ClamAv anti-malware scan
 * RootKit hunter scan
-* Display this readme file to screen 
+* Display cylon with optdepend installation check, info and readme file to screen 
 
 Needs installed for certain functions
 -------------------------------------
@@ -97,7 +99,7 @@ Copyright (C) 2016 g Lyons <glyons66@hotmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation, see license.md. 
+the Free Software Foundation, see license.md for more details
 
 
 
