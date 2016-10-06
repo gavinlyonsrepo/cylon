@@ -21,7 +21,7 @@ Dest3="$HOME/Documents/Cylon/"
 #folder for readme and config file
 Dest5="$HOME/.config/cylon"
 #prompt for select menus
-PS3="${BLUE}Press option number + [ENTER] $ ${NORMAL}"
+PS3="${BLUE}Press option number + [ENTER]${NORMAL}"
 #functions list  14 functions + one main loop
 function msgFunc
 {
