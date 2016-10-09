@@ -1,26 +1,38 @@
 ﻿Cylon
 -----
-25-06-16 glyons glyons66@hotmail.com
-See changlog.md for version control.
-Arch Linux distro maintenance  Bash script. 
-Aur package name = cylon
-The goal was to create a script to do as much maintenance, 
+Date: 101016
+Version control: 2.2.1 See changlog.md for details
+Author g. lyons contact at glyons66@hotmail.com
+Ttile : Arch Linux distro maintenance  Bash shell script. 
+AUR package name : cylon
+Upstream repo: https://github.com/gavinlyonsrepo/cylon
+Description:
+The goal was to create a script to do as much updates maintenance, 
 backups and system checks in a single menu driven optional script 
-Command line program for an Arch as possible
+Command line program for an Arch linux distro as possible.
 This script provides numerous tools 
-to Arch Linux for maintenance, system checks and backups.  
+to Arch Linux users for updates, maintenance, system checks and backups.  
 
 Config
 ------
+Type cylon to run
 Cylon is a bash script installed to user/bin by package 
-build. type cylon to run. Some function require software installed 
-as listed below see optdepends also. this is left to user discretion.
-software will display installed packages on cylon info page.
-cylonReadme.md is installed to "$HOME"/.config/cylonReadme.md
-this is displayed to screen by a menu option
+build. Some functions require software installed 
+as listed below, see optdepends of PKGBUILD also. 
+This is left to user discretion.
+Software will display optdepends installed packages on cylon info page.
+
+cylon files 
+* /usr/bin/cylon (the shell script)
+* /usr/share/doc/cylon/Readme.md
+* /usr/share/doc/cylon/changelog.md
+* /usr/share/licenses/cylon/License.md
+* $HOME/.config/cylon/cylonCfg.conf  (optional not installed)
+
+Readme  is displayed to screen by a menu option
 You can create an optional config file for custom system backup
 cylonCfg.conf, "gdrivedest" is google drive target directory ID.
-Location"$HOME/.config/cylon"
+if missing system uses hard-coded defaults
 File setup example
 * Destination1="/run/media/$USER/Linux_backup"
 * Destination2="/run/media/$USER/iomeaga_320"
@@ -29,7 +41,22 @@ File setup example
 * gdriveDest1="foo123456789"
 * gdriveDest2="foo123456789"
 
-All backups outputs downloads and updates are placed in $HOME/Documents/Cylon
+All system output (logsfiles, backups, outputs, downloads and updates) 
+are placed below unless otherwise specified on screen
+* $HOME/Documents/Cylon
+
+Needs installed for certain functions
+-------------------------------------
+* ccrypt: used for encrypting
+* bleachbit for system clean
+* clamav for virus check
+* gnu-netcat to check for internet connection
+* rkhunter to check for rootkits
+* rmlint  to check for lint and duplicates 
+* cower(AUR) for AUR functions
+* gdrive(AUR) to sync to google drive
+* lostfiles(AUR) to scan for lostfiles
+
 
 Functions/menu options
 ----------------------
@@ -46,13 +73,14 @@ Functions/menu options
 	* Write installed package lists to files
 	* Remove all packages not required as dependencies 
 	* Back-up the local pacman database  
+	* Arch news rss reader
 * AUR cower options 
-	* Get Information for AUR package with optional install
+	* Get Information for AUR package 
 	* search for AUR package
 	* Download AUR  package
 	* Fetch and install AUR packages
 	* Check for updates ( NO downloads)
-	* Write installed AUR/foreign package list to file.
+	
 * system maintenance check
 	* All Failed Systemd Services
 	* All Failed Active Systemd Services
@@ -73,18 +101,9 @@ Functions/menu options
 * Lostfiles scan
 * ClamAv anti-malware scan
 * RootKit hunter scan
-* Display cylon with optdepend installation check, info and readme file to screen 
-
-Needs installed for certain functions
--------------------------------------
-* bleachbit for system clean
-* clamav for virus check
-* gnu-netcat to check for internet connection
-* rkhunter to check for rootkits
-* rmlint  to check for lint and duplicates 
-* cower(AUR) for AUR functions
-* gdrive(AUR) to sync to google drive
-* lostfiles(AUR) to scan for lostfiles
+* password generator
+* ccrypt - encrypt and decrypt files:
+* Display cylon with optdepend installation check, info and readme file to screen
 
 Bug reports
 -----------
