@@ -112,7 +112,7 @@ Functions/menu options
 		* Return
 
 * Clean system with bleachbit
-		*http://www.bleachbit.org/documentation/command-line
+		* http://www.bleachbit.org/documentation/command-line
 		* Preset option based on GUI options
 		* Custom options involved for user to pick cleaners and options
 			* preview
@@ -120,8 +120,8 @@ Functions/menu options
 			* clean and overwrite 
 * System and package information displays 
 * Rmlint remove duplicates and other lint
-	*option to view results file
-	*option to execute shell script with results 
+	* option to view results file
+	* option to execute shell script with results 
 * ClamAv anti-malware scan
 * RootKit hunter scan
 * password generator
