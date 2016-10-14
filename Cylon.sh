@@ -9,7 +9,7 @@
 #
 #Written by G lyons  at glyons66@hotmail.com 
 #
-#Version 2.2-1  See changelog.md at repo for version control
+#Version 2.3-2  See changelog.md at repo for version control
 #
 #Software repo
 #https://github.com/gavinlyonsrepo/cylon
@@ -38,6 +38,7 @@
 #rkhunter (optional) – finds root kits malware
 #rmlint ((optional) – Finds lint and other unwanted
 #ccrypt (optional)  -  Encrypt and decrypt files
+#rsync (optional)  -  backup utility
 #================================================================
 # END_OF_HEADER
 #================================================================
@@ -144,7 +145,7 @@ function msgFunc
 # other cylon information and the installed readme file
 # INPUTS : $1 process name either HELP or SYS    
 # OUTPUTS : n/a
-# PROCESS :[1] HELP [2] SYS   
+# PROCESS :[1] HELP =cylon info [2] SYS   =system info
 function HelpFunc 
 {
 clear
@@ -171,6 +172,7 @@ msgFunc line
 				msgFunc checkpac clamav
 				msgFunc checkpac bleachbit 
 				msgFunc checkpac ccrypt
+				msgFunc checkpac rsync
 				msgFunc anykey "and view the readme."
 				msgFunc line
 				msgFunc green "Displaying cylonReadme.md file at $Dest6"
@@ -366,32 +368,7 @@ function PacmanFunc
 			msgFunc green "Done!"	
 			msgFunc anykey 
 }
-#FUNCTION HEADER
-# NAME :            lostfilesFunc
-# DESCRIPTION:Search for files which are not 
-# part of installed Arch Linux packages    
-# PROCESS : lostfiles relaxed and strict scans
-#NOTES :   needs lostfiles (AUR) installed)        
-function lostfilesFunc
-{
-	#check if lostfiles installed
-	msgFunc checkpac lostfiles
-    if [ "$?" != 0 ]
-	then
-		msgFunc anykey 
-	return
-	fi
-	clear
-	msgFunc line
-	msgFunc green "Lostfiles :-Search for files which are not part of installed Arch Linux packages"
-	msgFunc dir "-INFO"
-	msgFunc norm  "Lostfiles strict scan running, outputing to file"
-	sudo bash -c "lostfiles strict  > lostfilesStrictlist.txt" 
-	msgFunc green "Done!"
-	msgFunc norm  "Lostfiles relaxed scan running, outputing to file"
-    sudo bash -c  "lostfiles relaxed > lostfilesRelaxedlist.txt" 
-	msgFunc green "Done!"
-}
+     
 #FUNCTION HEADER
 # NAME :           readconfigFunc
 # DESCRIPTION:read the config file into program if not there   
@@ -407,23 +384,28 @@ function readconfigFunc
 	#check if file there if not use defaults.
 	if [ ! -f "$Dest5/cylonCfg.conf" ]
 		then
-		msgFunc red "No config found: Use the default paths"
+		msgFunc red "No config found: Use the default hardcoded paths"
 		#path for an internal hard drive backup
 		Destination1="/run/media/$USER/Linux_backup"
 		#path for an external hard drive backup
 		Destination2="/run/media/$USER/iomeaga_320"
-		#default paths for gdrive 
+		#default paths for gdrive sync upload path 1 		#path2 
 		gdriveSource1="$HOME/Documents"
-		gdriveSource2="$HOME/Pictures"
 		gdriveDest1="0B3_RVJ50UWFAaGxJSXg3NGJBaXc"
+		gdriveSource2="$HOME/Pictures"
 		gdriveDest2="0B3_RVJ50UWFAR3A2T3dZTU9TaTA"
+		#paths for rsync option
+		rsyncsource="$HOME/"
+		rsyncDest="/run/media/$USER/Linux_backup/Hbp_rsync_101016"
+		msgFunc green "Done!"
 		return
 	fi
 	cd "$Dest5"  || exitHandlerFunc dest5
 	source ./cylonCfg.conf
-	msgFunc norm "Custom paths read from file"
+	msgFunc green  "Custom paths read from file"
+	cat ./cylonCfg.conf
+	msgFunc green "Done!"
 }
-
 #FUNCTION HEADER
 # NAME :           CowerFunc
 # DESCRIPTION:use cower and makepkg utility to mange AUR packages
@@ -557,12 +539,14 @@ function CowerFunc
 }
 #FUNCTION HEADER
 # NAME :           SystemMaintFunc
-# DESCRIPTION:carries out 5 maintenance checks  
-# OUTPUTS : 4 output files 
-# PROCESS : systemd , SSD trim , broken syslinks ,journalcontrol errors 
-#NOTES :    needs cower(AUR) installed       
+# DESCRIPTION:carries out 6 maintenance checks  
+# OUTPUTS : 6 output files 
+# PROCESS : systemd , SSD trim , broken syslinks ,journalcontrol errors
+#lostfiles check with lostfiles package
+#NOTES :    needs lostfiles (AUR)  installed       
 function SystemMaintFunc
 {
+	        clear
 	        #change dir for log files
 	        msgFunc dir "-INFO"
 			msgFunc norm "Files report will be written to path above -"
@@ -575,7 +559,6 @@ function SystemMaintFunc
 			systemctl --failed
 			systemctl --failed >> Systemderrlog
 			msgFunc green "Done!"
-			
 			# -Logfiles:
 			msgFunc green "Check log Journalctl for Errors"
 			journalctl -p 3 -xb > Journalctlerrlog
@@ -600,7 +583,23 @@ function SystemMaintFunc
             #version pre-2.1 just for home
             #find "$HOME" -type l -! -exec test -e {} \; -print > symlinkerr
 			msgFunc green "Done!"
-			msgFunc norm " "
+			
+			#check if lostfiles package (AUR) installed
+			msgFunc checkpac lostfiles
+		    if [ "$?" != 0 ]
+			then
+				msgFunc anykey 
+			return
+			fi
+			msgFunc green "Lostfiles :-Search for files which are not part of installed Arch Linux packages"
+			msgFunc norm  "Lostfiles strict scan running, outputing to file"
+			sudo bash -c "lostfiles strict  > lostfilesStrictlist.txt" 
+			msgFunc green "Done!"
+			msgFunc norm  "Lostfiles relaxed scan running, outputing to file"
+		    sudo bash -c  "lostfiles relaxed > lostfilesRelaxedlist.txt" 
+			msgFunc green "Done!"
+			msgFunc anykey
+			clear
 }
 #FUNCTION HEADER
 # NAME :          SystemBackFunc
@@ -608,17 +607,17 @@ function SystemMaintFunc
 #to google drive
 # INPUTS:  configfile from readconfigFunc   
 # OUTPUTS : backups see OptionsB2 array
-# PROCESS : system backup(5 options) + gdrive sync 
-#NOTES :    needs gdrive and gnu-netcat installed if using gdrive option
+# PROCESS : system backup(5 options) + option to call gdriveFunc  +rsync option
+#NOTES :    needs rsync installed if using rsync option
+#
 function SystemBackFunc
 {
 			#get paths from config file if exists
 			clear
 			readconfigFunc
-			msgFunc green "Done!"
 			#get user input for backup
 			optionsB1=("$Destination1" "$Destination2" "$Dest3" \
-			"Custom" "gdrive" "Return")
+			"Custom" "gdrive" "rsync" "Return")
 			#variable to be passed to msgFunc dir : custom path
 			local D3=""
 			msgFunc blue "Pick destination directory for system backup or gdrive option"
@@ -638,32 +637,26 @@ function SystemBackFunc
 						cd "$Path1" || exitHandlerFunc dest4 
 						D3="1"
 						;;
-			"${optionsB1[4]}")   #gdrive function sync with two dirs in google drive
-					msgFunc green "gdrive sync with remote documents directory"
-					 #check gnu-cat is installed
-					msgFunc checkpac gnu-netcat "Accessing Network ...."
-					if [ "$?" != 0 ]
-					then
-						msgFunc red "Please install gnu-netcat for gdrive function to work"
-						msgFunc anykey 
+			"${optionsB1[4]}")   #gdrive function
+					gdriveFunc
 					return
-					fi
-					#check net up
-					msgFunc checkNet "google.com"
-					 #check gdrive is installed
-					msgFunc checkpac gdrive 
+					;;
+			"${optionsB1[5]}") 
+					msgFunc green "rsync backup utility"
+					#check rsync is installed
+					msgFunc checkpac rsync 
 					if [ "$?" != 0 ]
 					then
 						msgFunc anykey 
 					return
 					fi
-					msgFunc green "gdrive sync with  remote directory path number one:-"
-					gdrive sync upload "$gdriveSource1" "$gdriveDest1"
+					msgFunc norm "Source: $rsyncsource"
+					msgFunc norm "Destination: $rsyncDest"
+					msgFunc anykey
+					rsync -av --delete "$rsyncsource" "$rsyncDest" 
 					msgFunc green "Done!"
-					msgFunc green "gdrive sync with remote remote directory path number two:-"
-					gdrive sync upload  "$gdriveSource2" "$gdriveDest2"
-					msgFunc green "Done!"
-					return ;;				
+					msgFunc anykey
+					return ;;	
 			*) return ;;
 			esac
 			break
@@ -713,10 +706,112 @@ function SystemBackFunc
 			  *)#quit
 				msgFunc green "ALL Done!"
 				return
-			;;&
+				;;
 			esac
 			break 
 			done
+}
+#FUNCTION HEADER
+# NAME :         gdriveFunc
+# DESCRIPTION:gdrive sync to google drive
+# INPUTS:  configfile from readconfigFunc   
+# PROCESS : 6 syncs to google drive + provides information and search 
+#NOTES :    needs gdrive and gnu-netcat installed 
+function gdriveFunc
+{
+clear
+msgFunc green "gdrive, connect to google drive via the terminal" 
+#check gnu-cat is installed
+msgFunc checkpac gnu-netcat "Accessing Network ...."
+if [ "$?" != 0 ]
+then
+	msgFunc red "Please install gnu-netcat for gdrive function to work"
+	msgFunc anykey 
+return
+fi
+#check net up
+msgFunc checkNet "google.com"
+ #check gdrive is installed
+msgFunc checkpac gdrive 
+if [ "$?" != 0 ]
+then
+	msgFunc anykey 
+return
+fi
+gdrive version
+msgFunc blue "gdrive options"
+optionsGD=("List all syncable directories on drive" "Sync local directory to google drive (path 1)" \
+"Sync local directory to google drive (path 2)" "List content of syncable directory" "Google drive metadata, quota usage"
+ "List files" "Get file info" \
+  "Return")
+			select  choiceGD in "${optionsGD[@]}"
+			do
+			case "$choiceGD" in
+			 "${optionsGD[0]}")#List all syncable directories on drive
+			     msgFunc green "gdrive List all syncable directories on drive"
+				 gdrive sync list
+			   ;;
+			  "${optionsGD[1]}")#Sync upload to remote directory  path 1
+				msgFunc green "gdrive sync with remote directory path 1:-"
+				msgFunc norm "Source: $gdriveSource1"
+				msgFunc norm "Destination: $gdriveDest1"
+				msgFunc anykey
+				gdrive sync upload "$gdriveSource1" "$gdriveDest1"
+			   ;;
+			   "${optionsGD[2]}")#Sync upload to remote directory  path 2
+			     msgFunc green "gdrive sync with remote directory path 2:-"
+			    msgFunc norm "Source: $gdriveSource2"
+				msgFunc norm "Destination: $gdriveDest2"
+				msgFunc anykey
+				gdrive sync upload  "$gdriveSource2" "$gdriveDest2"
+			   ;;
+			    "${optionsGD[3]}")#List content of syncable directory
+					msgFunc dir "-SYNCINFO"
+					msgFunc green "List content of syncable directory (output to file)"
+					msgFunc norm "Enter fileId:-"
+					read -r  FID
+					gdrive sync content "$FID" > Syncinfo
+			    ;;
+			    "${optionsGD[4]}")#gdrive about
+					msgFunc green "Google drive metadata, quota usage"
+					gdrive about
+			   ;;
+			     "${optionsGD[5]}")#gdrive list files
+					msgFunc green "List files "
+					msgFunc norm "Enter Max files to list, Just press enter for all:-"
+					read -r  num
+					msgFunc norm "Enter Query (see https://developers.google.com/drive/search-parameters)"
+					msgFunc norm "Common Example: name contains 'foo' "
+					msgFunc norm "Just press enter to to leave Query blank :-"
+					read -r  quy
+					msgFunc norm "Enter Order (see https://godoc.org/google.golang.org/api/drive/v3#FilesListCall.OrderBy)"
+					msgFunc norm "Common Example: quotaBytesUsed desc "
+					msgFunc norm "Just press enter to to leave order blank :-"
+					read -r  order
+					msgFunc norm "Output to file? [Y/n] :-"
+					read -r CHOICE
+						if [ "$CHOICE" != "n" ]
+							then
+								# output to file
+								msgFunc dir "-LISTINFO"
+								gdrive list  -q "$quy" --order "$order" -m "$num" > Listinfo
+							else #output to screen 
+								gdrive list  -q "$quy" --order "$order" -m "$num" 
+						fi
+					;;
+				"${optionsGD[6]}")# get file info
+					msgFunc green "get file info"
+					msgFunc norm "Enter fileId:-"
+					read -r  ID
+					gdrive info "$ID"
+				      ;;
+				*)return  ;;
+			esac
+			break 
+			done
+			 msgFunc green "Done!"
+			 msgFunc anykey
+			 clear	
 }
 #FUNCTION HEADER
 # NAME :  AntiMalwareFunc 
@@ -843,8 +938,10 @@ function ccryptFunc
 # NAME :  SystemCleanFunc 
 # DESCRIPTION: Function for cleaning programs files and system  
 # with bleachbit also deletes trash can and download folder.
+# INPUTS : $1 FOLDERS option 
 # PROCESS : 16 see optionsbb array.
 #NOTES :    needs bleachit installed
+#CHANGES: added new options version 2.3.2
 function SystemCleanFunc
 {
 		     #check bleachbit is installed
@@ -854,97 +951,140 @@ function SystemCleanFunc
 				msgFunc anykey 
 			return
 			fi
-		    clear
-		   #system clean with bleachbit
-		   msgFunc blue "System clean with Bleachbit:-"
-			optionsbb=("bash" "Epiphany" "Evolution" "GNOME" "Rhythmbox" "Thumbnails" \
-			"Thunderbird" "Transmission" "VIM" "VLC media player" "X11" "deepscan" \
-			"flash" "libreoffice" "System" "Firefox" \
-			"ALL bleachbit options" "Trash + Download folder clean (non bleachbit)" "Return")
-			select choicebb in "${optionsbb[@]}"
-			do
-			case "$choicebb" in 
-				   
-				   "${optionsbb[16]}")
-				   msgFunc green "ALL - Full Bleachbit clean"
-				   ;;&  
-				   "${optionsbb[0]}"|"${optionsbb[16]}")
-				   msgFunc green "Clean bash"
-				   bleachbit --clean bash.*
-				   ;;&
-				   "${optionsbb[1]}"|"${optionsbb[16]}")
-				   msgFunc green "Clean Epiphany"
-				   bleachbit --clean epiphany.*
-				   ;;&
-				   "${optionsbb[2]}"|"${optionsbb[16]}")
-				   msgFunc green "Clean Evolution"
-				   bleachbit --clean evolution.*
-				   ;;&
-				   "${optionsbb[3]}"|"${optionsbb[16]}")
-				   msgFunc green "Clean GNOME"
-				   bleachbit --clean gnome.*
-				   ;;&
-				   "${optionsbb[4]}"|"${optionsbb[16]}")
-				   msgFunc green "Clean Rhythmbox"
-				   bleachbit --clean rhythmbox.*
-				   ;;&
-				   "${optionsbb[5]}"|"${optionsbb[16]}")
-				   msgFunc green "Clean Thumbnails"
-				   bleachbit --clean thumbnails.*
-				   ;;&
-				   "${optionsbb[6]}"|"${optionsbb[16]}")
-				   msgFunc green "Clean Thunderbird"
-				   bleachbit --clean thunderbird.*  
-				   ;;&
-				   "${optionsbb[7]}"|"${optionsbb[16]}")
-				   msgFunc green "Clean Transmission"
-				   bleachbit --clean transmission.*
-				   ;;&
-				   "${optionsbb[8]}"|"${optionsbb[16]}")
-				   msgFunc green "Clean VIM"
-				   bleachbit --clean vim.*
-				   ;;&
-				   "${optionsbb[9]}"|"${optionsbb[16]}")
-				   msgFunc green "Clean VLC media player"
-				   bleachbit --clean vlc.*
-				   ;;&
-				   "${optionsbb[10]}"|"${optionsbb[16]}")
-				   msgFunc green "Clean X11"
-				   bleachbit --clean x11.*
-				   ;;&
-				   "${optionsbb[11]}"|"${optionsbb[16]}")
-				   msgFunc green "Clean Deep scan"
-				   bleachbit --clean deepscan.*
-				   ;;&
-				   "${optionsbb[12]}"|"${optionsbb[16]}")
-				   msgFunc green "Clean Flash"
-				   bleachbit --clean flash.*
-				   ;;&
-				   "${optionsbb[13]}"|"${optionsbb[16]}")
-				   msgFunc green "Clean libreoffice"
-				   bleachbit --clean libreoffice.*
-				   ;;&
-    			   "${optionsbb[14]}"|"${optionsbb[16]}")
-    			   msgFunc green "Clean System"
-				   sudo bleachbit --clean system.*
-				   ;;&
-				   "${optionsbb[15]}"|"${optionsbb[16]}")
-				   msgFunc green "Clean Firefox"
-					bleachbit --clean firefox.*
-				   ;;&
-				   "${optionsbb[17]}")  msgFunc green "Deleting  Trash + downloads folder"
-						 rm -rvf /home/gavin/.local/share/Trash/*
+			clear
+			#check $1, Called with  FOLDERS input option?
+			#delete folders and shred with bleachbit options
+			if [ "$1" = "FOLDERS" ]
+			then
+				msgFunc blue "Delete files/folders. options:-"
+				optionsF=("Shred specific files or folders with bleachbit" "Delete Trash folder" \
+	         	"Delete Download folder" "Delete Cylon output folder ($HOME/Documents/Cylon/)" "Return")
+	         	select choiceF in "${optionsF[@]}"
+	         	do
+				case "$choiceF" in  
+					"${optionsF[0]}")
+				    msgFunc green "Shred specific files or folders"
+					msgFunc red "Enter path of file or folder to shred:"
+					read -r  mydelpath
+					bleachbit -s "$mydelpath" || exitHandlerFunc exitout
+					;;
+					"${optionsF[1]}")  msgFunc green "Deleting Trash folder "
+						 rm -rvf "$HOME"/.local/share/Trash/*
+					;;
+					"${optionsF[2]}")  msgFunc green "Deleting Download folder "
 						 rm -rvf "$HOME"/Downloads/*
-					;;&
-				    *)  #exit  
+					;;
+				   "${optionsF[3]}")  msgFunc green "Deleting Cylon output folder ($HOME/Documents/Cylon/)"
+				   		rm -rvf "$HOME"/Documents/Cylon/*
+					;;
+					*)  #exit  
 				     msgFunc green "Done!"	
-				     msgFunc anykey
-				     clear
 					return
 					;;
-		esac
-		done
-		#msgFunc green "Done!"	
+				esac
+				break
+				done
+				msgFunc green "Done!"	
+			return
+			fi
+			
+			#system clean with bleachbit (if this function called without "FOLDERS" input)
+			#query for preset option or custom?
+			msgFunc green "Bleachbit system clean. Use the options set in the GUI? [y/N]"  
+			msgFunc norm "For Preset options see $HOME/.config/bleachbit/ or GUI "
+									read -r choiceBBBB
+									if [ "$choiceBBBB" = "y" ]
+										then
+											#use options set in the graphical interface 
+											msgFunc norm  "Running bleachbit -c --preset"
+											bleachbit -c --preset
+											return
+									fi		
+		  
+					#custom bleachbit -c cleaner.option
+				    #get cleaner list and put it in array
+				    msgFunc green "Scanning bleachbit cleaners:"
+					myarray=$(bleachbit --list | awk -F"." '{ print $1 }' | sort -u)
+					#Sort array
+					IFS=$'\n' myarraysorted=($(sort <<<"${myarray[*]}"))
+					unset IFS
+					# get length of an array
+					tLen="${#myarraysorted[@]}"
+					# use for loop read all installed packages exception for deepscan
+					for (( i=0; i<"${tLen}"; i++ ));
+					do
+					  if [ "${myarraysorted[i]}" != "deepscan" ]
+					  then 
+							  msgFunc checkpac "${myarraysorted[i]}"
+							  if [ "$?" != 0 ] 
+								then
+									unset myarraysorted[i]
+								fi
+						fi
+					done
+					msgFunc anykey
+					msgFunc green "Done!"	
+					clear
+					 msgFunc blue "System clean with Bleachbit, Select Cleaner :-"
+					#get cleaner input from user
+					select cleaner in "${myarraysorted[@]}"
+					do
+					    #get list of options for selected cleaner and put in array
+					    myarray2=$(bleachbit --list | awk -F"."  ''/"${cleaner}"/' {print $2}')
+						break
+					done
+					#check for valid selection
+					if [ "$cleaner" =  ""  ]
+					then
+						return
+					fi
+					IFS=$'\n' myarraysorted2=($(sort <<<"${myarray2[*]}"))
+					unset IFS
+					myarraysorted2+=('*')
+					#get options from user
+					msgFunc blue  "Select option(* is all):-"
+					#msgFunc blue  "Options"
+					select options in "${myarraysorted2[@]}"
+					do
+						if [ "$options" =  ""  ]
+							then
+							return
+						fi
+						msgFunc norm " "
+						msgFunc green "You have selected ${cleaner}.${options}"
+						msgFunc anykey 
+					break
+					done
+					#give user 4 options - preview ,clean ,clean and overwrite ,quit
+					msgFunc blue "Pick a Bleachbit option (see readme for more details)"
+					select choiceBBB in "Preview only" "Overwrite & delete" "Delete" "Return"
+						do
+						case "$choiceBBB" in
+						"Preview only" )bleachbit -p "${cleaner}.${options}"
+						;;
+						"Overwrite & delete")
+							if [ "$cleaner" = "system" ]
+								then
+								sudo bleachbit -oc "${cleaner}.${options}"
+								else
+								bleachbit  -oc "${cleaner}.${options}"
+							fi
+						;;
+						"Delete")if [ "$cleaner" = "system" ]
+								then
+								sudo bleachbit  -c "${cleaner}.${options}"
+								else
+								bleachbit  -c "${cleaner}.${options}"
+							fi
+						  ;;
+						  *)
+						  return
+						  ;;
+						esac
+						break
+						done
+					 msgFunc anykey
+					 msgFunc green "Done!"	
 }
 
 #FUNCTION HEADER
@@ -1067,8 +1207,8 @@ while true; do
     msgFunc blue "Cylon Main Menu :-"
 	optionsM=("Pacman options" "Cower options (AUR)" "System check" \
 	 "System backup" "System clean" "System information " "Rmlint scan" \
-	 "Lostfiles scan" "Clamav scan" "RootKit hunter scan" "Ccrypt utility"\
-	  "Password generator" "Display cylon information" "Exit")
+	  "Clamav scan" "RootKit hunter scan" "Ccrypt utility"\
+	  "Password generator" "Delete files/folders"  "Display Cylon information" "Exit")
 	select choiceMain in "${optionsM[@]}"
 	do
     case "$choiceMain" in
@@ -1079,10 +1219,10 @@ while true; do
 		    CowerFunc
 		     ;;
 		"${optionsM[2]}") #system maintenance
-			SystemMaintFunc
+			SystemMaintFunc 
 			;;
 		"${optionsM[3]}")  #Full system backup
-		   	SystemBackFunc
+		   	SystemBackFunc 
 		   	 ;;
 		 "${optionsM[4]}") #system clean with bleachbit
 		   SystemCleanFunc
@@ -1093,19 +1233,16 @@ while true; do
 		"${optionsM[6]}") #rmlint 
 		   RmLintFunc
 		    ;;
-		"${optionsM[7]}")#lostfiles(AUR))
-		   lostfilesFunc 
-		   ;;
-		"${optionsM[8]}") 	#Anti-virus clamav
+		"${optionsM[7]}") 	#Anti-virus clamav
 			AntiMalwareFunc "CLAMAV"
 			 ;;
-		 "${optionsM[9]}")  #rootkit hunter 
+		 "${optionsM[8]}")  #rootkit hunter 
 			AntiMalwareFunc "RKHUNTER"
 			;;
-		"${optionsM[10]}")  # ccrypt - encrypt and decrypt files 
+		"${optionsM[9]}")  # ccrypt - encrypt and decrypt files 
 			ccryptFunc
 			 ;;
-		"${optionsM[11]}")  # password generator 
+		"${optionsM[10]}")  # password generator 
 				msgFunc green "Random Password generator"
 				msgFunc norm "Enter length:-"
 				read -r mylength
@@ -1115,7 +1252,10 @@ while true; do
 				msgFunc dir "-PG"
 			    echo -n "$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c"${1:-$mylength}";)"	> pg	  
 				msgFunc green "Done!"
-		  ;;
+			;;
+		  "${optionsM[11]}")  # delete folders /files
+			SystemCleanFunc "FOLDERS"
+			;;
 		"${optionsM[12]}")  # cylon info and cat readme file to screen 
 			HelpFunc "HELP"
 		;;

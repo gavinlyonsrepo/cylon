@@ -13,8 +13,13 @@
 * version 2.1-9  051016 added cylon info page with check for optdepends, added error handling for 
 missing optdepends in the functions ,changed menus from cat displays to select arrays with prompt. 
 Added licence.md and changlog.md, added optdepends array to PKGBUILD. 
-* version 2.2.1  121016 added ccrypt & password generator options, 
+* version 2.2.1  091016 added ccrypt & password generator options, 
 added arch linux news feed option.
 network checks optimisations, changed location from $HOME of readme file + 
 added install of changlog to usr/share/doc/cylon
+* version 2.3.2  201016 Added extra bleachbit functionality and options , 
+added extra gdrive functionality and options, added an rsync option
+(config file needs new options for rsync) 
+added new shred  folder and files option. 
+merged lostfiles function and menu option with system check
 
