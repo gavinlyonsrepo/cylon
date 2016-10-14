@@ -23,6 +23,7 @@ This is left to user discretion.
 Software will display optdepends installed packages on cylon info page.
 
 cylon files 
+
 * /usr/bin/cylon (the shell script)
 * /usr/share/doc/cylon/Readme.md
 * /usr/share/doc/cylon/changelog.md
@@ -33,7 +34,12 @@ Readme.md is displayed to screen by a menu option in cylon info
 
 You can create an optional config file for custom system backup called 
 NAME: cylonCfg.conf, PATH: $HOME/.config/cylon/cylonCfg.conf
+"DestinationX" is the path for backups
+"gdrivedestX" is remote google drive  directory ID(see gdrive readme)
+and "gdriveSourceX" is the local directory source.
+If config file missing the System uses hard-coded defaults.
 File setup example (Note:remove bullet points)
+
 * Destination1="/run/media/$USER/Linux_backup"
 * Destination2="/run/media/$USER/iomeaga_320"
 * gdriveSource1="$HOME/Documents"
@@ -41,11 +47,8 @@ File setup example (Note:remove bullet points)
 * gdriveDest1="foo123456789"
 * gdriveDest2="foo123456789"
 * rsyncsource="$HOME/"
-* rsyncDest="/run/media/$USER/Linux_backup/Hbp_rsync_101016"
-"DestinationX" is the path for backups
-"gdrivedestX" is remote google drive  directory ID(see gdrive readme)
-and "gdriveSourceX" is the local directory source.
-If config file missing the System uses hard-coded defaults.
+* rsyncDest="/run/media/$USER/Linux_backup/foo"
+
 
 Most system output (logsfiles, backups, downloads and updates etc) 
 is placed at below path , unless otherwise specified on screen
@@ -109,15 +112,13 @@ Functions/menu options
 		* Google drive metadata, quota usage
 		* List files
 		* Get file info
-		* Return
 
 * Clean system with bleachbit
-		* http://www.bleachbit.org/documentation/command-line
-		* Preset option based on GUI options
-		* Custom options involved for user to pick cleaners and options
-			* preview
-			* clean
-			* clean and overwrite 
+	* Preset option based on the same options as in the GUI 
+	* Custom options involved for user to pick cleaners and options
+		* preview
+		* clean (without overwrite, BB checks the config in GUI).
+		* clean + overwrite (with overwrite permanent deletion)
 * System and package information displays 
 * Rmlint remove duplicates and other lint
 	* option to view results file
