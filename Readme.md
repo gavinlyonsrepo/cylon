@@ -2,7 +2,7 @@
 -----
 Date: 201016
 Version control: 2.3.2 See changlog.md for details
-Author g. lyons contact at glyons66@hotmail.com 
+Author G Lyons contact upstream repo
 Ttile : Arch Linux distro maintenance  Bash shell script. 
 AUR package name : cylon
 Upstream repo: https://github.com/gavinlyonsrepo/cylon
@@ -144,12 +144,12 @@ Bug reports
 -----------
 
 If you should find a bug or any other query , 
-please send a report to glyons66@hotmail.com
+please send a report to upstream repo
 
 Copyright
 ---------
 
-Copyright (C) 2016 g Lyons <glyons66@hotmail.com>
+Copyright (C) 2016 G Lyons 
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

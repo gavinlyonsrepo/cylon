@@ -7,7 +7,7 @@
 #GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
 #see license.md  at repo or /usr/share/licenses/cylon/
 #
-#Written by G lyons  at glyons66@hotmail.com 
+#Written by G lyons 
 #
 #Version 2.3-2  See changelog.md at repo for version control
 #
