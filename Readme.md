@@ -1,11 +1,12 @@
 ﻿Cylon
 -----
-Date: 201016
-Version control: 2.3.2 See changlog.md for details
-Author G Lyons contact upstream repo
-Ttile : Arch Linux distro maintenance  Bash shell script. 
+Date: 201016 
+Version control: 3.0-1 See changlog.md for details
+Author G Lyons, contact upstream repo or glyons66@hotmail.com
+Ttile : Arch Linux distro maintenance  a Bash shell script. 
 AUR package name : cylon
 Upstream repo: https://github.com/gavinlyonsrepo/cylon
+Name:cylon
 Description:
 The goal was to create a script to do as much updates maintenance, 
 backups and system checks in a single menu driven optional script 
@@ -16,7 +17,11 @@ to Arch Linux users for updates, maintenance, system checks and backups.
 Config
 ------
 Type cylon to run
-Cylon is a bash script installed to user/bin by package 
+options:
+-h --help -help print help and exit.
+-s --system  print system information and exit
+-v --versiom print version information and exit.
+Cylon is a bash script installed to /usr/bin by package 
 build. Some functions require software installed 
 as listed below, see optdepends of PKGBUILD also. 
 This is left to user discretion.
@@ -28,7 +33,7 @@ cylon files
 * /usr/share/doc/cylon/Readme.md
 * /usr/share/doc/cylon/changelog.md
 * /usr/share/licenses/cylon/License.md
-* $HOME/.config/cylon/cylonCfg.conf (optional user created not install)
+* $HOME/.config/cylon/cylonCfg.conf (optional, user made, not install)
 
 Readme.md is displayed to screen by a menu option in cylon info
 
@@ -38,7 +43,7 @@ NAME: cylonCfg.conf, PATH: $HOME/.config/cylon/cylonCfg.conf
 "gdrivedestX" is remote google drive  directory ID(see gdrive readme)
 and "gdriveSourceX" is the local directory source.
 If config file missing the System uses hard-coded defaults.
-File setup example (Note:remove bullet points)
+File setup example (Note:remove bullet points in actual file)
 
 * Destination1="/run/media/$USER/Linux_backup"
 * Destination2="/run/media/$USER/iomeaga_320"
@@ -49,9 +54,10 @@ File setup example (Note:remove bullet points)
 * rsyncsource="$HOME/"
 * rsyncDest="/run/media/$USER/Linux_backup/foo"
 
-
 Most system output (logsfiles, backups, downloads and updates etc) 
 is placed at below path , unless otherwise specified on screen
+output folders are created with following syntax HHMMDAYMONYY-X where X
+is output type i.e backup, info etc
 * $HOME/Documents/Cylon
 
 Packages cylon needs installed for certain functions
@@ -63,9 +69,15 @@ Packages cylon needs installed for certain functions
 * rkhunter to check for rootkits
 * rmlint  to check for lint and duplicates 
 * rsync  for rsync backup function
-* cower(AUR) for AUR functions
+* pacaur  – AUR package for AUR work
+* inxi  – CLI system information script 
+* htop  Command line system information script 
+* wavemon  – wireless network monitor 
+* speedtest-cli  – testing internet bandwidth
+* cower(AUR) for AUR helper functions
 * gdrive(AUR) to sync to google drive
 * lostfiles(AUR) to scan for lostfiles
+* pacaur(AUR) alternate AUR helper
 
 Functions/menu options
 ----------------------
@@ -78,6 +90,7 @@ Functions/menu options
 	* pacman -Rs Delete Package
 	* pacman -Qs Search for already installed packages
 	* pacman -Qi  Display extensive information for 
+	* pacman -Ql  List all files owned by a given package
 	* paccache -r Prune older packages from cache
 	* Write installed package lists to files
 	* Remove all packages not required as dependencies 
@@ -89,13 +102,24 @@ Functions/menu options
 	* Download AUR  package
 	* Fetch and install AUR packages
 	* Check for updates ( NO downloads)
+* AUR pacaur options
+	* Get Information for AUR package 
+	* search for AUR package
+	* Download build and install AUR package
+	* update AUR packages
+	* Check for updates ( NO downloads)
+	* Download only
+	* Download and build only
+	* Delete Pacaur cache files.
 * system maintenance check
 	* All Failed Systemd Services
 	* All Failed Active Systemd Services
 	* Check log Journalctl for Errors
-	* Check log Journalctl for fstrim SSD trim (check for SSD)
-	* Check for broken symlinks,
-	* Lostfiles scan 
+	* Check log Journalctl for fstrim SSD trim (check for SSD in system)
+	* Analyze system boot-up performance
+	* Check for broken symlinks
+	* Check for files not owned by any user or group
+	* Lostfiles scan, relaxed and strict
 * System backup
 	* Optional destination path as defined in script or custom path
 	* Make copy of first 512 bytes MBR with dd
@@ -112,7 +136,6 @@ Functions/menu options
 		* Google drive metadata, quota usage
 		* List files
 		* Get file info
-
 * Clean system with bleachbit
 	* Preset option based on the same options as in the GUI 
 	* Custom options involved for user to pick cleaners and options
@@ -120,11 +143,13 @@ Functions/menu options
 		* clean (without overwrite, BB checks the config in GUI).
 		* clean + overwrite (with overwrite permanent deletion)
 * System and package information displays 
+	* Function also  run by -s or --system standalone
+	* inxi program feature
 * Rmlint remove duplicates and other lint
 	* option to view results file
 	* option to execute shell script with results 
-* ClamAv anti-malware scan
-* RootKit hunter scan
+* ClamAv anti-malware scan (Check for updates feature)
+* RootKit hunter scan (check for updates feature)
 * password generator
 * ccrypt - encrypt and decrypt files:
 	* Encrypt a file 		     
@@ -138,13 +163,24 @@ Functions/menu options
 	* Deleting Download directory
 	* Delete Cylon output folder ($HOME/Documents/Cylon/
 * Display cylon with optdepend installation check, info 
-and readme file to screen
-
-Bug reports
+and readme file to screen (function can also run by -h by -help)
+* Lynis system audit (summary of logfiles feature)
+* 3 day weather forecast by wttr.in
+* Option to open xterm terminal in new window
+* Option to launch htop - interactive process viewer
+* Network options
+	* launch wavemon network monitor
+	* Run speedtest-cli to measure bandwith 
+	with options for server list and file save
+	* various misc network commands
+	
+	
+Bug reports and communication
 -----------
 
 If you should find a bug or any other query , 
-please send a report to upstream repo
+please send a report to upstream repo or mail glyons66@hotmail.com
+suggestions for improvements and new features welcome
 
 Copyright
 ---------
