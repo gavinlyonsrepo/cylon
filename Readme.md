@@ -1,14 +1,13 @@
 ﻿Cylon
 -----
-Date: 201016 
-Version control: 3.1-2 See changlog.md for details
-Author G Lyons, contact upstream repo or glyons66@hotmail.com
-Ttile : Arch Linux distro maintenance  a Bash shell script. 
-AUR package name : cylon
-Upstream repo: https://github.com/gavinlyonsrepo/cylon
-Name:cylon
-Description:
-The goal was to create a script to do as much updates maintenance, 
+* Date: 201016 
+* Version control: 3.1-2 See changlog.md for details
+* Author: G Lyons, contact upstream repo or glyons66@hotmail.com
+* Title : Arch Linux distro maintenance  a Bash shell script. 
+* AUR package name : cylon
+* Upstream repo: https://github.com/gavinlyonsrepo/cylon
+* Name: cylon
+* Description: The goal was to create a script to do as much updates maintenance, 
 backups and system checks in a single menu driven optional script 
 Command line program for an Arch linux distro as possible.
 This script provides numerous tools 
@@ -23,6 +22,7 @@ options:
 * -v --version Print version information and exit.
 * -c --config Opens the cylon config file for editing and exit
 * -u --update runs a full update report with option to execute and exit
+
 Cylon is a bash script installed to /usr/bin by package 
 build. Some functions require software installed 
 as listed below, see optdepends of PKGBUILD also. 
@@ -82,9 +82,10 @@ Packages cylon needs installed for certain functions
 * gdrive(AUR) – to sync to google drive
 * lostfiles(AUR) – to scan for lostfiles
 * Arch-audit(AUR) Uses data collected by the Arch CVE Team.
-Note1 : gnu-netcat and openbsd-netcat peform same function, 
-only 1 can be or needs to be installed.
-Note2 : Cower and Pacaur are both AUR helpers you can install 
+
+* Note1 : gnu-netcat and openbsd-netcat peform same function, 
+only 1 can be or needs to be installed, both included due to conflicts
+* Note2 : Cower and Pacaur are both AUR helpers you can install 
 one or both depending on preference.
 
 Functions/menu options
