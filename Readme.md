@@ -1,7 +1,7 @@
 ﻿Cylon
 -----
 Date: 201016 
-Version control: 3.0-1 See changlog.md for details
+Version control: 3.1-2 See changlog.md for details
 Author G Lyons, contact upstream repo or glyons66@hotmail.com
 Ttile : Arch Linux distro maintenance  a Bash shell script. 
 AUR package name : cylon
@@ -16,11 +16,13 @@ to Arch Linux users for updates, maintenance, system checks and backups.
 
 Config
 ------
-Type cylon to run
+Type cylon to run :- cylon [options]
 options:
--h --help -help print help and exit.
--s --system  print system information and exit
--v --versiom print version information and exit.
+* -h --help Print cylon information and exit.
+* -s --system  Print system information and exit
+* -v --version Print version information and exit.
+* -c --config Opens the cylon config file for editing and exit
+* -u --update runs a full update report with option to execute and exit
 Cylon is a bash script installed to /usr/bin by package 
 build. Some functions require software installed 
 as listed below, see optdepends of PKGBUILD also. 
@@ -35,7 +37,7 @@ cylon files
 * /usr/share/licenses/cylon/License.md
 * $HOME/.config/cylon/cylonCfg.conf (optional, user made, not install)
 
-Readme.md is displayed to screen by a menu option in cylon info
+Readme.md is displayed to screen by a menu option on cylon info page
 
 You can create an optional config file for custom system backup called 
 NAME: cylonCfg.conf, PATH: $HOME/.config/cylon/cylonCfg.conf
@@ -56,28 +58,34 @@ File setup example (Note:remove bullet points in actual file)
 
 Most system output (logsfiles, backups, downloads and updates etc) 
 is placed at below path , unless otherwise specified on screen
-output folders are created with following syntax HHMMDAYMONYY-X where X
-is output type i.e backup, info etc
+output folders are created with following syntax HHMM-DDMONYY-X where X
+is output type i.e backup, update etc
 * $HOME/Documents/Cylon
 
 Packages cylon needs installed for certain functions
 -------------------------------------
-* ccrypt: used for encrypting
-* bleachbit for system clean and shredding
-* clamav for virus check
-* gnu-netcat to check for internet connection
-* rkhunter to check for rootkits
-* rmlint  to check for lint and duplicates 
-* rsync  for rsync backup function
-* pacaur  – AUR package for AUR work
+* ccrypt –  used for encrypting
+* bleachbit – for system clean and shredding
+* clamav –  for malware  check
+* gnu-netcat – to check for internet connection 
+* openbsd-netcat – to check for internet connection
+* rkhunter – to check for rootkits
+* rmlint – to check for lint and duplicates 
+* rsync – for rsync backup function
+* lynis – system audit
 * inxi  – CLI system information script 
-* htop  Command line system information script 
+* htop – command line system information script 
 * wavemon  – wireless network monitor 
 * speedtest-cli  – testing internet bandwidth
-* cower(AUR) for AUR helper functions
-* gdrive(AUR) to sync to google drive
-* lostfiles(AUR) to scan for lostfiles
-* pacaur(AUR) alternate AUR helper
+* pacaur(AUR)  – for AUR helper functions 
+* cower(AUR) – for AUR helper functions
+* gdrive(AUR) – to sync to google drive
+* lostfiles(AUR) – to scan for lostfiles
+* Arch-audit(AUR) Uses data collected by the Arch CVE Team.
+Note1 : gnu-netcat and openbsd-netcat peform same function, 
+only 1 can be or needs to be installed.
+Note2 : Cower and Pacaur are both AUR helpers you can install 
+one or both depending on preference.
 
 Functions/menu options
 ----------------------
@@ -91,26 +99,34 @@ Functions/menu options
 	* pacman -Qs Search for already installed packages
 	* pacman -Qi  Display extensive information for 
 	* pacman -Ql  List all files owned by a given package
+	* pacman -Qkk Verify packages(option for one or all)
 	* paccache -r Prune older packages from cache
 	* Write installed package lists to files
 	* Remove all packages not required as dependencies 
 	* Back-up the local pacman database  
 	* Arch news rss reader
+	* arch-audit 
+	* Edit pacman config file
 * AUR cower options 
+	* Check for updates ( NO downloads)
 	* Get Information for AUR package 
 	* search for AUR package
 	* Download AUR  package
 	* Fetch and install AUR packages
-	* Check for updates ( NO downloads)
+	* List all foreign packages
+	* Edit cower config file
 * AUR pacaur options
-	* Get Information for AUR package 
-	* search for AUR package
-	* Download build and install AUR package
-	* update AUR packages
 	* Check for updates ( NO downloads)
-	* Download only
+	* Get Information for AUR package 
+	* Search for AUR package
+	* Update AUR packages
+	* Download build and install AUR package
 	* Download and build only
+	* Download only
 	* Delete Pacaur cache files.
+	* Edit pacaur config file
+	* Update all packages in all repositories, pacaur -Syu
+	* List of all foreign packages installed
 * system maintenance check
 	* All Failed Systemd Services
 	* All Failed Active Systemd Services
@@ -170,10 +186,10 @@ and readme file to screen (function can also run by -h by -help)
 * Option to launch htop - interactive process viewer
 * Network options
 	* launch wavemon network monitor
-	* Run speedtest-cli to measure bandwith 
+	* Run speedtest-cli to measure bandwidth 
 	with options for server list and file save
 	* various misc network commands
-	
+	* firewall status and details check
 	
 Bug reports and communication
 -----------

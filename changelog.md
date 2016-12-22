@@ -28,4 +28,13 @@ weather forecast added.  Options for linux command line arguments
 passed to program on call added 3 of, help, system info, and version.
 systemd-analyze - Analyze system boot-up performance added to system check.
 open terminal added. 
-
+* version 3.1-2 201216.
+Added openbsd-netcat as optdepends due to conflict with gnu-netcat.
+Added 3 new options to pacman menu ((arch-audit) (pacman -Qkk) 
+and edit pacman conf)
+added 3 new options to pacaur (edit config file, list packages, pacaur -Syu)
+added 2 new options to cower (list packages, edit config file)
+changed file directory name output syntax
+Added firewall status check to Network menu
+Added runtime options -c edit config file
+Added runtime options -u update routine with optional execute

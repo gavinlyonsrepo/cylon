@@ -10,7 +10,7 @@
 #
 #Written by G lyons 
 #
-#Version 3.0-1  See changelog.md at repo for version control
+#Version 3.1-2  See changelog.md at repo for version control
 #
 #Software repo
 #https://github.com/gavinlyonsrepo/cylon
@@ -28,17 +28,20 @@
 # type cylon in terminal, optional config file cylonCfg.conf 
 # at "$HOME/.config/cylon"
 #options
-#-h --help -help print help and exit.
+#-h --help  print help and exit.
 #-s --system  print system information and exit
 #-v --versiom print version information and exit.
-
+#-c --config open config file
+#-u --update run update routine all
 #optional dependencies
 #bleachbit  (optional) – used for system clean
 #clamav  (optional) – used for finding malware
 #cower  (optional) – AUR package for AUR work
 #gdrive  (optional) – AUR package for google drive backup
 #gnu-netcat (optional) – used for checking network
+#openbsd-netcat(optional) – used for checking network
 #lostfiles (optional) – AUR package for finding lost files
+#arch-audit(optional) -AUR package  for Arch CVE Monitoring Team data
 #rkhunter (optional) – finds root kits malware
 #rmlint (optional) – Finds lint and other unwanted
 #ccrypt (optional) – Encrypt and decrypt files
@@ -115,7 +118,7 @@ function msgFunc
 			then 
 			cd "$Dest3" || exitHandlerFunc dest3
 			fi
-			TODAYSDIR=$(date +%H%M%a%b%C)"$2"
+			TODAYSDIR=$(date +%H%M-%d%b%y)"$2"
 			mkdir "$TODAYSDIR"
 			cd "$TODAYSDIR" || exitHandlerFunc dest4
 			msgFunc norm "Directory for output made at:-"
@@ -133,7 +136,17 @@ function msgFunc
 				return 1
 			fi ;;
 			
-		checkNet) #checks network with gnu-netcat exists 
+		checkNet) #checks network with netcat 
+					#check netcat is installed
+					if ! msgFunc checkpac gnu-netcat  
+					then
+						if ! msgFunc checkpac openbsd-netcat 
+						then
+							msgFunc red "Install gnu-netcat or openbsd-netcat for Network check"
+							msgFunc anykey 
+							exitHandlerFunc exitout
+						fi
+					fi
 					#This uses netcat (nc) in its port scan mode, 
 					#a quick poke (-z is zero-I/O mode [used for 
 					#scanning]) with a quick timeout 
@@ -173,13 +186,15 @@ msgFunc line
 				msgFunc norm "Location of readme.md changlog.md = $Dest6"
 				msgFunc norm "Location of License.md = /usr/share/licenses/cylon"
 				msgFunc anykey "and check which optional dependencies are installed"
-				msgFunc checkpac cower "AUR package"
-				msgFunc checkpac gdrive "AUR package"
-				msgFunc checkpac lostfiles "AUR package"
-				msgFunc checkpac pacaur  "AUR package"
+				msgFunc checkpac cower "NOTE: AUR package"
+				msgFunc checkpac gdrive "NOTE: AUR package"
+				msgFunc checkpac lostfiles "NOTE: AUR package"
+				msgFunc checkpac pacaur  "NOTE: AUR package"
+				msgFunc checkpac arch-audit "NOTE: AUR package"
 				msgFunc checkpac rmlint
 				msgFunc checkpac rkhunter
-				msgFunc checkpac gnu-netcat
+				msgFunc checkpac gnu-netcat "NOTE: No need if using openbsd-netcat"
+				msgFunc checkpac openbsd-netcat "NOTE: No need if using gnu-netcat"
 				msgFunc checkpac clamav
 				msgFunc checkpac bleachbit 
 				msgFunc checkpac ccrypt
@@ -220,18 +235,11 @@ msgFunc norm "RAM used/total = ($memory)"
 msgFunc norm "Number of All installed  packages = $(pacman -Q | wc -l)"
 msgFunc norm "Number of native, explicitly installed packages  = $(pacman -Qgen | wc -l)"
 msgFunc norm "Number of foreign installed packages  = $(pacman -Qm | wc -l)"
- #check gnu-cat is installed
-if ! msgFunc checkpac gnu-netcat "Accessing Network Database...."
-then
-	msgFunc red "Please install gnu-netcat for complete system information check"
-	msgFunc anykey 
-	return
-fi
+msgFunc norm "Accessing Network Database...." 
 #check network connectivity if good get updates numbers from arch
 msgFunc checkNet "archlinux.org"
 msgFunc norm   "Number of Pacman updates ready...> "
 msgFunc blue "$(checkupdates | wc -l)"
-msgFunc checkNet  "aur.archlinux.org"
 msgFunc norm "Number of updates for installed AUR packages ready ...>"
 msgFunc blue "$(cower -u | wc -l)"
 msgFunc anykey
@@ -243,7 +251,7 @@ then
 return
 fi
 # inxi  - Command line system information script for console and IRC
-msgFunc green "get output of inxi -Fxz"
+msgFunc green "get output of inxi -Fixz"
 inxi -Fixz >> inxioutput
 inxi -Fixz 
 msgFunc green "Done!"
@@ -271,21 +279,15 @@ function PacmanFunc
 			 "pacman -Ss Search for packages in the database" \
 			 "pacman -Rs Delete Package" "pacman -Qs Search for already installed packages" \
 			 "pacman -Qi  Display extensive information for locally installed packages" "pacman -Ql  List all files owned by a given package." \
-			 "paccache -r Prune older packages from cache"\
+			  "pacman -Qkk Verify packages" "paccache -r Prune older packages from cache"\
 			 "Write installed package lists to files" "Remove all packages not required as dependencies (orphans)" \
-			 "Back-up the local pacman database" "Arch Linux News Rss feed" "Return to main menu")
+			 "Back-up the local pacman database" "Arch Linux News Rss feed" "Arch-audit" "Edit pacman config file" "Return to main menu")
 			select choicep in "${options[@]}"
 			do
 			case "$choicep" in
 					"${options[0]}")
 					msgFunc green "Pacman updates ready:-.... "
 					#check gnu-netcat is installed
-					
-					if ! msgFunc checkpac gnu-netcat "Accessing Network Database...."
-					then
-						msgFunc anykey 
-						return
-					fi
 					#check network connectivity if good get updates numbers from arch
 						msgFunc checkNet "archlinux.org"
 						msgFunc norm   "Number of Pacman updates ready...> $(checkupdates | wc -l)"
@@ -337,34 +339,47 @@ function PacmanFunc
 						read -r pacString
                         pacman -Ql "$pacString"
 					;;
-					
-					"${options[9]}")  msgFunc green  "Prune older packages from cache."
+					"${options[9]}") #pacman -Qkk  Verify all packages
+						msgFunc dir "-PKGINFO"
+						msgFunc green "Verify  packages pacman -Qkk"
+						msgFunc norm "1 package or All? [1/A]"
+						read -r choicePAC
+						if [ "$choicePAC" = "1" ] 
+						then
+							msgFunc norm "Please enter package name"
+							read -r pacQString
+							pacman -Qkk "$pacQString" > pkgver
+						else
+							pacman -Qkk > pkgverall
+						fi
+					;;
+					"${options[10]}")  msgFunc green  "Prune older packages from cache."
 					#The paccache script, deletes all cached  package 
 						#regardless of whether they're installed or not, 
 						#except for the most recent 3, 
 							sudo paccache -r
 					;;
-					"${options[10]}")msgFunc green "Writing installed package lists to files at :"
+					"${options[11]}")msgFunc green "Writing installed package lists to files at :"
 						msgFunc dir "-PKGINFO"
-						#all packages 
-						pacman -Q  > pkglistQ.txt
-						#native, explicitly installed package
-						pacman -Qqen > pkglistQgen.txt
-						#foreign installed (AUR etc))
-						pacman -Qm > pkglistQm.txt
+						msgFunc green "All installed  packages" 
+						pacman -Q  | tee pkglistQ.txt
+						msgFunc green "All native, explicitly installed packages"
+						pacman -Qqen | tee pkglistQgen.txt
+						msgFunc green "All foreign installed packages(AUR etc)"
+						pacman -Qm | tee pkglistQm.txt
 					;;
-					"${options[11]}")   #delete orphans
+					"${options[12]}")   #delete orphans
 						msgFunc green "Delete orphans!"
 						#Remove all packages not required as dependencies (orphans)
 						sudo pacman -Rns "$(pacman -Qtdq)"
 					;;
 					
-					"${options[12]}") #backup the pacman database
+					"${options[13]}") #backup the pacman database
 						msgFunc green "Back-up the pacman database to :"
 						msgFunc dir "-BACKUPPACMAN"
 						tar -v -cjf pacman_database.tar.bz2 /var/lib/pacman/local
 					;;
-					"${options[13]}") #Arch Linux News Rss feed
+					"${options[14]}") #Arch Linux News Rss feed
 						msgFunc green "Arch Linux News Rss feed last 5 items"
 						# Set N to be the number of latest news to fetch
 						NEWS=$(echo -e $(curl --silent https://www.archlinux.org/feeds/news/  | awk ' NR == 1 {N = 4 ; while (N) {print;getline; if($0 ~ /<\/item>/) N=N-1} ; sub(/<\/item>.*/,"</item>") ;print}'))
@@ -397,6 +412,18 @@ function PacmanFunc
 						s/ *<[^>]\+> */ /g
 						s/[<>£§]//g')"    
 						;;
+						"${options[15]}") #run arch audit
+						msgFunc green "Running arch-audit program :"
+						msgFunc norm "Press [Enter] for full output: options> -q=quiet, -u=upgradable, -uq."
+					    read -r ARCHAUDIT
+					    arch-audit $ARCHAUDIT
+					    ARCHAUDIT=
+					    ;;
+					    "${options[16]}") #edit pacman conf file
+						msgFunc green "Edit Pacman.conf file."
+						sudo nano  /etc/pacman.conf
+						;;
+					    
 						*)  #exit  
 						msgFunc green "Done!"	
 						return
@@ -436,44 +463,40 @@ function pacaurFunc
 		    msgFunc green "AUR packages management by pacaur. Number of foreign packages installed = $(pacman -Qm | wc -l)"
 		    msgFunc line
 			msgFunc blue "Pacaur options:-"
-			optionsP=("Search for package " "Display information for package"\
-	         	"Check network and then check for updates (no download)"\
-	         	 "Get updates for installed packages" "Download and install package"\
-	         	 "Download files , build the package(no install)" "Download the package files only"\
-	         	  "Delete pacaur cache( $HOME/.cache/pacaur/)" "Return")
+			optionsP=("Check network and then check for AUR updates (no download), pacaur -k"\
+				"Search for package, pacaur -s" "Display information for package, pacaur -i"\
+	         	 "Get updates for installed packages, pacaur -u" "Download and install a package, pacaur -y"\
+	         	 "Download files and build the package(no install), pacaur -m " "Download the package files only, pacaur -d"\
+	         	  "Delete pacaur cache" "Edit pacaur config file" "Update all packages in all repositories, pacaur -Syu"\
+	         	  "List of all foreign packages installed" "Return")
 	         	select choiceP in "${optionsP[@]}"
 	         	do
 				case "$choiceP" in  
-					"${optionsP[0]}") #search
+					"${optionsP[0]}")    #check updates
+						msgFunc green  "Check network and then check for updates, pacaur -k"
+						#check network connectivity if good get updates numbers from arch
+						msgFunc checkNet "aur.archlinux.org"
+						msgFunc norm "Number of updates available for installed AUR packages :..."
+						pacaur -k | wc -l
+						pacaur -k
+						msgFunc anykey
+					;;
+					"${optionsP[1]}") #search
 						msgFunc green "Search for package in AUR pacaur -s"
 						msgFunc norm "Type a AUR package name:-"
 					      read -r pacaurP		
 						  pacaur -s "$pacaurP" || return
 						  msgFunc anykey
 					;;
-					"${optionsP[1]}") #info
+					"${optionsP[2]}") #info
 						msgFunc green "Display information for package in AUR pacaur -i"
 						msgFunc norm "Type a AUR package name:-"
 					      read -r pacaurP		
 						  pacaur -i "$pacaurP" || return
 						  msgFunc anykey
 					;;
-					"${optionsP[2]}")    #check updates
-								msgFunc green  "Check network and then check for updates, pacaur -k"
-								#check gnu-netcat is installed
-								if ! msgFunc checkpac gnu-netcat "Accessing Network Database...."
-								then
-									msgFunc anykey 
-									return
-								fi
-								#check network connectivity if good get updates numbers from arch
-								msgFunc checkNet "aur.archlinux.org"
-								msgFunc norm "Number of updates available for installed AUR packages :..."
-								pacaur -k | wc -l
-								pacaur -k
-								msgFunc anykey
-					;;
-				   "${optionsP[3]}")  #check for updates cower and optional install 
+
+				   "${optionsP[3]}")  #get updates
 					msgFunc green "Update AUR packages.  pacaur -u  "	
 					 pacaur -u
 					 msgFunc anykey
@@ -499,10 +522,63 @@ function pacaurFunc
 						  pacaur -d "$pacaurP" || return
 						  msgFunc anykey
 					;;
-					"${optionsP[7]}")  #delete pacaur cache
-						rm -rvf "$HOME"/.cache/pacaur/*
+					"${optionsP[7]}")  #delete pacaur cache see man pacaur for details
+						#check if custom AURDEST environmental variable defined
+						if [ -d "$AURDEST" ] 
+							then
+								msgFunc red "AURDEST environmental variable set, please do manual delete"
+							else
+								msgFunc green "Deleting the pacaur cache"
+								if  [ -d "$XDG_CACHE_HOME/pacaur/" ]
+								then
+									rm -rvf "$XDG_CACHE_HOME"/pacaur/* 
+								else
+									rm -rvf "$HOME"/.cache/pacaur/*
+								fi
+						fi
 					;;
-					
+					"${optionsP[8]}") #edit the config file see man pacaur for details
+						msgFunc green "Do you wish to edit the user pacaur config file or system [u/S]?"
+						read -r pacaurP	
+						if [ "$pacaurP" = "u" ] 
+							then #user file
+								if [ -f  "$XDG_CONFIG_HOME/pacaur/config" ] 
+								then
+									nano "$XDG_CONFIG_HOME/pacaur/config" 
+								else 
+									if  [ -f "$HOME/.config/pacaur/config" ] 
+									then
+									 nano "$HOME/.config/pacaur/config"   
+									 else
+									 msgFunc red "user config File does not exist"
+									fi
+								fi
+							else #system file
+								if [ -f "$XDG_CONFIG_DIRS/pacaur/config" ]
+								then
+									sudo nano "$XDG_CONFIG_DIRS/pacaur/config"
+								else 
+									if [ -f "/etc/xdg/pacaur/config" ] 
+									then
+									sudo nano "/etc/xdg/pacaur/config" 
+									else
+									msgFunc red "system config File does not exist"
+									fi
+								fi
+						fi
+						msgFunc anykey
+					;;
+					"${optionsP[9]}") #update all repos
+						msgFunc green "Update all packages in all repositories, pacaur -Syu"
+						pacaur -Syu
+						msgFunc anykey
+						;;
+						"${optionsP[10]}") #"List of all foreign packages
+						msgFunc green "List of all foreign packages installed"
+					     msgFunc norm "Number of foreign packages installed = $(pacman -Qm | wc -l)"
+						pacman -Qm 
+						msgFunc anykey
+						;;
 					*)  #exit  
 				     msgFunc green "Done!"	
 					return
@@ -555,7 +631,7 @@ function readconfigFunc
 # NAME :           CowerFunc
 # DESCRIPTION:use cower and makepkg utility to mange AUR packages
 # downloads, updates and searches
-# PROCESS : six options, see optionsC array 
+# PROCESS : eight options, see optionsC array 
 #NOTES :    needs cower(AUR) installed  gnu-netcat is needed for option 5     
 function CowerFunc
 {
@@ -579,14 +655,23 @@ function CowerFunc
 		   msgFunc green "AUR packages management by cower. Number of foreign packages installed = $(pacman -Qm | wc -l)"
 		   msgFunc line
 	        msgFunc blue "AUR package install and updates by cower, options:-"
-         	optionsC=("Information for package" "Search for package" \
-         	"Download package" "Get updates for installed packages" \
-         	"Check network and then check for updates (no download)" "Return")
+         	optionsC=("Check network and then check for updates (no download), cower -uc" "Information for package, cower -ic" "Search for package, cower -sc" \
+         	"Download package, cower -dc + makepkg -si" "Get updates for installed packages, cower -dvuc + makepkg -si" \
+         	 "List all foreign packages, pacman -Qm " "Edit cower config file" "Return")
          	select choiceCower in "${optionsC[@]}"
 			do
 			case "$choiceCower" in    
+						"${optionsC[0]}") #check for updates 
+								msgFunc green  "Check network and then check for updates"
+								#check network connectivity if good get updates numbers from arch
+								msgFunc checkNet "aur.archlinux.org"
+								msgFunc norm "Number of updates available for installed AUR packages :..."
+								cower -u | wc -l
+								cower -uc
+								msgFunc anykey
+						  ;;
 						#search AUR with cower with optional install
-						"${optionsC[0]}")msgFunc green "${GREEN}Information for AUR package , cower -i"
+						"${optionsC[1]}")msgFunc green "${GREEN}Information for AUR package , cower -i"
 						  msgFunc norm "Type a AUR package name:-"
 					      read -r cowerPac		
 						  msgFunc norm " " 
@@ -594,7 +679,7 @@ function CowerFunc
 						  msgFunc anykey
 						    ;;
 						   
-						  "${optionsC[1]}") msgFunc green "${GREEN}Search for AUR package, cower -s"
+						  "${optionsC[2]}") msgFunc green "${GREEN}Search for AUR package, cower -s"
 						  #cower -s 
 						  msgFunc norm "Type a AUR package name:-"
 					      read -r cowerPac		
@@ -603,7 +688,7 @@ function CowerFunc
 						  msgFunc anykey
 						  ;;
 						  
-						"${optionsC[2]}")#cower -d Download AUR package with an optional install
+						"${optionsC[3]}")#cower -d Download AUR package with an optional install
 							msgFunc green "${GREEN}Download AUR package cower -d with an optional install"
 							msgFunc dir "-AURDOWNLOAD"
 							#build and install packages
@@ -623,7 +708,7 @@ function CowerFunc
 						 ;;
 						
 						#check for updates cower and optional install 
-						"${optionsC[3]}")msgFunc green "Update AUR packages  cower -du  "		
+						"${optionsC[4]}")msgFunc green "Update AUR packages  cower -du  "		
 						#make cower update directory
 						msgFunc dir "-AURUPDATES" 
 						cower -d -vuc || return
@@ -655,23 +740,27 @@ function CowerFunc
 							msgFunc norm "No updates found for installed AUR packages by Cower."
 						  fi	
 						;;
-						
-						 "${optionsC[4]}") #check for updates 
-								msgFunc green  "Check network and then check for updates"
-								#check gnu-netcat is installed
-								if ! msgFunc checkpac gnu-netcat
+						 "${optionsC[5]}") #List of all foreign packages
+						msgFunc green "List of all foreign packages installed"
+					     msgFunc norm "Number of foreign packages installed = $(pacman -Qm | wc -l)"
+						pacman -Qm 
+						msgFunc anykey
+						;;
+						"${optionsC[6]}") #edit the config file see man cower
+						msgFunc green "Edit cower config file"
+								if [ -f  "$XDG_CONFIG_HOME/cower/config" ] 
 								then
-									msgFunc anykey 
-									return
+									nano "$XDG_CONFIG_HOME/cower/config"
+								else 
+									 if [ -f "$HOME/.config/cower/config" ] 
+									 then
+										nano "$HOME/.config/cower/config"
+									  else
+										msgFunc red "config file not found, see man cower"
+									fi
 								fi
-								#check network connectivity if good get updates numbers from arch
-								msgFunc checkNet "aur.archlinux.org"
-								msgFunc norm "Number of updates available for installed AUR packages :..."
-								cower -u | wc -l
-								cower -uc
-								msgFunc anykey
-						  ;;
-						 
+						msgFunc anykey
+					;;
 						 *)  #exit to main menu 
 							return
 						 ;;
@@ -695,7 +784,7 @@ function networkFunc
      msgFunc norm "Files report will be written to path above -"
 	msgFunc blue "Network. options:-"
 				optionsN=("Wavemon - wireless network monitor" "Speedtest-cli testing internet bandwidth" \
-	         	"Check if website up with netcat and ping" "ip addr" "netstat -r & route" "Return")
+	         	"Check if website up with netcat and ping" "ip addr" "netstat -r & route" "Check the status of UFW  Uncomplicated Firewall" "Return")
 	         	select choiceN in "${optionsN[@]}"
 	         	do
 				case "$choiceN" in  
@@ -757,6 +846,9 @@ function networkFunc
 				     netstat -r 
 				     route
 					;;
+					"${optionsN[5]}") #check firewall status
+					sudo ufw status verbose
+					;;
 					*)  #exit  
 				     msgFunc green "Done!"	
 					return
@@ -776,7 +868,8 @@ function networkFunc
 #NOTES :    needs lostfiles (AUR)  installed       
 function SystemMaintFunc
 {
-	        clear        
+	        clear  
+	        msgFunc green  "System maintenance checks routine running!"      
 	        #change dir for log files
 	        msgFunc dir "-SYSINFO"
 			msgFunc norm "Files report will be written to path above -"
@@ -966,24 +1059,10 @@ function SystemBackFunc
 #NOTES :    needs gdrive and gnu-netcat installed 
 function gdriveFunc
 {
+ #check gdrive is installed
+ msgFunc checkPac gdrive
 clear
 msgFunc green "gdrive, connect to google drive via the terminal" 
-#check gnu-cat is installed
-
-if ! msgFunc checkpac gnu-netcat "Accessing Network ...."
-then
-	msgFunc red "Please install gnu-netcat for gdrive function to work"
-	msgFunc anykey 
-return
-fi
-#check net up
-
- #check gdrive is installed
-if ! msgFunc checkNet "google.com"
-then
-	msgFunc anykey 
-return
-fi
 gdrive version
 msgFunc blue "gdrive options"
 optionsGD=("List all syncable directories on drive" "Sync local directory to google drive (path 1)" \
@@ -1465,24 +1544,49 @@ function exitHandlerFunc
 #check Options from linux command line arguments passed to program on call
 #-v display version and exit
 #-s display system info and exit
-#-help display cylon info and exit 
+#-h display cylon info and exit 
+#-c open config file for edit.
+#-u update all
 case "$1" in
+	-u|--update)
+      clear
+      msgFunc line
+      msgFunc green "Number of Pacman updates ready ..> $(checkupdates | wc -l)"	
+	  checkupdates
+	  msgFunc line
+	  msgFunc green "Number of updates available for installed AUR packages ..> $(cower -u | wc -l)"
+	  cower -uc
+	  msgFunc line
+	  msgFunc green "arch-audit vulnerable package names"
+	  arch-audit -q
+	  msgFunc green "Update all now? [Y/n]"
+	  read -r choiceIU3
+			if [ "$choiceIU3" != "n" ]
+				then
+					pacaur -Syu	
+			fi
+	;;
+  -c|--config)
+		nano  "$HOME/.config/cylon/cylonCfg.conf"
+    ;;
   -v|--version)
-    msgFunc norm "$(pacman -Qs cylon)" 
-    exit 0
+		msgFunc norm "$(pacman -Qs cylon)" 
     ;;
   -s|--system)
-    HelpFunc 
-    exit 0
+		HelpFunc SYS
     ;;
-  -help|-h|--help)
-    HelpFunc HELP
-    exit 0
+  -h|--help)
+		HelpFunc HELP
     ;;
-  *)
-    clear
-    ;;
+   *)
+   ;;
 esac
+if [ -n "$1" ] 
+then
+	exit 0 
+else
+	clear
+fi   
 #print horizontal line  + Title
 msgFunc line
 msgFunc green "********* $(pacman -Qs cylon | head -1 | cut -c 7-20) (CYbernetic LifefOrm Node) *********" 
@@ -1494,18 +1598,17 @@ Cylon is an Arch Linux maintenance CLI program written in Bash script.
 This program provides numerous tools to Arch Linux users to carry 
 out updates, maintenance, system checks, backups and more. 
 EOF
-date +%A-Week%U-%d-%B-%Y--%T
-msgFunc norm " " 
+date +%T--%A-Week%U-%d-%B-%Y
 #main program loop    
 while true; do
 	cd ~ || exitHandlerFunc dest4
     msgFunc blue "Cylon Main Menu :-"
-	optionsM=("Pacman options" "Cower  options (AUR)" "Pacaur options (AUR)" "System check"\
-	 "System backup" "System clean" "System information " "Rmlint scan"\
-	  "Clamav scan" "RootKit hunter scan" "Lynis system audit" "Ccrypt utility"\
-	  "Password generator" "Delete files/folders"\
-	  "Open xterm (terminal)" "htop - interactive process viewer"\
-	   "Weather" "Network" "Display Cylon information" "Exit")
+	optionsM=("Pacman package manager" "Cower  AUR helper " "Pacaur AUR helper" "System check"\
+	 "System backup" "System clean" "Network" "Rmlint scan"\
+	  "Clamav scan" "RootKit hunter scan" "Lynis system audit" 
+	   "htop process viewer" "Open xterm (terminal)" \
+	  "Ccrypt utility" "Password generator" "Delete files/folders"\
+	   "Weather" "System information" "Cylon information" "Exit")
 	select choiceMain in "${optionsM[@]}"
 	do
     case "$choiceMain" in
@@ -1527,9 +1630,9 @@ while true; do
 		 "${optionsM[5]}") #system clean with bleachbit
 		   SystemCleanFunc
 		    ;;
-		"${optionsM[6]}") #system info
-		   HelpFunc "SYS"
-		   ;;
+		"${optionsM[6]}")  # network utiltes
+			networkFunc
+		    ;;
 		"${optionsM[7]}") #rmlint 
 		   RmLintFunc
 		    ;;
@@ -1542,32 +1645,31 @@ while true; do
 		"${optionsM[10]}")  # Lynis - System and security auditing tool
 			AntiMalwareFunc "LYNIS"
 			 ;;
-		"${optionsM[11]}")  # ccrypt - encrypt and decrypt files 
-			ccryptFunc
-			 ;;
-		"${optionsM[12]}")  # password generator 
-				msgFunc green "Random Password generator"
-				msgFunc norm "Enter length:-"
-				read -r mylength
-				if [ -z "$mylength" ]; then
-					mylength=50
-				fi
-				msgFunc dir "-PGINFO"
-			    echo -n "$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c"${1:-$mylength}";)"	> pg	  
-				msgFunc green "Done!"
-			;;
-		  "${optionsM[13]}")  # delete folders /files
-			SystemCleanFunc "FOLDERS"
-			;;
-		
-		"${optionsM[14]}")  # open a terminal
-			xterm &
-			msgFunc anykey
-		;;
-		"${optionsM[15]}")  # htop - interactive process viewer
+		"${optionsM[11]}")  # htop - interactive process viewer
 			xterm -e "htop" &  
 			msgFunc anykey
-		;;
+			;;
+		"${optionsM[12]}")  # open a terminal
+			xterm &
+			msgFunc anykey
+			;;
+		"${optionsM[13]}")  # ccrypt - encrypt and decrypt files 
+			ccryptFunc
+			;;
+		"${optionsM[14]}")  # password generator 
+			msgFunc green "Random Password generator"
+			msgFunc norm "Enter length:-"
+			read -r mylength
+			if [ -z "$mylength" ]; then
+				mylength=50
+			fi
+			msgFunc dir "-PGINFO"
+		    echo -n "$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c"${1:-$mylength}";)"	> pg	  
+			msgFunc green "Done!"
+			;;
+		"${optionsM[15]}")  # delete folders /files
+			SystemCleanFunc "FOLDERS"
+			;;
 		"${optionsM[16]}")  # 3 day forecast weather
 			msgFunc norm "3 day weather forecast by WTTR.IN"
 			msgFunc norm "Type a City name, airport code, domain name or area code:-"
@@ -1576,13 +1678,13 @@ while true; do
 			curl wttr.in/"$mycity"
 			msgFunc anykey 
 			clear
-		;;
-		"${optionsM[17]}")  # network utiltes
-			networkFunc
-		;;
+			;;
+		"${optionsM[17]}") #system info
+		   HelpFunc "SYS"
+		   ;;
 		"${optionsM[18]}")  # cylon info and cat readme file to screen 
 			HelpFunc "HELP"
-		;;
+			;;
 		*)  #exit  
 			exitHandlerFunc exitout ;;
 	esac
