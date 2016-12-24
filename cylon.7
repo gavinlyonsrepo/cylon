@@ -1,0 +1,107 @@
+.TH CYLON "7" "December 2016" "1.0.1" "User Commands"
+.SH NAME
+cylon \- This script provides numerous tools to Arch Linux users.
+
+.SH SYNOPSIS
+.B cylon \fR[Optional Flags]
+
+.SH DESCRIPTION
+The goal was to create a script to do as much updates maintenance, 
+backups and system checks in a single menu driven optional script 
+Command line program for an Arch linux distro as possible.
+This script provides numerous tools 
+to Arch Linux users for updates, maintenance, system checks and backups.  
+
+.SH OPTIONS
+.TP
+.B \-c --config 
+Opens the cylon config file for editing and exit
+.TP
+.B \-h --help 
+Print cylon information and exit
+.TP
+.B \-s --system 
+Print system information and exit
+.TP
+.B \-u --update 
+Runs a full update report with option to execute and exit
+.TP
+.B \* -v --version 
+Print version information and exit.
+
+.SH FILES
+cylon files 
+.TP
+.B /usr/bin/cylon (the shell script)
+.TP
+.B /usr/share/doc/cylon/Readme.md
+.TP
+.B /usr/share/doc/cylon/changelog.md
+.TP
+.B /usr/share/licenses/cylon/License.md
+.TP
+.B /usr/share/man/man1/cylon.7
+.TP
+.B $HOME/.config/cylon/cylonCfg.conf (optional, user made, not install)
+
+.SH CONFIG FILE OPTIONS
+.TP
+.B \ Destination1="/foo/foo/" 
+Backup path 1 destination
+.TP
+.B \ Destination2="/foo/foo3/" 
+Backup path 2 destination
+.TP
+.B \ gdriveSource1="foo/foo" 
+Source for Gdrive backup local Source path 1
+.TP
+.B \ gdriveSource2="foo/foo2" 
+Source for Gdrive backup local Source path 2
+.TP
+.B \ gdriveDest1="foo123456789" 
+Destination for Gdrive backup path 1 on google drive
+is remote google drive  directory ID(see gdrive readme)
+.TP
+.B \ gdriveDest2="foo2123456789" 
+Destination  for Gdrive backup path 2 on google drive
+is remote google drive  directory ID(see gdrive readme)
+.TP
+.B \ rsyncsource="$HOME/"
+rsync backup source option
+.TP
+.B \ rsyncDest="/run/media/$USER/foo1/foo"
+Backup path for rsync destination
+.SH OTHER
+Most system output (logsfiles, backups, downloads and updates etc) 
+is placed at below path , unless otherwise specified on screen
+output folders are created with following syntax HHMM-DDMONYY-X where X
+is output type i.e backup, update etc
+.TP
+.B $HOME/Documents/Cylon
+
+.SH AUTHOR
+Created by Gavin Lyons. glyons66@hotmail.com
+
+.SH "SEE ALSO"
+upstream repository https://github.com/gavinlyonsrepo/cylon
+Cylon information page option in menu or -h includes optdepends 
+install check
+Readme.md for full detailed list of menu options and functions
+is displayed on cylon information page which is launched from menu or -h
+
+.SH REPORTING BUGS
+If you should find a bug or any other query , 
+please send a report 
+to upstream repo https://github.com/gavinlyonsrepo/cylon
+or mail glyons66@hotmail.com
+suggestions for improvements and new features welcome
+
+.SH COPYRIGHT
+Copyright (C) 2016 G Lyons 
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, see license.md for more details
+
+
+.SH HISTORY
+see changelog.md
