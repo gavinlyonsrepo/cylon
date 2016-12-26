@@ -32,13 +32,14 @@ Software will display optdepends installed packages on cylon info page.
 cylon files 
 
 * /usr/bin/cylon (the shell script)
+* /usr/lib/cylon/modules/*_module (modular functions called by script)
 * /usr/share/doc/cylon/Readme.md
 * /usr/share/doc/cylon/changelog.md
 * /usr/share/licenses/cylon/License.md
 * $HOME/.config/cylon/cylonCfg.conf (optional, user made, not install)
 
 Readme.md is displayed to screen by a menu option on cylon info page
-
+A manpage is also installed together with menu entry and Icon.
 You can create an optional config file for custom system backup called 
 NAME: cylonCfg.conf, PATH: $HOME/.config/cylon/cylonCfg.conf
 "DestinationX" is the path for backups
