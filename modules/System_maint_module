@@ -18,7 +18,7 @@ function SystemMaintFunc
 	        msgFunc dir "-SYSINFO"
 			msgFunc norm "Files report will be written to path above -"
 			msgFunc blue "System Maintenance options"
-			select  choiceM in "${optionsM[@]}"
+			select  choiceM in "${optionsM2[@]}"
 			do
 			case  "$choiceM" in
 			"${optionsM2[0]}")

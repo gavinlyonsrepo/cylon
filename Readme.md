@@ -1,7 +1,7 @@
 ﻿Cylon
 -----
-* Date: 201016 
-* Version control: 3.1-2 See changlog.md for details
+* Date: 281216
+* Version control: 3.2-3 See changlog.md for details
 * Author: G Lyons, contact upstream repo or glyons66@hotmail.com
 * Title : Arch Linux distro maintenance  a Bash shell script. 
 * AUR package name : cylon
