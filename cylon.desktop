@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Cylon
+GenericName=Cylon maintenance
+Comment=Arch Linux maintenance CLI program
+Exec=cylon
+Icon=cylonicon
+Categories=System
+Type=Application
+Terminal=true

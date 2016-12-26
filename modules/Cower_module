@@ -1,0 +1,142 @@
+#FUNCTION HEADER
+# NAME :           CowerFunc
+# DESCRIPTION:use cower and makepkg utility to mange AUR packages
+# downloads, updates and searches
+# PROCESS : eight options, see optionsC array 
+#NOTES :    needs cower(AUR) installed  gnu-netcat is needed for option 5     
+function CowerFunc
+{
+			 #check cower is installed
+            if ! msgFunc checkpac cower
+				then
+				msgFunc anykey 
+				return
+			fi
+			clear
+	         #AUR warning
+	         msgFunc red  " AUR WARNING: User Beware"	
+	         cat <<-EOF
+			 The Arch User Repository (AUR) is a community-driven repository for Arch users
+			 Before installing packages or installing updates
+			 Please read Arch linux wiki First and learn the AUR system.
+			EOF
+			msgFunc anykey
+			clear
+			msgFunc line
+		   msgFunc green "AUR packages management by cower. Number of foreign packages installed = $(pacman -Qm | wc -l)"
+		   msgFunc line
+	        msgFunc blue "AUR package install and updates by cower, options:-"
+         	optionsC=("Check network and then check for updates (no download), cower -uc" "Information for package, cower -ic" "Search for package, cower -sc" \
+         	"Download package, cower -dc + makepkg -si" "Get updates for installed packages, cower -dvuc + makepkg -si" \
+         	 "List all foreign packages, pacman -Qm " "Edit cower config file" "Return")
+         	select choiceCower in "${optionsC[@]}"
+			do
+			case "$choiceCower" in    
+						"${optionsC[0]}") #check for updates 
+								msgFunc green  "Check network and then check for updates"
+								#check network connectivity if good get updates numbers from arch
+								msgFunc checkNet "aur.archlinux.org"
+								msgFunc norm "Number of updates available for installed AUR packages :..."
+								cower -u | wc -l
+								cower -uc
+								msgFunc anykey
+						  ;;
+						#search AUR with cower with optional install
+						"${optionsC[1]}")msgFunc green "${GREEN}Information for AUR package , cower -i"
+						  msgFunc norm "Type a AUR package name:-"
+					      read -r cowerPac		
+						  msgFunc norm " " 
+						  cower -i -c "$cowerPac" 
+						  msgFunc anykey
+						    ;;
+						   
+						  "${optionsC[2]}") msgFunc green "${GREEN}Search for AUR package, cower -s"
+						  #cower -s 
+						  msgFunc norm "Type a AUR package name:-"
+					      read -r cowerPac		
+						  msgFunc norm " " 
+						  cower -s -c "$cowerPac" 
+						  msgFunc anykey
+						  ;;
+						  
+						"${optionsC[3]}")#cower -d Download AUR package with an optional install
+							msgFunc green "${GREEN}Download AUR package cower -d with an optional install"
+							msgFunc dir "-AURDOWNLOAD"
+							#build and install packages
+							msgFunc norm "Type a AUR package name:-"
+							read -r cowerPac		
+							cower -d -c	 "$cowerPac" || return
+							cd "$cowerPac" || return
+							msgFunc green "$cowerPac PKGBUILD: Please read"
+							cat PKGBUILD
+							msgFunc green "PKGBUILDS displayed above. Install  [Y/n]"
+							read -r choiceIU3
+							if [ "$choiceIU3" != "n" ]
+								then
+									msgFunc norm  "Installing package $cowerPac"
+									makepkg -si		
+							fi
+						 ;;
+						
+						#check for updates cower and optional install 
+						"${optionsC[4]}")msgFunc green "Update AUR packages  cower -du  "		
+						#make cower update directory
+						msgFunc dir "-AURUPDATES" 
+						cower -d -vuc || return
+						# look for empty dir (i.e. if no updates) 
+						if [ "$(ls -A .)" ] 
+						then
+							msgFunc norm  "Package builds available"
+							ls 
+							msgFunc norm " "
+						    msgFunc green "Press any key to View package builds or n to quit"
+							read -r choiceIU2
+								if [ "$choiceIU2" != "n" ]
+									then
+									msgFunc green " Viewing  PKGBUILDS of updates :-" 
+									#cat PKGBUILDs to screen
+									find . -name PKGBUILD -exec cat {} \; | more
+									msgFunc anykey
+									msgFunc line
+									msgFunc green "PKGBUILDS displayed above. Install all [Y/n]"  
+									read -r choiceIU1
+									if [ "$choiceIU1" != "n" ]
+										then
+											#build and install all donwloaded PKGBUILD files 
+											msgFunc norm  "Installing packages"
+											find . -name PKGBUILD -execdir makepkg -si \;
+									fi			
+								fi	
+						  else
+							msgFunc norm "No updates found for installed AUR packages by Cower."
+						  fi	
+						;;
+						 "${optionsC[5]}") #List of all foreign packages
+						msgFunc green "List of all foreign packages installed"
+					     msgFunc norm "Number of foreign packages installed = $(pacman -Qm | wc -l)"
+						pacman -Qm 
+						msgFunc anykey
+						;;
+						"${optionsC[6]}") #edit the config file see man cower
+						msgFunc green "Edit cower config file"
+								if [ -f  "$XDG_CONFIG_HOME/cower/config" ] 
+								then
+									nano "$XDG_CONFIG_HOME/cower/config"
+								else 
+									 if [ -f "$HOME/.config/cower/config" ] 
+									 then
+										nano "$HOME/.config/cower/config"
+									  else
+										msgFunc red "config file not found, see man cower"
+									fi
+								fi
+						msgFunc anykey
+					;;
+						 *)  #exit to main menu 
+							return
+						 ;;
+				 esac
+				 break
+				 done
+			     msgFunc green "Done!"
+}

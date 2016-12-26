@@ -1,0 +1,110 @@
+#FUNCTION HEADER
+# NAME :          SystemBackFunc
+# DESCRIPTION:carries out Full system backup + gdrive sync 
+#to google drive
+# INPUTS:  configfile from readconfigFunc   
+# OUTPUTS : backups see OptionsB2 array
+# PROCESS : system backup(5 options) + option to call gdriveFunc  +rsync option
+#NOTES :    needs rsync installed if using rsync option
+#
+function SystemBackFunc
+{
+			#get paths from config file if exists
+			clear
+			readconfigFunc
+			#get user input for backup
+			optionsB1=("$Destination1" "$Destination2" "$Dest3" \
+			"Custom" "gdrive" "rsync" "Return")
+			#variable to be passed to msgFunc dir : custom path
+			local D3=""
+			msgFunc blue "Pick destination directory for system backup or gdrive option"
+			select  choiceBack in "${optionsB1[@]}"
+			#check that paths exist and change path to dest path
+			do
+			case "$choiceBack" in
+			
+			"${optionsB1[0]}")  cd "$Destination1" || exitHandlerFunc dest1 
+											D3="1";;				
+			"${optionsB1[1]}")  cd "$Destination2"   || exitHandlerFunc dest2 
+											D3="1";;
+			"${optionsB1[2]}")  cd "$Dest3" || exitHandlerFunc dest3;;
+			"${optionsB1[3]}")  #custom path read in 
+						msgFunc norm "Type a custom destination path:-"
+						read -r Path1		
+						cd "$Path1" || exitHandlerFunc dest4 
+						D3="1"
+						;;
+			"${optionsB1[4]}")   #gdrive function
+					gdriveFunc
+					return
+					;;
+			"${optionsB1[5]}") 
+					msgFunc green "rsync backup utility"
+					#check rsync is installed
+					
+					if ! msgFunc checkpac rsync 
+					then
+						msgFunc anykey 
+					return
+					fi
+					msgFunc norm "Source: $rsyncsource"
+					msgFunc norm "Destination: $rsyncDest"
+					msgFunc anykey
+					rsync -av --delete "$rsyncsource" "$rsyncDest" 
+					msgFunc green "Done!"
+					msgFunc anykey
+					return ;;	
+			*) return ;;
+			esac
+			break
+			done
+			
+			#make the backup directory
+			msgFunc dir "-BACKUP" "$D3"
+			#begin the backup get user choice from user to what to back up
+			optionsB2=("Copy of 1st 512 bytes MBR" "Copy of etc dir" \
+"Copy of home dir" "Copy of package lists" "Make tarball of all" "ALL" "Return")
+			msgFunc blue "Pick a Backup option:-"
+			select  choiceBack2 in "${optionsB2[@]}"
+			do
+			case  "$choiceBack2" in
+			"${optionsB2[0]}"|"${optionsB2[5]}") #MBR
+				msgFunc green "Make copy of first 512 bytes MBR with dd"
+				#get /dev/sdxy where currenty filesystem is mounted 
+				myddpath="$(df /boot/ --output=source | tail -1)"
+				msgFunc norm "$myddpath"
+				sudo dd if="$myddpath" of=hda-mbr.bin bs=512 count=1
+				msgFunc green "Done!"
+            ;;&
+			"${optionsB2[1]}"|"${optionsB2[5]}")#etc
+				msgFunc green "Make a copy of etc dir"
+				sudo cp -a -v -u /etc .
+				msgFunc green "Done!"
+            ;;&
+            "${optionsB2[2]}"|"${optionsB2[5]}")#home
+				msgFunc green "Make a copy of home dir"
+				sudo cp -a -v -u /home .
+				msgFunc green "Done!"
+				sync
+			;;&
+			"${optionsB2[3]}"|"${optionsB2[5]}")#packages
+				msgFunc green "Make copy of package lists"
+				pacman -Qqen > pkglistQgenNAT.txt
+				pacman -Qm > pkglistQmAUR.txt
+				pacman -Q  > pkglistQALL.txt
+				msgFunc green "Done!"
+            ;;&
+            "${optionsB2[4]}"|"${optionsB2[5]}")#tar
+				msgFunc green "Make tarball of all except tmp dev proc sys run"
+				sudo tar --one-file-system --exclude=/tmp/* --exclude=/dev/* --exclude=/proc/* --exclude=/sys/* --exclude=/run/* -pzcvf RootFS_backup.tar.gz /
+				msgFunc green "Done!"
+				sync 
+				;;&
+			  *)#quit
+				msgFunc green "ALL Done!"
+				return
+				;;
+			esac
+			break 
+			done
+}

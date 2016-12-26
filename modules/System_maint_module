@@ -1,0 +1,108 @@
+#FUNCTION HEADER
+# NAME :           SystemMaintFunc
+# DESCRIPTION:carries out 6 maintenance checks  
+# OUTPUTS : various output files 
+# PROCESS : systemd , SSD trim , broken syslinks ,journalcontrol errors
+#lostfiles check with lostfiles package, systemdanalysis boot, 
+#NOTES :    needs lostfiles (AUR)  installed       
+
+function SystemMaintFunc
+{
+	        clear 
+	        optionsM2=("Failed Systemd Services" "Check Journalctl log for Errors"\ 
+				"Check Journalctl for fstrim SSD trim" "Analyze system boot-up performance"\
+				"Checking for Broken Symlinks" "Find files where no group or User corresponds to file's numeric"\
+				"Lostfiles" "Return")
+			
+		   #change dir for log files
+	        msgFunc dir "-SYSINFO"
+			msgFunc norm "Files report will be written to path above -"
+			msgFunc blue "System Maintenance options"
+			select  choiceM in "${optionsM[@]}"
+			do
+			case  "$choiceM" in
+			"${optionsM2[0]}")
+				  # -systemd --failed:
+				msgFunc green "All Failed Systemd Services"
+				systemctl --failed --all
+				systemctl --failed --all > Systemderrlog
+				msgFunc green "Done!"
+				msgFunc green "All Failed Active Systemd Services"
+				systemctl --failed
+				systemctl --failed >> Systemderrlog
+            ;;
+			"${optionsM2[1]}")
+					# -Logfiles:
+					msgFunc green "Check log Journalctl for Errors"
+					journalctl -p 3 -xb > Journalctlerrlog
+            ;;
+            
+            "${optionsM2[2]}")
+				#check if ssd trim functioning  ok in log
+				#am I on a sdd drive? , 0 for SDD 1 for HDD from command
+				SDX="$(df /boot/ --output=source | tail -1 | cut -c 6-8)"
+						SDX=$(grep 0 /sys/block/"$SDX"/queue/rotational) 
+					if [ "$SDX" = "0" ] 
+						then
+						msgFunc green "Check Journalctl for fstrim SSD trim"
+						echo "SSD trim" > JournalctlerrSDDlog
+						journalctl -u fstrim > JournalctlerrSDDlog
+						else 
+						msgFunc red "HDD detected no SSD trim check done"
+					fi
+			;;
+			
+			"${optionsM2[3]}")
+					# systemd-analyze - Analyze system boot-up performance
+					msgFunc green "Analyze system boot-up performance"
+		            {
+		            echo "Analyze boot-up performance"  
+		            systemd-analyze time 
+		            echo "CRITICAL-CHAIN" 
+		            systemd-analyze critical-chain 
+		            echo "BLAME" 
+		            systemd-analyze blame 
+				     } >>  systemdanalyzelog   
+            ;;
+            "${optionsM2[4]}")
+					#Checking for broken symlinks:
+					msgFunc green "Checking for Broken Symlinks"
+		            find / -path /proc -prune -o -type l -! -exec test -e {} \; -print 2>/dev/null > symlinkerr
+		            #version pre-2.1 just for home
+		            #find "$HOME" -type l -! -exec test -e {} \; -print > symlinkerr
+			;;
+			
+			 "${optionsM2[5]}")
+				msgFunc green "Find files where no group or User corresponds to file's numeric user/group ID."
+				find / -nogroup > filenogrouplog 2> /dev/null
+				find / -nouser  > filenouserlog  2> /dev/null
+			;;
+			
+			 "${optionsM2[6]}")
+				#check if lostfiles package (AUR) installed
+		    if ! msgFunc checkpac lostfiles
+			then
+				msgFunc anykey 
+			return
+			fi
+			msgFunc green "Lostfiles :-Search for files which are not part of installed Arch Linux packages"
+			msgFunc norm  "Lostfiles strict scan running, outputing to file"
+			sudo bash -c "lostfiles strict  > lostfilesStrictlist.txt" 
+			msgFunc green "Done!"
+			msgFunc norm  "Lostfiles relaxed scan running, outputing to file"
+		    sudo bash -c  "lostfiles relaxed > lostfilesRelaxedlist.txt" 
+			;;
+			
+			 *)#quit
+				msgFunc green "Done!"
+				return
+				;;
+				
+			esac
+			break 
+			done
+			
+			msgFunc green "Done!"	
+			msgFunc anykey 
+			clear
+}

@@ -38,3 +38,7 @@ changed file directory name output syntax
 Added firewall status check to Network menu
 Added runtime options -c edit config file
 Added runtime options -u update routine with optional execute
+* version 3.2-3 281216
+Added manpage, system icon added , modules added, split functions into separate 
+files, changed system maintence rountine to menu select rather 
+than pass through all options in one run.

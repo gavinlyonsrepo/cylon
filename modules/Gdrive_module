@@ -1,0 +1,87 @@
+#FUNCTION HEADER
+# NAME :         gdriveFunc
+# DESCRIPTION:gdrive sync to google drive
+# INPUTS:  configfile from readconfigFunc   
+# PROCESS : 6 syncs to google drive + provides information and search 
+#NOTES :    needs gdrive and gnu-netcat installed 
+function gdriveFunc
+{
+ #check gdrive is installed
+ msgFunc checkPac gdrive
+clear
+msgFunc green "gdrive, connect to google drive via the terminal" 
+gdrive version
+msgFunc blue "gdrive options"
+optionsGD=("List all syncable directories on drive" "Sync local directory to google drive (path 1)" \
+"Sync local directory to google drive (path 2)" "List content of syncable directory" "Google drive metadata, quota usage"
+ "List files" "Get file info" \
+  "Return")
+			select  choiceGD in "${optionsGD[@]}"
+			do
+			case "$choiceGD" in
+			 "${optionsGD[0]}")#List all syncable directories on drive
+			     msgFunc green "gdrive List all syncable directories on drive"
+				 gdrive sync list
+			   ;;
+			  "${optionsGD[1]}")#Sync upload to remote directory  path 1
+				msgFunc green "gdrive sync with remote directory path 1:-"
+				msgFunc norm "Source: $gdriveSource1"
+				msgFunc norm "Destination: $gdriveDest1"
+				msgFunc anykey
+				gdrive sync upload "$gdriveSource1" "$gdriveDest1"
+			   ;;
+			   "${optionsGD[2]}")#Sync upload to remote directory  path 2
+			     msgFunc green "gdrive sync with remote directory path 2:-"
+			    msgFunc norm "Source: $gdriveSource2"
+				msgFunc norm "Destination: $gdriveDest2"
+				msgFunc anykey
+				gdrive sync upload  "$gdriveSource2" "$gdriveDest2"
+			   ;;
+			    "${optionsGD[3]}")#List content of syncable directory
+					msgFunc dir "-SYNCINFO"
+					msgFunc green "List content of syncable directory (output to file)"
+					msgFunc norm "Enter fileId:-"
+					read -r  FID
+					gdrive sync content "$FID" > Syncinfo
+			    ;;
+			    "${optionsGD[4]}")#gdrive about
+					msgFunc green "Google drive metadata, quota usage"
+					gdrive about
+			   ;;
+			     "${optionsGD[5]}")#gdrive list files
+					msgFunc green "List files "
+					msgFunc norm "Enter Max files to list, Just press enter for all:-"
+					read -r  num
+					msgFunc norm "Enter Query (see https://developers.google.com/drive/search-parameters)"
+					msgFunc norm "Common Example: name contains 'foo' "
+					msgFunc norm "Just press enter to to leave Query blank :-"
+					read -r  quy
+					msgFunc norm "Enter Order (see https://godoc.org/google.golang.org/api/drive/v3#FilesListCall.OrderBy)"
+					msgFunc norm "Common Example: quotaBytesUsed desc "
+					msgFunc norm "Just press enter to to leave order blank :-"
+					read -r  order
+					msgFunc norm "Output to file? [Y/n] :-"
+					read -r CHOICE
+						if [ "$CHOICE" != "n" ]
+							then
+								# output to file
+								msgFunc dir "-LISTINFO"
+								gdrive list  -q "$quy" --order "$order" -m "$num" > Listinfo
+							else #output to screen 
+								gdrive list  -q "$quy" --order "$order" -m "$num" 
+						fi
+					;;
+				"${optionsGD[6]}")# get file info
+					msgFunc green "get file info"
+					msgFunc norm "Enter fileId:-"
+					read -r  ID
+					gdrive info "$ID"
+				      ;;
+				*)return  ;;
+			esac
+			break 
+			done
+			 msgFunc green "Done!"
+			 msgFunc anykey
+			 clear	
+}
