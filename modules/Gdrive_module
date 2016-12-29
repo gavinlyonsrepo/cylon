@@ -6,8 +6,6 @@
 #NOTES :    needs gdrive and gnu-netcat installed 
 function gdriveFunc
 {
- #check gdrive is installed
- msgFunc checkPac gdrive
 clear
 msgFunc green "gdrive, connect to google drive via the terminal" 
 gdrive version

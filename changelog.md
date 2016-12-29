@@ -38,7 +38,12 @@ changed file directory name output syntax
 Added firewall status check to Network menu
 Added runtime options -c edit config file
 Added runtime options -u update routine with optional execute
-* version 3.2-3 281216
+* version 3.2-3 271216
 Added manpage, system icon added , modules added, split functions into separate 
 files, changed system maintence rountine to menu select rather 
 than pass through all options in one run.
+* version 3.3-4 291216
+added "n/a" text to menu options for non installed packages,
+added old configuration file scan and Diskspace usage  options to system 
+maintenance. inxi moved to separate option.
+new icon added.  systemctl status show option added.

@@ -3,14 +3,14 @@
 # HEADER cylon bash shell script
 #================================================================
 #name:cylon
-#Date 281216
+#Date 291216
 #License: 
 #GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
 #see license.md  at repo or /usr/share/licenses/cylon/
 #
 #Written by G lyons 
 #
-#Version 3.2-3  See changelog.md at repo for version control
+#Version 3.3-4  See changelog.md at repo for version control
 #
 #Software repo
 #https://github.com/gavinlyonsrepo/cylon
@@ -42,7 +42,9 @@
 #colours for printf
 RED=$(printf "\033[31;1m")
 GREEN=$(printf "\033[32;1m")
+YELLOW=$(printf "\033[33;1m")
 BLUE=$(printf "\033[36;1m")
+HL=$(printf "\033[42;1m")
 NORMAL=$(printf "\033[0m") 
 #make the path for the program output dest3
 mkdir -p "$HOME/Documents/Cylon/"
@@ -55,7 +57,8 @@ Dest5="$HOME/.config/cylon"
 #set path for readme.md changlog.md dest6
 Dest6="/usr/share/doc/cylon"
 #prompt for select menus
-PS3="${BLUE}Press option number + [ENTER]${NORMAL}"
+PS3="${BLUE}By your command:${NORMAL}"
+#
 
 #====================FUNCTIONS space (3)===============================
 #FUNCTION HEADER
@@ -66,7 +69,7 @@ PS3="${BLUE}Press option number + [ENTER]${NORMAL}"
 # INPUTS : $1 process name $2 text input $3 text input    
 # OUTPUTS : checkpac returns 1 or 0 
 # PROCESS :[1]   line [2]    anykey
-# [3]   "green , red ,blue , norm" ,                 
+# [3]   "green , red ,blue , norm yellow and highlight" ,                 
 # [4]   checkpac [5]   checkNet v
 #NOTES :   needs gnu-cat installed for checkNet        
 function msgFunc
@@ -75,6 +78,7 @@ function msgFunc
 	
 		line) #print blue horizontal line of =
 			printf '\033[36;1m%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' =
+			msgFunc norm
 		;;
 		anykey) #any key prompt, appends second text input to prompt
 		    printf '%s' "${GREEN}" 
@@ -86,6 +90,9 @@ function msgFunc
 		green) printf '%s\n' "${GREEN}$2${NORMAL}" ;;
 		red) printf '%s\n' "${RED}$2${NORMAL}" ;;
 		blue) printf '%s\n' "${BLUE}$2${NORMAL}" ;;
+		yellow)printf '%s\n' "${YELLOW}$2${NORMAL}" ;;
+		highlight)printf '%s\n' "${HL}$2${NORMAL}" ;;
+		
 		norm) #print normal text colour
 			if [ "$2" = "" ]
 				then
@@ -106,16 +113,29 @@ function msgFunc
 			cd "$TODAYSDIR" || exitHandlerFunc dest4
 			msgFunc norm "Directory for output made at:-"
 			pwd	 ;;
-			
+			 
 		checkpac) #check if package(passed text 2) installed 
 		          #returns 1 or 0  and appends passed text 3
+		          #if NOMES passed as $3 goto menu display mode
 			x=$(pacman -Qqs "$2")
 			if [ -n "$x" ]
-			then 
-				printf '%s\n' "$2 is Installed $3"
+			then #installed
+				#if text input is NOMES skip install good message
+				if [ "$3" = "NOMES" ] 
+				then 
+					printf '%s' "$2"
+				else
+					printf '%s\n' "$2 is Installed $3"
+				fi
 				return 0
-			else 
-				printf '%s\n' "${RED}$2 is Not installed${NORMAL} $3"
+			else #not installed
+				#if text input is NOMES skip install bad message
+				if [ "$3" = "NOMES" ] 
+				then
+					printf '%s' "$2 n/a"
+				else
+					printf '%s\n' "${RED}$2 is Not installed${NORMAL} $3"
+				fi
 				return 1
 			fi ;;
 			
@@ -141,7 +161,9 @@ function msgFunc
 						exitHandlerFunc netdown "$2"
 					fi
 		;;
-		*) printf '%s\n' "Error bad input to msgFunc" ;;
+		*) #for debug catch typos etc
+			printf '%s\n' "Error bad input to msgFunc"
+			 ;;
 	esac
 }
 
@@ -160,6 +182,12 @@ msgFunc line
 				then
 				msgFunc green "cylon info and readme display" 
 				msgFunc line 
+				#Program details print
+				cat <<-EOF
+				Cylon is an Arch Linux maintenance CLI program written in Bash script.
+				This program provides numerous tools to Arch Linux users to carry 
+				out updates, maintenance, system checks, backups and more. 
+				EOF
 				msgFunc norm "Written by G.Lyons, Reports to  <glyons66@hotmail.com>"
 				msgFunc norm "AUR package name = cylon, at aur.archlinux.org by glyons."
 				msgFunc norm "Version=$(pacman -Qs cylon | head -1 | cut -c 7-20)"
@@ -223,10 +251,8 @@ msgFunc line
 msgFunc norm  #set colour back
 date +%A-Week%U-%d-%B-%Y--%T
 msgFunc norm "Uptime = $(uptime -p)"
-msgFunc norm "Operating System = $(uname -mo)"
-msgFunc norm "Kernel = $(uname -sr)"
+msgFunc norm "Operating System + Kernal = $(uname -mosr)"
 msgFunc norm "Network node name = $(uname -n)"
-msgFunc norm "Shell = $SHELL"
 msgFunc norm "Screen Resolution = $(xrandr |grep "\*" | cut -c 1-15)"
 msgFunc norm "CPU $(grep name /proc/cpuinfo  | tail -1)"
 mem=($(awk -F ':| kB' '/MemTotal|MemAvail/ {printf $2}' /proc/meminfo))
@@ -235,32 +261,30 @@ memused="$((memused / 1024))"
 memtotal="$((mem[0] / 1024))"
 memory="${memused}MB / ${memtotal}MB"
 msgFunc norm "RAM used/total = ($memory)"
+msgFunc highlight "Package Information"
 msgFunc norm "Number of All installed  packages = $(pacman -Q | wc -l)"
 msgFunc norm "Number of native, explicitly installed packages  = $(pacman -Qgen | wc -l)"
 msgFunc norm "Number of foreign installed packages  = $(pacman -Qm | wc -l)"
-msgFunc norm "Accessing Network Database...." 
-#check network connectivity if good get updates numbers from arch
-msgFunc checkNet "archlinux.org"
-msgFunc norm   "Number of Pacman updates ready...> "
-msgFunc blue "$(checkupdates | wc -l)"
-msgFunc norm "Number of updates for installed AUR packages ready ...>"
-msgFunc blue "$(cower -u | wc -l)"
-msgFunc anykey
-#check if inxi package  installed
-if ! msgFunc checkpac inxi
-then
+msgFunc norm "Accessing archlinux.org Network Database...." 
+msgFunc norm   "Number of Pacman updates ready...>  "
+msgFunc yellow "$(checkupdates | wc -l)"
+if ! msgFunc checkpac cower
+	then
 	msgFunc anykey 
-	clear
-return
+	return
 fi
-# inxi  - Command line system information script for console and IRC
-msgFunc green "get output of inxi -Fixz"
-inxi -Fixz >> inxioutput
-inxi -Fixz 
-msgFunc green "Done!"
-msgFunc anykey
+msgFunc norm "Number of updates for installed AUR packages ready ...>"
+msgFunc yellow "$(cower -u | wc -l)"
+if ! msgFunc checkpac arch-audit 
+	then
+	msgFunc anykey 
+	return
+fi
+msgFunc norm "Number of upgradable Arch-audit vulnerable packages ...>"
+msgFunc yellow "$(arch-audit -qu | wc -l)"
+msgFunc anykey 
 clear
-} 
+}
 
 #FUNCTION HEADER
 # NAME :           readconfigFunc
@@ -314,7 +338,7 @@ function exitHandlerFunc
 			#dest3 = program output #dest4 = general
 			#dest5 = config file  #dest6  = Documentation
 	        exitout) 
-	        msgFunc blue "GOODBYE $USER!!"
+	        msgFunc yellow "GOODBYE $USER!!"
 			msgFunc anykey "and exit."
 			exit 0
 	        ;;
@@ -331,7 +355,7 @@ function exitHandlerFunc
 			     msgFunc norm "$Dest6" ;;
 			 netdown) msgFunc red "Internet connectivity test to $2 failed" ;;
 	 esac
-	msgFunc blue "GOODBYE $USER!!"
+	msgFunc yellow "GOODBYE $USER!!"
 	msgFunc anykey "and exit."
 	exit 1
 }
@@ -340,22 +364,39 @@ function exitHandlerFunc
 
 #==================MAIN CODE HEADER====================================
 #=====================================================================
-#source the modules for the functions from the cylon library folder
-#for f in ./modules/*; do #debug
+#SOURCE THE MODULES for the functions from the cylon library folder
+#for MYFILE in ./modules/*;  #debug
 #echo $f #debug
-for f in /usr/lib/cylon/modules/*; do
-   source $f
+for MYFILE in /usr/lib/cylon/modules/*;
+ do
+   # shellcheck disable=SC1090
+   source "$MYFILE"
 done
-
-#check Options from linux command line arguments passed to program on call
+########
+#CHECK INPUT OPTIONS from linux command line arguments passed to program on call
 #-v display version and exit
 #-s display system info and exit
 #-h display cylon info and exit 
 #-c open config file for edit.
 #-u update all
 case "$1" in
+	"");;
 	-u|--update)
       clear
+      #check if arch-audit package  installed
+		if ! msgFunc checkpac arch-audit
+		then
+			msgFunc anykey 
+			clear
+		return
+		fi
+		#check if pacaur package  installed
+		if ! msgFunc checkpac pacaur
+		then
+			msgFunc anykey 
+			clear
+		return
+		fi
       msgFunc line
       msgFunc green "Number of Pacman updates ready ..> $(checkupdates | wc -l)"	
 	  checkupdates
@@ -363,7 +404,7 @@ case "$1" in
 	  msgFunc green "Number of updates available for installed AUR packages ..> $(cower -u | wc -l)"
 	  cower -uc
 	  msgFunc line
-	  msgFunc green "arch-audit vulnerable package names"
+	  msgFunc green "Arch-audit vulnerable package names"
 	  arch-audit -q
 	  msgFunc green "Update all now? [Y/n]"
 	  read -r choiceIU3
@@ -384,7 +425,7 @@ case "$1" in
   -h|--help)
 		HelpFunc HELP
     ;;
-   *)
+   *) msgFunc yellow "Usage:- -c -v -s -u -h"
    ;;
 esac
 if [ -n "$1" ] 
@@ -393,31 +434,30 @@ then
 else
 	clear
 fi   
-#print horizontal line  + Title
+#############
+#MAIN SCREEN, print horizontal line  + Title and datetime
 msgFunc line
-msgFunc green "********* $(pacman -Qs cylon | head -1 | cut -c 7-20) (CYbernetic LifefOrm Node) *********" 
+msgFunc highlight "$(pacman -Qs cylon | head -1 | cut -c 7-20) (CYbernetic LifefOrm Node)"
+msgFunc yellow "$(date +%T-%A-%d-Week%U-%B-%Y)"
 msgFunc line
-msgFunc norm
-#Program details print
-cat <<-EOF
-Cylon is an Arch Linux maintenance CLI program written in Bash script.
-This program provides numerous tools to Arch Linux users to carry 
-out updates, maintenance, system checks, backups and more. 
-EOF
-date +%T--%A-Week%U-%d-%B-%Y
 #main program loop    
 while true; do
 	cd ~ || exitHandlerFunc dest4
-    msgFunc blue "Cylon Main Menu :-"
-	optionsM=("Pacman package manager" "Cower  AUR helper " "Pacaur AUR helper" "System check"\
-	 "System backup" "System clean" "Network" "Rmlint scan"\
-	  "Clamav scan" "RootKit hunter scan" "Lynis system audit" 
-	   "htop process viewer" "Open xterm (terminal)" \
-	  "Ccrypt utility" "Password generator" "Delete files/folders"\
-	   "Weather" "System information" "Cylon information" "Exit")
+	#make the main menu 
+	msgFunc blue "Main Menu:"
+	optionsM=(
+	"pacman" "$(msgFunc checkpac cower NOMES)" 
+	"$(msgFunc checkpac pacaur NOMES)" "System check" 
+	"System backup" "$(msgFunc checkpac bleachbit NOMES)"
+	"Network" "$(msgFunc checkpac rmlint NOMES)" 
+	"$(msgFunc checkpac clamav NOMES)" "$(msgFunc checkpac rkhunter NOMES)" 
+	"$(msgFunc checkpac lynis NOMES)" "$(msgFunc checkpac htop NOMES)" "xterm"
+	"$(msgFunc checkpac ccrypt NOMES)" "Password generator" "Delete files"
+	"Weather" "$(msgFunc checkpac inxi NOMES)" "System information" "Cylon information" "Exit"
+	)
 	select choiceMain in "${optionsM[@]}"
 	do
-    case "$choiceMain" in
+	case "$choiceMain" in
 		"${optionsM[0]}")   #pacman update
 			 PacmanFunc
 			  ;;
@@ -452,6 +492,13 @@ while true; do
 			AntiMalwareFunc "LYNIS"
 			 ;;
 		"${optionsM[11]}")  # htop - interactive process viewer
+			#check if htop package  installed
+				if ! msgFunc checkpac htop
+				then
+					msgFunc anykey 
+					clear
+				break
+				fi
 			xterm -e "htop" &  
 			msgFunc anykey
 			;;
@@ -485,10 +532,25 @@ while true; do
 			msgFunc anykey 
 			clear
 			;;
-		"${optionsM[17]}") #system info
+			"${optionsM[17]}") 
+				#check if inxi package  installed
+				if ! msgFunc checkpac inxi
+				then
+					msgFunc anykey 
+					clear
+				break
+				fi
+				# inxi  - Command line system information script for console and IRC
+				msgFunc green "get output of inxi -Fixz"
+				msgFunc dir "-SYSINXI"
+				inxi -Fixz | tee inxioutput
+				msgFunc green "Done!"
+				msgFunc anykey
+			;;
+		"${optionsM[18]}") #system info
 		   HelpFunc "SYS"
 		   ;;
-		"${optionsM[18]}")  # cylon info and cat readme file to screen 
+		"${optionsM[19]}")  # cylon info and cat readme file to screen 
 			HelpFunc "HELP"
 			;;
 		*)  #exit  

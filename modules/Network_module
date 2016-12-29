@@ -11,7 +11,7 @@ function networkFunc
 	 msgFunc dir "-NETINFO"
      msgFunc norm "Files report will be written to path above -"
 	msgFunc blue "Network. options:-"
-				optionsN=("Wavemon - wireless network monitor" "Speedtest-cli testing internet bandwidth" \
+				optionsN=("$(msgFunc checkpac wavemon NOMES) -wireless network monitor" "$(msgFunc checkpac speedtest-cli  NOMES) -testing internet bandwidth"\
 	         	"Check if website up with netcat and ping" "ip addr" "netstat -r & route" "Check the status of UFW  Uncomplicated Firewall" "Return")
 	         	select choiceN in "${optionsN[@]}"
 	         	do

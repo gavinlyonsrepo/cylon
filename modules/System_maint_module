@@ -9,10 +9,10 @@
 function SystemMaintFunc
 {
 	        clear 
-	        optionsM2=("Failed Systemd Services" "Check Journalctl log for Errors"\ 
+	        optionsM2=("Failed Systemd Services and status" "Check Journalctl log for Errors"\
 				"Check Journalctl for fstrim SSD trim" "Analyze system boot-up performance"\
-				"Checking for Broken Symlinks" "Find files where no group or User corresponds to file's numeric"\
-				"Lostfiles" "Return")
+				"Check for Broken Symlinks" "Find files where no group or User corresponds to file's numeric ID"\
+				"$(msgFunc checkpac lostfiles NOMES)" "Diskspace usage" "Old configuration files scan" "Return")
 			
 		   #change dir for log files
 	        msgFunc dir "-SYSINFO"
@@ -23,6 +23,9 @@ function SystemMaintFunc
 			case  "$choiceM" in
 			"${optionsM2[0]}")
 				  # -systemd --failed:
+				msgFunc green "Systemd status"
+				msgFunc green "Done!"
+				systemctl status > Systemdstatus
 				msgFunc green "All Failed Systemd Services"
 				systemctl --failed --all
 				systemctl --failed --all > Systemderrlog
@@ -67,10 +70,16 @@ function SystemMaintFunc
             "${optionsM2[4]}")
 					#Checking for broken symlinks:
 					msgFunc green "Checking for Broken Symlinks"
-		            find / -path /proc -prune -o -type l -! -exec test -e {} \; -print 2>/dev/null > symlinkerr
-		            #version pre-2.1 just for home
-		            #find "$HOME" -type l -! -exec test -e {} \; -print > symlinkerr
-			;;
+					#root or home?
+					msgFunc norm "Do you want to scan / or $HOME? [R/h]"
+					read -r choiceSYM
+					if [ "$choiceSYM" = "h" ]
+					then
+						find "$HOME" -type l -! -exec test -e {} \; -print > symlinkerr
+		            else
+						find / -path /proc -prune -o -type l -! -exec test -e {} \; -print 2>/dev/null > symlinkerr
+					fi
+					;;
 			
 			 "${optionsM2[5]}")
 				msgFunc green "Find files where no group or User corresponds to file's numeric user/group ID."
@@ -93,6 +102,77 @@ function SystemMaintFunc
 		    sudo bash -c  "lostfiles relaxed > lostfilesRelaxedlist.txt" 
 			;;
 			
+			"${optionsM2[7]}")
+				msgFunc green "diskspace usage"
+				# This is GOLD for finding out what is taking so much space on your drives!
+					msgFunc norm "Do you want to scan / or $HOME? [R/h]"
+					read -r choiceDU
+					if [ "$choiceDU" = "h" ]
+					then
+						du -H "$HOME" 2> /dev/null | sort -n -r >> diskspace
+		            else
+						du -H / 2> /dev/null | sort -n -r >> diskspace
+					fi
+			       ;;
+			 "${optionsM2[8]}") #old config files
+			 msgFunc green "Old configuration files scan"
+cat <<-EOF
+Old configuration files may conflict with newer software versions,
+or corrupt over time. Remove unneeded configurations periodically, 
+This option will scan three folders and compare names of dirs with
+names of installed packages and output result to files.
+~/.config/ -- where apps stores their configuration
+~/.cache/ -- cache of some programs may grow in size
+~/.local/share/ -- old files may be lying there
+The user can then inspect these files and remove anything unwanted.
+EOF
+ msgFunc anykey
+					MYARRAY=$(find "$HOME/.config" -maxdepth 1 -type d  | awk -F"/" '{print $5}')
+					MYARRAY1=$(find "$HOME/.cache" -maxdepth 1 -type d  | awk -F"/" '{print $5}')
+					MYARRAY2=$(find "$HOME/.local/share" -maxdepth 1 -type d  | awk -F"/" '{print $6}')
+					IFS=$'\n' MYARRAY=($(sort <<<"${MYARRAY[*]}"))
+					unset IFS
+					IFS=$'\n' MYARRAY1=($(sort <<<"${MYARRAY1[*]}"))
+					unset IFS
+					IFS=$'\n' MYARRAY2=($(sort <<<"${MYARRAY2[*]}"))
+					unset IFS
+					# get length of an array
+					tLen="${#MYARRAY[@]}"
+					tLen1="${#MYARRAY1[@]}"
+					tLen2="${#MYARRAY2[@]}"
+					# use for loop read all installed packages 
+					msgFunc green "$HOME/.config/ -- where apps stores their configuration"
+					for (( i=0; i<"${tLen}"; i++ ));
+					do
+							if  msgFunc checkpac "${MYARRAY[i]}" 
+							then
+									unset "MYARRAY[i]"
+							fi
+					done
+					msgFunc anykey
+					printf "%s\n" "${MYARRAY[@]}" > HOMECONFIGfile
+						# use for loop read all installed packages
+					msgFunc green " $HOME/.cache/ -- cache of some programs may grow in size"
+					for (( i=0; i<"${tLen1}"; i++ ));
+					do
+							if  msgFunc checkpac "${MYARRAY1[i]}" 
+							then
+									unset "MYARRAY1[i]"
+							fi
+					done
+					msgFunc anykey
+					printf "%s\n" "${MYARRAY1[@]}" > HOMECACHEfile 
+					 msgFunc green "$HOME/.local/share/ -- old files may be lying there"
+					for (( i=0; i<"${tLen2}"; i++ ));
+					do
+							if  msgFunc checkpac "${MYARRAY2[i]}" 
+							then
+									unset "MYARRAY2[i]"
+							fi
+					done
+					printf "%s\n" "${MYARRAY2[@]}" > HOMELOCALSHAREfile
+				;;
+
 			 *)#quit
 				msgFunc green "Done!"
 				return

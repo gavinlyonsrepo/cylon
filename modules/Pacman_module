@@ -19,7 +19,7 @@ function PacmanFunc
 			 "pacman -Qi  Display extensive information for locally installed packages" "pacman -Ql  List all files owned by a given package." \
 			  "pacman -Qkk Verify packages" "paccache -r Prune older packages from cache"\
 			 "Write installed package lists to files" "Remove all packages not required as dependencies (orphans)" \
-			 "Back-up the local pacman database" "Arch Linux News Rss feed" "Arch-audit" "Edit pacman config file" "Return to main menu")
+			 "Back-up the local pacman database" "Arch Linux News Rss feed" "$(msgFunc checkpac arch-audit  NOMES)" "Edit pacman config file" "Return to main menu")
 			select choicep in "${options[@]}"
 			do
 			case "$choicep" in
@@ -152,6 +152,12 @@ function PacmanFunc
 						;;
 						"${options[15]}") #run arch audit
 						msgFunc green "Running arch-audit program :"
+						#check archaudit is installed
+						if ! msgFunc checkpac arch-audit
+							then
+							msgFunc anykey 
+							return
+						fi
 						msgFunc norm "Press [Enter] for full output: options> -q=quiet, -u=upgradable, -uq."
 					    read -r ARCHAUDIT
 					    arch-audit $ARCHAUDIT

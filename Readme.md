@@ -28,7 +28,7 @@ build. Some functions require software installed
 as listed below, see optdepends of PKGBUILD also. 
 This is left to user discretion.
 Software will display optdepends installed packages on cylon info page.
-
+also "n/a" is displayed besides uninstalled options in menus
 cylon files 
 
 * /usr/bin/cylon (the shell script)
@@ -106,8 +106,8 @@ Functions/menu options
 	* Write installed package lists to files
 	* Remove all packages not required as dependencies 
 	* Back-up the local pacman database  
-	* Arch news rss reader
-	* arch-audit 
+	* Arch news rss reader 
+	* arch-audit gather CVE data
 	* Edit pacman config file
 * AUR cower options 
 	* Check for updates ( NO downloads)
@@ -130,7 +130,7 @@ Functions/menu options
 	* Update all packages in all repositories, pacaur -Syu
 	* List of all foreign packages installed
 * system maintenance check
-	* All Failed Systemd Services
+	* All Failed Systemd Services and system status
 	* All Failed Active Systemd Services
 	* Check log Journalctl for Errors
 	* Check log Journalctl for fstrim SSD trim (check for SSD in system)
@@ -138,6 +138,8 @@ Functions/menu options
 	* Check for broken symlinks
 	* Check for files not owned by any user or group
 	* Lostfiles scan, relaxed and strict
+	* Diskspace usage 
+	* Old configuration files scan, output to files
 * System backup
 	* Optional destination path as defined in script or custom path
 	* Make copy of first 512 bytes MBR with dd
@@ -161,14 +163,14 @@ Functions/menu options
 		* clean (without overwrite, BB checks the config in GUI).
 		* clean + overwrite (with overwrite permanent deletion)
 * System and package information displays 
-	* Function also  run by -s or --system standalone
-	* inxi program feature
+	* Function also  run by -s  standalone
 * Rmlint remove duplicates and other lint
 	* option to view results file
 	* option to execute shell script with results 
 * ClamAv anti-malware scan (Check for updates feature)
 * RootKit hunter scan (check for updates feature)
 * password generator
+* inxi - system information display 
 * ccrypt - encrypt and decrypt files:
 	* Encrypt a file 		     
     * Decrypt a file

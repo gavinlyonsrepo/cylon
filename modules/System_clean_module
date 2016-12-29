@@ -8,20 +8,13 @@
 #CHANGES: added new options version 2.3.2
 function SystemCleanFunc
 {
-		     #check bleachbit is installed
-			
-			if ! msgFunc checkpac bleachbit 
-			then
-				msgFunc anykey 
-			return
-			fi
 			clear
 			#check $1, Called with  FOLDERS input option?
 			#delete folders and shred with bleachbit options
 			if [ "$1" = "FOLDERS" ]
 			then
 				msgFunc blue "Delete files/folders. options:-"
-				optionsF=("Shred specific files or folders with bleachbit" "Delete Trash folder" \
+				optionsF=("$(msgFunc checkpac bleachbit NOMES) shred files function"  "Delete Trash folder" \
 	         	"Delete Download folder" "Delete Cylon output folder ($HOME/Documents/Cylon/)" "Return")
 	         	select choiceF in "${optionsF[@]}"
 	         	do
@@ -51,7 +44,12 @@ function SystemCleanFunc
 				msgFunc green "Done!"	
 			return
 			fi
-			
+			#check bleachbit is installed
+			if ! msgFunc checkpac bleachbit 
+			then
+				msgFunc anykey 
+			return
+			fi
 			#system clean with bleachbit (if this function called without "FOLDERS" input)
 			#query for preset option or custom?
 			msgFunc green "Bleachbit system clean. Use the options set in the GUI? [y/N]"  

@@ -14,7 +14,7 @@ function SystemBackFunc
 			readconfigFunc
 			#get user input for backup
 			optionsB1=("$Destination1" "$Destination2" "$Dest3" \
-			"Custom" "gdrive" "rsync" "Return")
+			"Custom" "$(msgFunc checkpac "gdrive" NOMES)" "$(msgFunc checkpac "rsync" NOMES)" "Return")
 			#variable to be passed to msgFunc dir : custom path
 			local D3=""
 			msgFunc blue "Pick destination directory for system backup or gdrive option"
@@ -35,13 +35,18 @@ function SystemBackFunc
 						D3="1"
 						;;
 			"${optionsB1[4]}")   #gdrive function
+					#check gdrive is installed
+					if ! msgFunc checkpac gdrive 
+					then
+						msgFunc anykey 
+					return
+					fi
 					gdriveFunc
 					return
 					;;
 			"${optionsB1[5]}") 
 					msgFunc green "rsync backup utility"
 					#check rsync is installed
-					
 					if ! msgFunc checkpac rsync 
 					then
 						msgFunc anykey 
