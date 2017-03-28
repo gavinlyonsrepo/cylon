@@ -8,6 +8,7 @@
 function ccryptFunc
 {
 	clear
+	myccfile=""
 	msgFunc blue "ccrypt - encrypt and decrypt files:-"
 	#check if ccrypt installed
     if ! msgFunc checkpac ccrypt
@@ -15,17 +16,28 @@ function ccryptFunc
 		msgFunc anykey 
 	return
 	fi
-	msgFunc norm "Type a path to the folder you want to work with:-"
-	read -r myccfile
-	cd "$myccfile" || exitHandlerFunc dest4
-	ls -la
-	msgFunc norm "Type the file name  you want to work with:-"
-	read -r myccfile
-	 if [ -f "$myccfile"  ] 
+	msgFunc green "Do you want to use the path(myccfile) defined in Config file  [y/N]"
+	read -r choiceccy
+	if [ "$choiceccy" = "y" ]
+	then
+	#path from file
+	readconfigFunc
+	msgFunc anykey
+	clear
+	else
+			#prompt for manual file path
+			msgFunc norm "Type a path to the folder you want to work with:-"
+			read -r myccfile
+			cd "$myccfile" || exitHandlerFunc dest4
+			ls -la
+			msgFunc norm "Type the file name  you want to work with:-"
+			read -r myccfile
+	fi
+	if [ -f "$myccfile"  ] 
 	 then 
-		msgFunc norm 'Found file!' 
+		msgFunc norm "$myccfile Found file!" 
 	 else
-		msgFunc red 'File out found!'
+		msgFunc red "$myccfile File out found!"
 		exitHandlerFunc exitout
 	 fi
 	 msgFunc blue "ccrypt - encrypt and decrypt files Menu options:-"

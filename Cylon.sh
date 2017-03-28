@@ -3,14 +3,14 @@
 # HEADER cylon bash shell script
 #================================================================
 #name:cylon
-#Date 291216
+#Date 280317
 #License: 
 #GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
 #see license.md  at repo or /usr/share/licenses/cylon/
 #
 #Written by G lyons 
 #
-#Version 3.3-4  See changelog.md at repo for version control
+#Version 3.4-5  See changelog.md at repo for version control
 #
 #Software repo
 #https://github.com/gavinlyonsrepo/cylon
@@ -314,6 +314,8 @@ function readconfigFunc
 		#paths for rsync option
 		rsyncsource="$HOME/"
 		rsyncDest="/run/media/$USER/Linux_backup/Hbp_rsync_101016"
+		#ccyptfile
+		myccfile="XXXX"
 		msgFunc green "Done!"
 		return
 	fi
@@ -365,7 +367,7 @@ function exitHandlerFunc
 #==================MAIN CODE HEADER====================================
 #=====================================================================
 #SOURCE THE MODULES for the functions from the cylon library folder
-#for MYFILE in ./modules/*;  #debug
+#for MYFILE in ./modules/*;  #DEBUG ONLY DEBUG ONLY
 #echo $f #debug
 for MYFILE in /usr/lib/cylon/modules/*;
  do
@@ -397,25 +399,44 @@ case "$1" in
 			clear
 		return
 		fi
-      msgFunc line
+	  msgFunc line
+		RssFunc
+	  msgFunc anykey
+	  msgFunc line
+	  msgFunc green "Arch-audit upgradable vulnerable packages"
+	  arch-audit -u #used to be -q pre v3.3
+	  msgFunc line
       msgFunc green "Number of Pacman updates ready ..> $(checkupdates | wc -l)"	
 	  checkupdates
+	  msgFunc anykey
 	  msgFunc line
 	  msgFunc green "Number of updates available for installed AUR packages ..> $(cower -u | wc -l)"
 	  cower -uc
-	  msgFunc line
-	  msgFunc green "Arch-audit vulnerable package names"
-	  arch-audit -q
-	  msgFunc green "Update all now? [Y/n]"
+	   cat <<-EOF
+		The Arch User Repository (AUR) is a community-driven repository for Arch users
+		When installing packages or installing updates
+		user beware. Also make sure TargetDir in cower config file not set. 
+		EOF
+		msgFunc line
+	  msgFunc green "Install ALl updates? pacaur -Syu	 [Y/n]"
 	  read -r choiceIU3
 			if [ "$choiceIU3" != "n" ]
 				then
 					pacaur -Syu	
 			fi
+		msgFunc green "Done!"
 	;;
   -c|--config)
 		nano  "$HOME/.config/cylon/cylonCfg.conf"
     ;;
+  -d|--defaultBB)
+#Bleachbit system clean. Use the options set in the GUI
+		msgFunc green "Bleachbit system clean"  
+		msgFunc norm "Preset options see $HOME/.config/bleachbit/ or GUI "
+		msgFunc norm  "Running bleachbit -c --preset"
+		bleachbit -c --preset
+		msgFunc green "Done!"
+     ;;
   -v|--version)
 		msgFunc norm "$(pacman -Qs cylon)" 
     ;;
@@ -425,7 +446,7 @@ case "$1" in
   -h|--help)
 		HelpFunc HELP
     ;;
-   *) msgFunc yellow "Usage:- -c -v -s -u -h"
+   *) msgFunc yellow "Usage:- -c -d -v -s -u -h"
    ;;
 esac
 if [ -n "$1" ] 

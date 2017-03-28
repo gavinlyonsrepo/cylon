@@ -1,7 +1,7 @@
 ﻿Cylon
 -----
-* Date: 281216
-* Version control: 3.2-3 See changlog.md for details
+* Date: 250317
+* Version control: 3.4-5 See changlog.md for details
 * Author: G Lyons, contact upstream repo or glyons66@hotmail.com
 * Title : Arch Linux distro maintenance  a Bash shell script. 
 * AUR package name : cylon
@@ -21,7 +21,10 @@ options:
 * -s --system  Print system information and exit
 * -v --version Print version information and exit.
 * -c --config Opens the cylon config file for editing and exit
-* -u --update runs a full update report with option to execute and exit
+* -d --default Bleachbit system clean. Use the options set in the GUI
+* -u --update runs a full update report with option to execute and exit.
+Report provides Arch news rss reader + arch-audit vulnerable 
+packages output + number and type of updates available. 
 
 Cylon is a bash script installed to /usr/bin by package 
 build. Some functions require software installed 
@@ -37,6 +40,9 @@ cylon files
 * /usr/share/doc/cylon/changelog.md
 * /usr/share/licenses/cylon/License.md
 * $HOME/.config/cylon/cylonCfg.conf (optional, user made, not install)
+* /usr/share/pixmaps/cylonicon.png (icon)
+* /usr/share/applications/cylon.desktop (desktop entry file)
+* /usr/share/man/man7/cylon.7 (manpage)
 
 Readme.md is displayed to screen by a menu option on cylon info page
 A manpage is also installed together with menu entry and Icon.
@@ -45,8 +51,9 @@ NAME: cylonCfg.conf, PATH: $HOME/.config/cylon/cylonCfg.conf
 "DestinationX" is the path for backups
 "gdrivedestX" is remote google drive  directory ID(see gdrive readme)
 and "gdriveSourceX" is the local directory source.
+"myccfile" is a setting for ccrypt utility, a path to a default file.
 If config file missing the System uses hard-coded defaults.
-File setup example (Note:remove bullet points in actual file)
+File setup example (Note:remove md bullet points in actual file)
 
 * Destination1="/run/media/$USER/Linux_backup"
 * Destination2="/run/media/$USER/iomeaga_320"
@@ -56,8 +63,9 @@ File setup example (Note:remove bullet points in actual file)
 * gdriveDest2="foo123456789"
 * rsyncsource="$HOME/"
 * rsyncDest="/run/media/$USER/Linux_backup/foo"
+* myccfile="$HOME/TEST/test.cpt"
 
-Most system output (logsfiles, backups, downloads and updates etc) 
+Most system output (logfiles, backups, downloads and updates etc) 
 is placed at below path , unless otherwise specified on screen
 output folders are created with following syntax HHMM-DDMONYY-X where X
 is output type i.e backup, update etc
@@ -88,6 +96,7 @@ Packages cylon needs installed for certain functions
 only 1 can be or needs to be installed, both included due to conflicts
 * Note2 : Cower and Pacaur are both AUR helpers you can install 
 one or both depending on preference.
+* Note3 : the setting TargetDir in cower config file must not be used.
 
 Functions/menu options
 ----------------------
@@ -156,6 +165,7 @@ Functions/menu options
 		* Google drive metadata, quota usage
 		* List files
 		* Get file info
+		* Note : Syncs Include Delete extraneous remote files as of V3.4-5
 * Clean system with bleachbit
 	* Preset option based on the same options as in the GUI 
 	* Custom options involved for user to pick cleaners and options
@@ -165,13 +175,21 @@ Functions/menu options
 * System and package information displays 
 	* Function also  run by -s  standalone
 * Rmlint remove duplicates and other lint
+	* Find bad UID, GID or files with both.
+	* Find bad symlinks pointing nowhere.
+	* Find empty directories.
+	* Find empty files.
+	* Find nonstripped binaries.
+	* Find duplicate files.
+	* Find duplicate directories.
 	* option to view results file
 	* option to execute shell script with results 
 * ClamAv anti-malware scan (Check for updates feature)
 * RootKit hunter scan (check for updates feature)
 * password generator
-* inxi - system information display 
+* inxi - system information display with logging of results
 * ccrypt - encrypt and decrypt files:
+	* config file path option for ease of use.
 	* Encrypt a file 		     
     * Decrypt a file
     * Edit decrypted file with NANO

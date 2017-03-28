@@ -23,23 +23,64 @@ EOF
 				return
 			fi
 			msgFunc line
-			msgFunc norm "Type a  directory path you wish to scan:-"
+			msgFunc norm "Type a directory path you wish to scan:-"
 			read -r rmlintPath	            
 		     cd "$rmlintPath" || exitHandlerFunc dest4
 			msgFunc norm " "
-			msgFunc green "Press g for progress bar any other key for list [g/L]"
-			read -r choicermlint
-			if [ "$choicermlint" = "g" ]
-				then
-					# run with progress bar 
-					rmlint -g
-				else
-					rmlint
-			fi
+			
+			##new menu
+			optionsRM=("All" "badids, bi: Find bad UID, GID or files with both." \
+			"badlinks, bl: Find bad symlinks pointing nowhere." \
+			"emptydirs, ed: Find empty directories." \
+			"emptyfiles, ef: Find empty files." \
+			"nonstripped, ns: Find nonstripped binaries."\
+			"duplicates, df: Find duplicate files."\
+			"duplicatedirs, dd: Find duplicate directories."\
+			"Return")
+
+			msgFunc blue "Pick rmlint options"
+			select  choiceBack in "${optionsRM[@]}"
+			#check that paths exist and change path to dest path
+			do
+			case "$choiceBack" in
+			
+			"${optionsRM[0]}")#all
+			rmlint -g
+			;;
+			"${optionsRM[1]}")#badids, bi: Find bad UID, GID or files with both
+			rmlint -g --types="+bi"
+			;;
+			"${optionsRM[2]}")#badlinks, bl: Find bad symlinks pointing nowhere
+			rmlint -g --types="+bl"
+			;;
+			"${optionsRM[3]}")#emptydirs, ed: Find empty directories.
+			rmlint -g --types="+ed"
+			;;
+			"${optionsRM[4]}")#emptyfiles, ef: Find empty files  
+			rmlint -g --types="+ef"
+			;;
+			"${optionsRM[5]}")#nonstripped, ns: Find nonstripped binaries.
+			rmlint -g --types="+ns"
+			;;
+			"${optionsRM[6]}")#duplicates, df: Find duplicate files.
+			rmlint -g --types="+df"
+			;;
+			"${optionsRM[7]}")#duplicatedirs, dd: Find duplicate directories
+			rmlint -g --types="+dd"
+			;;
+			*) #exit
+			clear
+			return 
+			;;
+			esac
+			break
+			done
+
+			msgFunc green "Done!"
 			msgFunc line
 			msgFunc anykey
 			#display the results file option? 
-			msgFunc green "Display results file? press Any key or n to quit [Y/n]"
+			msgFunc green "Display results file  [Y/n]?"
 			read -r choicermlint1
 			if [ "$choicermlint1" != "n" ]
 			then
@@ -47,6 +88,7 @@ EOF
 				more rmlint.json		
 				msgFunc line
 				msgFunc anykey
+			fi
 				#run the shell option?
 				msgFunc green "Execute rmlint.sh file? press e or any key to quit [e/N]"
 				msgFunc red "Warning rmlint.sh will change your system based on results of the previous scan"
@@ -59,9 +101,5 @@ EOF
 						msgFunc green "Done!"
 						return
 					fi
-			else
-				msgFunc green "Done!"
-				return
-			fi
 			msgFunc green "Done!"
 }

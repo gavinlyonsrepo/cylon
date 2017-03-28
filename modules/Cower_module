@@ -19,6 +19,7 @@ function CowerFunc
 			 The Arch User Repository (AUR) is a community-driven repository for Arch users
 			 Before installing packages or installing updates
 			 Please read Arch linux wiki First and learn the AUR system.
+			 Also setting TargetDir in cower config file must not be set.
 			EOF
 			msgFunc anykey
 			clear

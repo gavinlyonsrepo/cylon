@@ -1,4 +1,4 @@
-.TH CYLON "7" "December 2016" "1.0.1" "User Commands"
+.TH CYLON "7" "March 2017" "1.0.1" "User Commands"
 
 .SH NAME
 cylon \- This script provides numerous tools to Arch Linux users.
@@ -26,6 +26,9 @@ Print system information and exit
 .TP
 .B \-u --update 
 Runs a full update report with option to execute and exit
+.TP
+.B \-d --default
+Bleachbit system clean. Use the options set in the GUI/file
 .TP
 .B \* -v --version 
 Print version information and exit.
@@ -74,6 +77,9 @@ rsync backup source option
 .TP
 .B \ rsyncDest="/run/media/$USER/foo1/foo"
 Backup path for rsync destination
+.TP
+.B \ myccfile="$HOME/"
+default file path option for ccrypt
 .SH OTHER
 Most system output (logsfiles, backups, downloads and updates etc) 
 is placed at below path , unless otherwise specified on screen

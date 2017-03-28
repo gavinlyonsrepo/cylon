@@ -9,6 +9,7 @@ function gdriveFunc
 clear
 msgFunc green "gdrive, connect to google drive via the terminal" 
 gdrive version
+msgFunc yellow "NOTE Options 2 & 3 Include Delete extraneous remote files as of V3.4-5"
 msgFunc blue "gdrive options"
 optionsGD=("List all syncable directories on drive" "Sync local directory to google drive (path 1)" \
 "Sync local directory to google drive (path 2)" "List content of syncable directory" "Google drive metadata, quota usage"
@@ -26,14 +27,14 @@ optionsGD=("List all syncable directories on drive" "Sync local directory to goo
 				msgFunc norm "Source: $gdriveSource1"
 				msgFunc norm "Destination: $gdriveDest1"
 				msgFunc anykey
-				gdrive sync upload "$gdriveSource1" "$gdriveDest1"
+				gdrive sync upload --delete-extraneous "$gdriveSource1" "$gdriveDest1"
 			   ;;
 			   "${optionsGD[2]}")#Sync upload to remote directory  path 2
 			     msgFunc green "gdrive sync with remote directory path 2:-"
 			    msgFunc norm "Source: $gdriveSource2"
 				msgFunc norm "Destination: $gdriveDest2"
 				msgFunc anykey
-				gdrive sync upload  "$gdriveSource2" "$gdriveDest2"
+				gdrive sync upload --delete-extraneous "$gdriveSource2" "$gdriveDest2"
 			   ;;
 			    "${optionsGD[3]}")#List content of syncable directory
 					msgFunc dir "-SYNCINFO"
