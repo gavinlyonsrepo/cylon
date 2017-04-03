@@ -15,11 +15,13 @@ function PacmanFunc
 			options=("Check network and then check for updates (no download)" "pacman -Syu Upgrade packages" \
 			 "pacman -Si Display extensive information about a given package" "pacman -S Install Package" \
 			 "pacman -Ss Search for packages in the database" \
-			 "pacman -Rs Delete Package" "pacman -Qs Search for already installed packages" \
+			 "pacman -Rs Remove Package" "pacman -Qs Search for already installed packages" \
 			 "pacman -Qi  Display extensive information for locally installed packages" "pacman -Ql  List all files owned by a given package." \
 			  "pacman -Qkk Verify packages" "paccache -r Prune older packages from cache"\
 			 "Write installed package lists to files" "Remove all packages not required as dependencies (orphans)" \
-			 "Back-up the local pacman database" "Arch Linux News Rss feed" "$(msgFunc checkpac arch-audit  NOMES)" "Edit pacman config file" "Return to main menu")
+			 "Back-up the local pacman database" "Arch Linux News Rss feed" "$(msgFunc checkpac arch-audit  NOMES)" \
+			 "pactree,    List dependency tree of a package" "pactree -r, Show packages that depend on the named package" \
+			"Edit pacman config file" "Return to main menu")
 			select choicep in "${options[@]}"
 			do
 			case "$choicep" in
@@ -54,7 +56,7 @@ function PacmanFunc
                         pacman -Ss "$pacString"
 					;;
 					"${options[5]}") #pacman -Rs Delete Package
-						msgFunc green "Delete Package."
+						msgFunc green "Remove Package."
 						msgFunc norm "Please enter package name"
 						read -r pacString
                         sudo pacman -Rs "$pacString"
@@ -101,10 +103,14 @@ function PacmanFunc
 						msgFunc dir "-PKGINFO"
 						msgFunc green "All installed  packages" 
 						pacman -Q  | tee pkglistQ.txt
-						msgFunc green "All native, explicitly installed packages"
+						msgFunc green "All native explicitly installed packages"
 						pacman -Qqen | tee pkglistQgen.txt
-						msgFunc green "All foreign installed packages(AUR etc)"
+						msgFunc green "All foreign installed packages"
 						pacman -Qm | tee pkglistQm.txt
+						msgFunc green "All foreign explicitly installed packages"
+						pacman -Qme | tee pkglistQme.txt
+						msgFunc green "List explicitely installed packages not in the base or base-devel groups: "
+						comm -23 <(pacman -Qeq | sort) <(pacman -Qgq base base-devel | sort) | tee pkglistNonbase.txt
 					;;
 					"${options[12]}")   #delete orphans
 						msgFunc green "Delete orphans!"
@@ -128,12 +134,29 @@ function PacmanFunc
 							msgFunc anykey 
 							return
 						fi
-						msgFunc norm "Press [Enter] for full output: options> -q=quiet, -u=upgradable, -uq."
+						msgFunc norm "Press [A] for full output: or other options> -q=quiet, -u=upgradable, -uq."
 					    read -r ARCHAUDIT
-					    arch-audit $ARCHAUDIT
+					    if [ "$ARCHAUDIT" = "A" ] 
+							then
+							arch-audit
+							else
+							 arch-audit "$ARCHAUDIT"
+						fi 
 					    ARCHAUDIT=
 					    ;;
-					    "${options[16]}") #edit pacman conf file
+					      "${options[16]}") #To list a dependency tree of a package:
+						msgFunc green "List a dependency tree of a package:"
+						msgFunc norm "Please enter package name"
+						read -r pacString
+                        pactree "$pacString"
+						;;
+						  "${options[17]}") #  Show packages that depend on the named package.
+						msgFunc green "Show packages that depend on the named package:"
+						msgFunc norm "Please enter package name"
+						read -r pacString
+                        pactree -r "$pacString"
+						;;
+					    "${options[18]}") #edit pacman conf file
 						msgFunc green "Edit Pacman.conf file."
 						sudo nano  /etc/pacman.conf
 						;;
@@ -161,7 +184,6 @@ function RssFunc
 				#  THE RSS PARSER Remove some tags 
 				NEWS=$(echo -e "$NEWS" | \
 				awk '{
-				# uncomment to remove first line which is usually not a news item
 				sub(/<lastBuildDate[^>]*>([^>]*>)/,"");sub(/<language[^>]*>([^>]*>)/,"");sub(/<title[^>]*>([^>]*>)/,"");sub(/<link[^>]*>([^>]*>)/,""); 
 				while (sub(/<guid[^>]*>([^>]*>)/,"")); 
 				while (sub(/<dc:creator[^>]*>([^>]*>)/,""));

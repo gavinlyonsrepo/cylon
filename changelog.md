@@ -49,14 +49,29 @@ than pass through all options in one run.
 
 * version 3.3-4 291216
 added "n/a" text to menu options for non installed packages,
-added old configuration file scan and Diskspace usage  options to system 
+added old configuration file scan and Diskspace usage options to system 
 maintenance. inxi moved to separate option.
 new icon added.  systemctl status show option added.
 
 * version 3.4-5 250317
 ccrypt file setting added to config file called myccfile,
 add -d option for bleachbit system clean. Use the options set in the GUI/file.
-changes to -u option RSS feed added and arch-audit chnaged from -q to -u.
+changes to -u option RSS feed added and arch-audit changed from -q to -u.
 rmlint menu 6 extra options added.
-gdrive change --delete-extraneous option added to Sync local directory to drive
-passive warning added not to use targetDir setting for cower and pacaur  
+gdrive change --delete-extraneous option added to Sync local directory to drive.
+Warning added not to use targetDir setting for cower and pacaur  
+
+* version 3.5-6 050417
+Uninstall AUR packages menu function added to cower and pacaur menus, 
+it takes output of pacman -Qmeq and displays it in dialog menu 
+for optional uninstall.
+Added extra gdrive option, requires two new option in config file for use.
+Changed input for directory paths to a dialog dselect option at 4 points 
+in program where prompted for. 
+Added new lists options  to package lists options. 
+unix epoch time readout added to main page.
+pactree and pactree -r options added in pacman.
+Arch-Audit in cylon -u option now consists of two options -q followed by -u.
+Arch-Audit is moved from AUR to main repos Cylon changed to reflect this.
+
+ 

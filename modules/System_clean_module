@@ -3,7 +3,6 @@
 # DESCRIPTION: Function for cleaning programs files and system  
 # with bleachbit also deletes trash can and download folder.
 # INPUTS : $1 FOLDERS option 
-# PROCESS : 16 see optionsbb array.
 #NOTES :    needs bleachit installed
 #CHANGES: added new options version 2.3.2
 function SystemCleanFunc
@@ -14,24 +13,77 @@ function SystemCleanFunc
 			if [ "$1" = "FOLDERS" ]
 			then
 				msgFunc blue "Delete files/folders. options:-"
-				optionsF=("$(msgFunc checkpac bleachbit NOMES) shred files function"  "Delete Trash folder" \
+				optionsF=("$(msgFunc checkpac bleachbit NOMES) shred file function" "$(msgFunc checkpac bleachbit NOMES) shred folder function" \
+				"Delete Trash folder" \
 	         	"Delete Download folder" "Delete Cylon output folder ($HOME/Documents/Cylon/)" "Return")
 	         	select choiceF in "${optionsF[@]}"
 	         	do
 				case "$choiceF" in  
 					"${optionsF[0]}")
-				    msgFunc green "Shred specific files or folders"
-					msgFunc red "Enter path of file or folder to shred:"
-					read -r  mydelpath
-					bleachbit -s "$mydelpath" || exitHandlerFunc exitout
+				    	mydelfile=$(dialog --title "Bleachbit Delete file" --output-fd 1 --title "Please choose a file" --fselect "$HOME/" 14 48)
+						#echo "${FILE} file chosen."
+				    	case $? in
+							0)
+								clear
+							;;
+							1)
+								msgFunc yellow "Exit pressed."
+								return
+							;;
+							255)
+								msgFunc red "Box closed."
+								return
+							;;
+						esac
+					msgFunc norm "\"$mydelfile\" chosen file."
+					msgFunc green "Execute bleachbit to delete file $mydelfile ? "
+					msgFunc red   "Press y or any key to quit [y/N]"
+					read -r choicebdf
+					if [ "$choicebdf" = "y" ]
+					then
+						bleachbit -s "$mydelfile" || exitHandlerFunc exitout
+					else
+						msgFunc green "Done!"
+						return
+					fi
 					;;
-					"${optionsF[1]}")  msgFunc green "Deleting Trash folder "
+					
+					"${optionsF[1]}")
+				    msgFunc green "Shred specific folder"
+					mydelpath=$(dialog --title "Bleachbit Delete folder" --output-fd 1 --begin 1 1 --cancel-label "Exit" --title  "Select folder to delete:" --dselect / 10 40) 
+						case $? in
+							0)
+								clear
+							;;
+							1)
+								msgFunc yellow "Exit pressed."
+								return
+							;;
+							255)
+								msgFunc red "Box closed."
+								return
+							;;
+						esac
+					msgFunc norm "\"$mydelpath\" chosen directory."
+					msgFunc green "Execute bleachbit to delete folder $mydelpath ? "
+					msgFunc red   "Press y or any key to quit [y/N]"
+					read -r choicebdf
+					if [ "$choicebdf" = "y" ]
+					then
+						bleachbit -s "$mydelpath" || exitHandlerFunc exitout
+					else
+						msgFunc green "Done!"
+						return
+					fi
+					;;
+					
+					"${optionsF[2]}")  msgFunc green "Deleting Trash folder "
 						 rm -rvf "$HOME"/.local/share/Trash/*
 					;;
-					"${optionsF[2]}")  msgFunc green "Deleting Download folder "
+					"${optionsF[3]}")  msgFunc green "Deleting Download folder "
 						 rm -rvf "$HOME"/Downloads/*
 					;;
-				   "${optionsF[3]}")  msgFunc green "Deleting Cylon output folder ($HOME/Documents/Cylon/)"
+				   "${optionsF[4]}")  msgFunc green "Deleting Cylon output folder ($HOME/Documents/Cylon/)"
 				   		rm -rvf "$HOME"/Documents/Cylon/*
 					;;
 					*)  #exit  
@@ -52,8 +104,8 @@ function SystemCleanFunc
 			fi
 			#system clean with bleachbit (if this function called without "FOLDERS" input)
 			#query for preset option or custom?
-			msgFunc green "Bleachbit system clean. Use the options set in the GUI? [y/N]"  
-			msgFunc norm "For Preset options see $HOME/.config/bleachbit/ or GUI "
+			msgFunc green "Bleachbit system clean. Use the Preset options set in the GUI? [y/N]"  
+			msgFunc norm "Note: For Preset options see $HOME/.config/bleachbit/ or GUI "
 									read -r choiceBBBB
 									if [ "$choiceBBBB" = "y" ]
 										then

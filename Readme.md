@@ -1,7 +1,7 @@
 ﻿Cylon
 -----
-* Date: 250317
-* Version control: 3.4-5 See changlog.md for details
+* Date: 050417
+* Version control: 3.5-6 See changlog.md for details
 * Author: G Lyons, contact upstream repo or glyons66@hotmail.com
 * Title : Arch Linux distro maintenance  a Bash shell script. 
 * AUR package name : cylon
@@ -12,6 +12,8 @@ backups and system checks in a single menu driven optional script
 Command line program for an Arch linux distro as possible.
 This script provides numerous tools 
 to Arch Linux users for updates, maintenance, system checks and backups.  
+The software is mainly console text based also uses dialog GUI's 
+at a few points for directory and file selection.
 
 Config
 ------
@@ -21,10 +23,11 @@ options:
 * -s --system  Print system information and exit
 * -v --version Print version information and exit.
 * -c --config Opens the cylon config file for editing and exit
-* -d --default Bleachbit system clean. Use the options set in the GUI
-* -u --update runs a full update report with option to execute and exit.
+* -d --default Bleachbit system clean. Use the options set in the GUI,
+this will execute options selected in bleachbit GUI or bleachbit config file.
+* -u --update Runs a full update report with option to execute and exit.
 Report provides Arch news rss reader + arch-audit vulnerable 
-packages output + number and type of updates available. 
+packages output + number and type of updates available for all repos.
 
 Cylon is a bash script installed to /usr/bin by package 
 build. Some functions require software installed 
@@ -46,10 +49,12 @@ cylon files
 
 Readme.md is displayed to screen by a menu option on cylon info page
 A manpage is also installed together with menu entry and Icon.
-You can create an optional config file for custom system backup called 
+
+Config file: You can create an optional config file for custom system backup called 
 NAME: cylonCfg.conf, PATH: $HOME/.config/cylon/cylonCfg.conf
 "DestinationX" is the path for backups
-"gdrivedestX" is remote google drive  directory ID(see gdrive readme)
+"gdrivedestX" is remote google drive directory file ID
+(see gdrive readme for setup and how to get file id numbers)
 and "gdriveSourceX" is the local directory source.
 "myccfile" is a setting for ccrypt utility, a path to a default file.
 If config file missing the System uses hard-coded defaults.
@@ -59,8 +64,10 @@ File setup example (Note:remove md bullet points in actual file)
 * Destination2="/run/media/$USER/iomeaga_320"
 * gdriveSource1="$HOME/Documents"
 * gdriveSource2="$HOME/Pictures"
+* gdriveSource3="$HOME/Videos"
 * gdriveDest1="foo123456789"
-* gdriveDest2="foo123456789"
+* gdriveDest2="foo125656789"
+* gdriveDest3="foo123666689"
 * rsyncsource="$HOME/"
 * rsyncDest="/run/media/$USER/Linux_backup/foo"
 * myccfile="$HOME/TEST/test.cpt"
@@ -86,17 +93,21 @@ Packages cylon needs installed for certain functions
 * htop – command line system information script 
 * wavemon  – wireless network monitor 
 * speedtest-cli  – testing internet bandwidth
+* Arch-audit – Uses data collected by the Arch CVE Team.
 * pacaur(AUR)  – for AUR helper functions 
 * cower(AUR) – for AUR helper functions
 * gdrive(AUR) – to sync to google drive
 * lostfiles(AUR) – to scan for lostfiles
-* Arch-audit(AUR) Uses data collected by the Arch CVE Team.
 
 * Note1 : gnu-netcat and openbsd-netcat peform same function, 
 only 1 can be or needs to be installed, both included due to conflicts
-* Note2 : Cower and Pacaur are both AUR helpers you can install 
-one or both depending on preference.
+* Note2 : cower and pacaur are both AUR helpers you can install 
+just cower or both depending on preference. pacaur wraps cower 
+and needs it installed.
 * Note3 : the setting TargetDir in cower config file must not be used.
+* Note4 : gdrive readme for config https://github.com/prasmussen/gdrive
+* Note5 : gdrive option Syncs will Delete extraneous remote files as of V3.4-5
+
 
 Functions/menu options
 ----------------------
@@ -106,17 +117,19 @@ Functions/menu options
 	* pacman -Si Display extensive information 
 	* pacman -S Install Package
 	* pacman -Ss Search for packages in the database
-	* pacman -Rs Delete Package
+	* pacman -Rs Remove Package
 	* pacman -Qs Search for already installed packages
 	* pacman -Qi  Display extensive information for 
 	* pacman -Ql  List all files owned by a given package
 	* pacman -Qkk Verify packages(option for one or all)
 	* paccache -r Prune older packages from cache
-	* Write installed package lists to files
+	* Write installed package lists to files (1)
 	* Remove all packages not required as dependencies 
 	* Back-up the local pacman database  
 	* Arch news rss reader 
 	* arch-audit gather CVE data
+	* List a dependency tree of a package
+	* Show packages that depend on a package
 	* Edit pacman config file
 * AUR cower options 
 	* Check for updates ( NO downloads)
@@ -125,7 +138,9 @@ Functions/menu options
 	* Download AUR  package
 	* Fetch and install AUR packages
 	* List all foreign packages
+	* List all foreign packages explicitly installed
 	* Edit cower config file
+	* Remove foreign packages explicitly installed menu
 * AUR pacaur options
 	* Check for updates ( NO downloads)
 	* Get Information for AUR package 
@@ -138,6 +153,8 @@ Functions/menu options
 	* Edit pacaur config file
 	* Update all packages in all repositories, pacaur -Syu
 	* List of all foreign packages installed
+	* List all foreign packages explicitly installed
+	* Remove foreign packages explicitly installed menu
 * system maintenance check
 	* All Failed Systemd Services and system status
 	* All Failed Active Systemd Services
@@ -155,17 +172,17 @@ Functions/menu options
 	* Make a copy of etc dir
 	* Make a copy of home dir
 	* Make tarball of all except tmp dev proc sys run
-	* Make copy of package lists
+	* Make copy of package lists (1)
 	* Rsync option 
 	* gdrive options
 		* List all syncable directories on drive
 		* Sync local directory to google drive (path 1)
 		* Sync local directory to google drive (path 2)
+		* Sync local directory to google drive (path 3)
 		* List content of syncable directory
 		* Google drive metadata, quota usage
 		* List files
 		* Get file info
-		* Note : Syncs Include Delete extraneous remote files as of V3.4-5
 * Clean system with bleachbit
 	* Preset option based on the same options as in the GUI 
 	* Custom options involved for user to pick cleaners and options
@@ -196,7 +213,8 @@ Functions/menu options
     * Change the key of encrypted file
     * View encrypted file	
 * Delete folders(bleachbit shred option) 
-	* Shred specific files or folders with bleachbit
+	* Shred specific files with bleachbit
+	* Shred specific folders with bleachbit
 	* Deleting Trash 
 	* Deleting Download directory
 	* Delete Cylon output folder ($HOME/Documents/Cylon/
@@ -213,12 +231,17 @@ and readme file to screen (function can also run by -h by -help)
 	* various misc network commands
 	* firewall status and details check
 	
+* Note1: packages list referenced above at (1) include 5 lists :-
+pacman -Qqen , pacman -Qm, pacman -Q  pacman -Qme, 
+comm -23 <(pacman -Qeq | sort) <(pacman -Qgq base base-devel | sort) 
+
 Bug reports and communication
 -----------
 
 If you should find a bug or any other query , 
 please send a report to upstream repo or mail glyons66@hotmail.com
 suggestions for improvements and new features welcome
+Upstream repo: https://github.com/gavinlyonsrepo/cylon
 
 Copyright
 ---------

@@ -29,8 +29,24 @@ function SystemBackFunc
 											D3="1";;
 			"${optionsB1[2]}")  cd "$Dest3" || exitHandlerFunc dest3;;
 			"${optionsB1[3]}")  #custom path read in 
-						msgFunc norm "Type a custom destination path:-"
-						read -r Path1		
+						#msgFunc norm "Type a custom destination path:-"
+						#read -r Path1		
+						Path1=$(dialog --title "Custom backup" --output-fd 1 --begin 1 1 --cancel-label "Exit" --title  "Select Directory path for custom backup" --dselect / 10 40) 
+						case $? in
+							0)
+								msgFunc norm " "
+								msgFunc 	norm "\"$Path1\" chosen directory."
+							;;
+							1)
+								msgFunc yellow "Exit pressed."
+								return
+							;;
+							255)
+								msgFunc red "Box closed."
+								return
+							;;
+						esac
+
 						cd "$Path1" || exitHandlerFunc dest4 
 						D3="1"
 						;;
@@ -97,6 +113,8 @@ function SystemBackFunc
 				pacman -Qqen > pkglistQgenNAT.txt
 				pacman -Qm > pkglistQmAUR.txt
 				pacman -Q  > pkglistQALL.txt
+				pacman -Qme > pkglistQmeAUR.txt
+				comm -23 <(pacman -Qeq | sort) <(pacman -Qgq base base-devel | sort) > pkglistNonBase.txt
 				msgFunc green "Done!"
             ;;&
             "${optionsB2[4]}"|"${optionsB2[5]}")#tar

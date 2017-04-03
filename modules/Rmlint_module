@@ -15,19 +15,32 @@ contains readily prepared shell commands to remove duplicates and other
 finds. cylon wrapper  will scan, then optionally show report and then  
 optionally execute the rmlint.sh.
 EOF
-	     #check crmlint is installed
-            
+	     #check rmlint is installed
             if ! msgFunc checkpac rmlint
 				then
 				msgFunc anykey 
 				return
 			fi
-			msgFunc line
-			msgFunc norm "Type a directory path you wish to scan:-"
-			read -r rmlintPath	            
+			rmlintPath=$(dialog --title "Rmlint" --output-fd 1 --begin 1 1 --cancel-label "Exit" --title  "Select Directory path you wish to scan:" --dselect / 10 40)
+			case $? in
+				0)
+					clear
+				;;
+				1)
+					msgFunc yellow "Exit pressed."
+					return
+				;;
+				255)
+					msgFunc red "Box closed."
+					return
+				;;
+			esac
+			#read -r rmlintPath	            
 		     cd "$rmlintPath" || exitHandlerFunc dest4
 			msgFunc norm " "
-			
+			msgFunc norm "\"$rmlintPath\" chosen directory."
+			msgFunc line
+			#msgFunc norm "Type a directory path you wish to scan:-"
 			##new menu
 			optionsRM=("All" "badids, bi: Find bad UID, GID or files with both." \
 			"badlinks, bl: Find bad symlinks pointing nowhere." \
@@ -38,7 +51,7 @@ EOF
 			"duplicatedirs, dd: Find duplicate directories."\
 			"Return")
 
-			msgFunc blue "Pick rmlint options"
+			msgFunc blue "Pick rmlint options for selected directory $rmlintPath"
 			select  choiceBack in "${optionsRM[@]}"
 			#check that paths exist and change path to dest path
 			do

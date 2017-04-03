@@ -3,14 +3,14 @@
 # HEADER cylon bash shell script
 #================================================================
 #name:cylon
-#Date 280317
+#Date 100417
 #License: 
 #GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
 #see license.md  at repo or /usr/share/licenses/cylon/
 #
 #Written by G lyons 
 #
-#Version 3.4-5  See changelog.md at repo for version control
+#Version 3.5-6  See changelog.md at repo for version control
 #
 #Software repo
 #https://github.com/gavinlyonsrepo/cylon
@@ -27,11 +27,8 @@
 # type cylon in terminal, optional config file cylonCfg.conf 
 # at "$HOME/.config/cylon"
 #options
-#-h --help  print help and exit.
-#-s --system  print system information and exit
-#-v --versiom print version information and exit.
-#-c --config open config file
-#-u --update run update routine all
+#see readme.md(access thru cylon info page) or manpage "man cylon"
+#
 #optional dependencies see helpFunc or PKGBUILD or reame
 #================================================================
 # END_OF_HEADER
@@ -58,9 +55,8 @@ Dest5="$HOME/.config/cylon"
 Dest6="/usr/share/doc/cylon"
 #prompt for select menus
 PS3="${BLUE}By your command:${NORMAL}"
-#
 
-#====================FUNCTIONS space (3)===============================
+#====================FUNCTIONS space (4)===============================
 #FUNCTION HEADER
 # NAME :            msgFunc
 # DESCRIPTION :     utility and general purpose function,
@@ -180,7 +176,7 @@ clear
 msgFunc line
 	if [ "$1" = "HELP" ]
 				then
-				msgFunc green "cylon info and readme display" 
+				msgFunc green "Cylon information and readme.md file  display." 
 				msgFunc line 
 				#Program details print
 				cat <<-EOF
@@ -207,8 +203,8 @@ msgFunc line
 				msgFunc checkpac lostfiles "NOTE: AUR package"
 				#pacaur (optional – AUR package for AUR work
 				msgFunc checkpac pacaur  "NOTE: AUR package"
-				#arch-audit(optional) -AUR package  for Arch CVE Monitoring Team data
-				msgFunc checkpac arch-audit "NOTE: AUR package"
+				#arch-audit(optional) - Arch CVE Monitoring Team data
+				msgFunc checkpac arch-audit 
 				#rmlint (optional) – Finds lint and other unwanted
 				msgFunc checkpac rmlint
 				#rkhunter (optional) – finds root kits malware
@@ -246,10 +242,9 @@ msgFunc line
 				clear
 				return
 			fi
-msgFunc green "System Information"
+msgFunc green "System Information display"
 msgFunc line
 msgFunc norm  #set colour back
-date +%A-Week%U-%d-%B-%Y--%T
 msgFunc norm "Uptime = $(uptime -p)"
 msgFunc norm "Operating System + Kernal = $(uname -mosr)"
 msgFunc norm "Network node name = $(uname -n)"
@@ -263,8 +258,9 @@ memory="${memused}MB / ${memtotal}MB"
 msgFunc norm "RAM used/total = ($memory)"
 msgFunc highlight "Package Information"
 msgFunc norm "Number of All installed  packages = $(pacman -Q | wc -l)"
-msgFunc norm "Number of native, explicitly installed packages  = $(pacman -Qgen | wc -l)"
+msgFunc norm "Number of native explicitly installed packages  = $(pacman -Qgen | wc -l)"
 msgFunc norm "Number of foreign installed packages  = $(pacman -Qm | wc -l)"
+msgFunc norm "Number of foreign explicitly installed packages = $(pacman -Qme | wc -l)"
 msgFunc norm "Accessing archlinux.org Network Database...." 
 msgFunc norm   "Number of Pacman updates ready...>  "
 msgFunc yellow "$(checkupdates | wc -l)"
@@ -308,9 +304,11 @@ function readconfigFunc
 		Destination2="/run/media/$USER/iomeaga_320"
 		#default paths for gdrive sync upload path 1 		#path2 
 		gdriveSource1="$HOME/Documents"
-		gdriveDest1="0B3_RVJ50UWFAaGxJSXg3NGJBaXc"
+		gdriveDest1="0B3_YYY"
 		gdriveSource2="$HOME/Pictures"
-		gdriveDest2="0B3_RVJ50UWFAR3A2T3dZTU9TaTA"
+		gdriveDest2="0B3_XXXX"
+		gdriveSource3="$HOME/Videos"
+		gdriveDest3="XXXXYYY"
 		#paths for rsync option
 		rsyncsource="$HOME/"
 		rsyncDest="/run/media/$USER/Linux_backup/Hbp_rsync_101016"
@@ -404,19 +402,15 @@ case "$1" in
 	  msgFunc anykey
 	  msgFunc line
 	  msgFunc green "Arch-audit upgradable vulnerable packages"
-	  arch-audit -u #used to be -q pre v3.3
+	  arch-audit -u
+	  arch-audit -q
+	  msgFunc anykey
 	  msgFunc line
       msgFunc green "Number of Pacman updates ready ..> $(checkupdates | wc -l)"	
 	  checkupdates
-	  msgFunc anykey
 	  msgFunc line
 	  msgFunc green "Number of updates available for installed AUR packages ..> $(cower -u | wc -l)"
 	  cower -uc
-	   cat <<-EOF
-		The Arch User Repository (AUR) is a community-driven repository for Arch users
-		When installing packages or installing updates
-		user beware. Also make sure TargetDir in cower config file not set. 
-		EOF
 		msgFunc line
 	  msgFunc green "Install ALl updates? pacaur -Syu	 [Y/n]"
 	  read -r choiceIU3
@@ -429,7 +423,7 @@ case "$1" in
   -c|--config)
 		nano  "$HOME/.config/cylon/cylonCfg.conf"
     ;;
-  -d|--defaultBB)
+  -d|--default)
 #Bleachbit system clean. Use the options set in the GUI
 		msgFunc green "Bleachbit system clean"  
 		msgFunc norm "Preset options see $HOME/.config/bleachbit/ or GUI "
@@ -446,7 +440,7 @@ case "$1" in
   -h|--help)
 		HelpFunc HELP
     ;;
-   *) msgFunc yellow "Usage:- -c -d -v -s -u -h"
+   *) msgFunc yellow "Invalid option, Usage: -c -d -v -s -u -h"
    ;;
 esac
 if [ -n "$1" ] 
@@ -455,11 +449,12 @@ then
 else
 	clear
 fi   
-#############
+###################################################
 #MAIN SCREEN, print horizontal line  + Title and datetime
 msgFunc line
-msgFunc highlight "$(pacman -Qs cylon | head -1 | cut -c 7-20) (CYbernetic LifefOrm Node)"
-msgFunc yellow "$(date +%T-%A-%d-Week%U-%B-%Y)"
+msgFunc highlight "$(pacman -Qs cylon | head -1 | cut -c 7-20) CYbernetic LifefOrm Node"
+msgFunc yellow "$(date +%T-%d-%A-Week%U-%B-%Y)"
+msgFunc yellow "Unix epoch time $(date +%s)"
 msgFunc line
 #main program loop    
 while true; do
@@ -538,7 +533,7 @@ while true; do
 				mylength=50
 			fi
 			msgFunc dir "-PGINFO"
-		    echo -n "$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c"${1:-$mylength}";)"	> pg	  
+		   echo -n "$(< /dev/urandom tr -dc _*?#!A-Z-a-z-0-9 | head -c"${1:-$mylength}";)"	> pg	  
 			msgFunc green "Done!"
 			;;
 		"${optionsM[15]}")  # delete folders /files

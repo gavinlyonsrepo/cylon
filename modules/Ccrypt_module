@@ -26,11 +26,26 @@ function ccryptFunc
 	clear
 	else
 			#prompt for manual file path
-			msgFunc norm "Type a path to the folder you want to work with:-"
-			read -r myccfile
+			#msgFunc norm "Type a path to the folder you want to work with:-"
+			#read -r myccfile
+			myccfile=$(dialog --title "Ccrypt" --output-fd 1 --begin 1 1 --cancel-label "Exit" --title  "Select Directory path:" --dselect / 10 40)
+				case $? in
+				0)
+					clear
+				;;
+				1)
+					msgFunc yellow "Exit pressed."
+					return
+				;;
+				255)
+					msgFunc red "Box closed."
+					return
+				;;
+			esac
 			cd "$myccfile" || exitHandlerFunc dest4
+			msgFunc blue "Contents of $myccfile "
 			ls -la
-			msgFunc norm "Type the file name  you want to work with:-"
+			msgFunc blue "Type the file name  you want to work with:-"
 			read -r myccfile
 	fi
 	if [ -f "$myccfile"  ] 

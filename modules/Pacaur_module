@@ -13,26 +13,24 @@ function pacaurFunc
 				return
 			fi
 			clear
-			#AUR warning
-	         msgFunc red  " AUR WARNING: User Beware"	
-	         cat <<-EOF
-			 The Arch User Repository (AUR) is a community-driven repository for Arch users
-			 Before installing packages or installing updates
-			 Please read Arch linux wiki First and learn the AUR system.
-			 Also setting TargetDir in cower config file must not be set.
-			EOF
-			msgFunc anykey
-			clear
 			msgFunc line
 		    msgFunc green "AUR packages management by pacaur. Number of foreign packages installed = $(pacman -Qm | wc -l)"
 		    msgFunc line
+		    #AUR warning
+			msgFunc norm
+	         cat <<-EOF
+			 Note: The Arch User Repository (AUR) is a community-driven repository for Arch users
+			 When installing packages or installing updates > user beware.
+			 Also setting TargetDir in cower config file must not be set.
+			EOF
 			msgFunc blue "Pacaur options:-"
 			optionsP=("Check network and then check for AUR updates (no download), pacaur -k"\
 				"Search for package, pacaur -s" "Display information for package, pacaur -i"\
 	         	 "Get updates for installed packages, pacaur -u" "Download and install a package, pacaur -y"\
 	         	 "Download files and build the package(no install), pacaur -m " "Download the package files only, pacaur -d"\
 	         	  "Delete pacaur cache" "Edit pacaur config file" "Update all packages in all repositories, pacaur -Syu"\
-	         	  "List of all foreign packages installed" "Return")
+	         	  "List of all foreign packages installed" "List all foreign packages explicitly installed" \
+	         	  "Remove foreign packages explicitly installed menu" "Return")
 	         	select choiceP in "${optionsP[@]}"
 	         	do
 				case "$choiceP" in  
@@ -143,10 +141,21 @@ function pacaurFunc
 						pacman -Qm 
 						msgFunc anykey
 						;;
-					*)  #exit  
-				     msgFunc green "Done!"	
-					return
-					;;
+						
+						 "${optionsP[11]}") #List of all foreign packages explicitly installed
+						msgFunc green "List of all foreign packages explicitly installed"
+					     msgFunc norm "Number of foreign packages explicitly installed = $(pacman -Qme | wc -l)"
+						pacman -Qme 
+						msgFunc anykey
+						;;
+						
+						"${optionsP[12]}") #Delete foreign packages explicitly installed
+							DelQmeFunc
+						;;
+						*)  #exit  
+						 msgFunc green "Done!"	
+						return
+						;;
 				esac
 				break
 				done

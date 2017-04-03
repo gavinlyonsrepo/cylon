@@ -13,23 +13,21 @@ function CowerFunc
 				return
 			fi
 			clear
-	         #AUR warning
-	         msgFunc red  " AUR WARNING: User Beware"	
-	         cat <<-EOF
-			 The Arch User Repository (AUR) is a community-driven repository for Arch users
-			 Before installing packages or installing updates
-			 Please read Arch linux wiki First and learn the AUR system.
-			 Also setting TargetDir in cower config file must not be set.
-			EOF
-			msgFunc anykey
-			clear
 			msgFunc line
 		   msgFunc green "AUR packages management by cower. Number of foreign packages installed = $(pacman -Qm | wc -l)"
 		   msgFunc line
+		   	#AUR warning
+			msgFunc norm
+	         cat <<-EOF
+			 Note: The Arch User Repository (AUR) is a community-driven repository for Arch users
+			 When installing packages or installing updates > user beware.
+			 Also setting TargetDir in cower config file must not be set.
+			EOF
 	        msgFunc blue "AUR package install and updates by cower, options:-"
          	optionsC=("Check network and then check for updates (no download), cower -uc" "Information for package, cower -ic" "Search for package, cower -sc" \
          	"Download package, cower -dc + makepkg -si" "Get updates for installed packages, cower -dvuc + makepkg -si" \
-         	 "List all foreign packages, pacman -Qm " "Edit cower config file" "Return")
+         	 "List all foreign packages, pacman -Qm " "List all foreign packages explicitly installed, pacman -Qme " \
+         	 "Edit cower config file" "Remove foreign packages explicitly installed menu" "Return")
          	select choiceCower in "${optionsC[@]}"
 			do
 			case "$choiceCower" in    
@@ -118,7 +116,15 @@ function CowerFunc
 						pacman -Qm 
 						msgFunc anykey
 						;;
-						"${optionsC[6]}") #edit the config file see man cower
+						
+						 "${optionsC[6]}") #List of all foreign packages explicitly installed
+						msgFunc green "List of all foreign packages explicitly installed"
+					     msgFunc norm "Number of foreign packages explicitly installed = $(pacman -Qme | wc -l)"
+						pacman -Qme 
+						msgFunc anykey
+						;;
+						
+						"${optionsC[7]}") #edit the config file see man cower
 						msgFunc green "Edit cower config file"
 								if [ -f  "$XDG_CONFIG_HOME/cower/config" ] 
 								then
@@ -133,11 +139,57 @@ function CowerFunc
 								fi
 						msgFunc anykey
 					;;
-						 *)  #exit to main menu 
-							return
-						 ;;
+					
+					"${optionsC[8]}") #Delete  foreign packages explicitly installed
+							DelQmeFunc
+					;;
+						
+					*)  #exit to main menu 
+						return
+					;;
 				 esac
 				 break
 				 done
 			     msgFunc green "Done!"
 }
+
+
+#FUNCTION HEADER
+# NAME :  DelQmeFunc
+# DESCRIPTION:Delete  foreign packages explicitly installed
+# PROCESS : pacman -Qme pacman -Rs
+#Note called from cowerFunc and pacaurFunc
+function DelQmeFunc
+{
+	arrayQme=$(pacman -Qmeq)
+	IFS=$'\n' arrayQme=($(sort <<<"${arrayQme[*]}"))
+	unset IFS
+	dialog --title "Output of pacman -Qmeq:" --begin 1 1  --no-items --menu "Select Package to Remove:" 20 40 10 "${arrayQme[@]}"  2>/tmp/cylontempfile
+				case $? in
+				0)
+					msgFunc norm " "
+					mySelection=$(cat /tmp/cylontempfile)
+					msgFunc yellow "\"$mySelection\" is the chosen package."
+					msgFunc anykey "and uninstall it. pacman -Rs"
+					sudo pacman -Rs "$mySelection"
+					mySelection=""
+					rm /tmp/cylontempfile
+					msgFunc anykey
+					arrayQme=()
+					clear
+				;;
+				1)
+					clear
+					msgFunc yellow "Cancel pressed."
+					arrayQme=()
+					return
+				;;
+				255)
+					clear
+					msgFunc red "Box closed."
+					arrayQme=()
+					return
+				;;
+			esac
+			
+}  

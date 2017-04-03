@@ -9,10 +9,11 @@ function gdriveFunc
 clear
 msgFunc green "gdrive, connect to google drive via the terminal" 
 gdrive version
-msgFunc yellow "NOTE Options 2 & 3 Include Delete extraneous remote files as of V3.4-5"
+msgFunc yellow "NOTE Options 2,3 & 4 Include Delete extraneous remote files as of V3.4-5"
 msgFunc blue "gdrive options"
 optionsGD=("List all syncable directories on drive" "Sync local directory to google drive (path 1)" \
-"Sync local directory to google drive (path 2)" "List content of syncable directory" "Google drive metadata, quota usage"
+"Sync local directory to google drive (path 2)" "Sync local directory to google drive (path 3)" \
+ "List content of syncable directory" "Google drive metadata, quota usage" \
  "List files" "Get file info" \
   "Return")
 			select  choiceGD in "${optionsGD[@]}"
@@ -36,18 +37,25 @@ optionsGD=("List all syncable directories on drive" "Sync local directory to goo
 				msgFunc anykey
 				gdrive sync upload --delete-extraneous "$gdriveSource2" "$gdriveDest2"
 			   ;;
-			    "${optionsGD[3]}")#List content of syncable directory
+			      "${optionsGD[3]}")#Sync upload to remote directory  path 3
+			     msgFunc green "gdrive sync with remote directory path 3:-"
+			    msgFunc norm "Source: $gdriveSource3"
+				msgFunc norm "Destination: $gdriveDest3"
+				msgFunc anykey
+				gdrive sync upload --delete-extraneous "$gdriveSource3" "$gdriveDest3"
+			   ;;
+			    "${optionsGD[4]}")#List content of syncable directory
 					msgFunc dir "-SYNCINFO"
 					msgFunc green "List content of syncable directory (output to file)"
 					msgFunc norm "Enter fileId:-"
 					read -r  FID
 					gdrive sync content "$FID" > Syncinfo
 			    ;;
-			    "${optionsGD[4]}")#gdrive about
+			    "${optionsGD[5]}")#gdrive about
 					msgFunc green "Google drive metadata, quota usage"
 					gdrive about
 			   ;;
-			     "${optionsGD[5]}")#gdrive list files
+			     "${optionsGD[6]}")#gdrive list files
 					msgFunc green "List files "
 					msgFunc norm "Enter Max files to list, Just press enter for all:-"
 					read -r  num
@@ -70,8 +78,8 @@ optionsGD=("List all syncable directories on drive" "Sync local directory to goo
 								gdrive list  -q "$quy" --order "$order" -m "$num" 
 						fi
 					;;
-				"${optionsGD[6]}")# get file info
-					msgFunc green "get file info"
+				"${optionsGD[7]}")# get file info
+					msgFunc green "Get file info"
 					msgFunc norm "Enter fileId:-"
 					read -r  ID
 					gdrive info "$ID"
