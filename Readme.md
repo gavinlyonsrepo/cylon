@@ -35,7 +35,6 @@ Files
 -----------------------------------------
 Cylon is a bash script installed to /usr/bin by package 
 build.
-cylon files 
 
 * /usr/bin/cylon (the shell script)
 * /usr/lib/cylon/modules/*_module (modular functions called by script)
@@ -54,7 +53,7 @@ The manpage is a truncated version of this readme file.
 Config file: You can create an optional config file for custom system backup. 
 * NAME: cylonCfg.conf 
 * PATH: $HOME/.config/cylon/cylonCfg.conf.
-Config file Settings:
+* SETTINGS:
 "DestinationX" is the path for backups.
 "gdrivedestX" is remote google drive directory file ID
 (see gdrive readme for setup and how to get file id numbers)
@@ -83,9 +82,9 @@ Most system output (logfiles, backups, downloads and updates etc)
 is placed at below path, unless otherwise specified on screen.
 Output folders are created with following syntax HHMM-DDMONYY-X where X
 is output type i.e backup, update etc. The default path is:
-* $HOME/Documents/Cylon
+$HOME/Documents/Cylon
 Optional Environment variable
-* example= export CYLONDEST="$HOME/.cache/cylon"
+example= export CYLONDEST="$HOME/.cache/cylon"
 This optional Environment variable is provided for users
 who wish to use different destination path for program output folder
 if variable is not set or does not exist, cylon uses the default path.
@@ -93,7 +92,7 @@ if variable is not set or does not exist, cylon uses the default path.
 Dependencies
 -------------------------------------
 Some functions require various dependencies packages to be installed.
-There are two dependencies and the rest are optional dependencies
+There are two dependencies and the rest are optional dependencies.
 The optional dependencies are left to user discretion.
 Software will check for missing dependencies and report if user 
 tries to use a function which requires a missing one.
