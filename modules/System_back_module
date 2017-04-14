@@ -34,15 +34,20 @@ function SystemBackFunc
 						Path1=$(dialog --title "Custom backup" --output-fd 1 --begin 1 1 --cancel-label "Exit" --title  "Select Directory path for custom backup" --dselect / 10 40) 
 						case $? in
 							0)
+								clear
 								msgFunc norm " "
 								msgFunc 	norm "\"$Path1\" chosen directory."
 							;;
 							1)
+								clear
+								msgFunc norm " "
 								msgFunc yellow "Exit pressed."
 								return
 							;;
 							255)
-								msgFunc red "Box closed."
+								clear
+								msgFunc norm " "
+								msgFunc yellow "Esc pressed."
 								return
 							;;
 						esac
@@ -109,13 +114,8 @@ function SystemBackFunc
 				sync
 			;;&
 			"${optionsB2[3]}"|"${optionsB2[5]}")#packages
-				msgFunc green "Make copy of package lists"
-				pacman -Qqen > pkglistQgenNAT.txt
-				pacman -Qm > pkglistQmAUR.txt
-				pacman -Q  > pkglistQALL.txt
-				pacman -Qme > pkglistQmeAUR.txt
-				comm -23 <(pacman -Qeq | sort) <(pacman -Qgq base base-devel | sort) > pkglistNonBase.txt
-				msgFunc green "Done!"
+				#pass Backup to pkglistFunc to not create directory
+				pkglistFunc "Backup"
             ;;&
             "${optionsB2[4]}"|"${optionsB2[5]}")#tar
 				msgFunc green "Make tarball of all except tmp dev proc sys run"

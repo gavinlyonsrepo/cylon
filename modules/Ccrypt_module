@@ -7,6 +7,7 @@
 #NOTES :   needs ccrypt  installed 
 function ccryptFunc
 {
+	while true; do
 	clear
 	myccfile=""
 	msgFunc blue "ccrypt - encrypt and decrypt files:-"
@@ -34,11 +35,13 @@ function ccryptFunc
 					clear
 				;;
 				1)
+					clear
 					msgFunc yellow "Exit pressed."
 					return
 				;;
 				255)
-					msgFunc red "Box closed."
+					clear
+					msgFunc yellow "Esc pressed."
 					return
 				;;
 			esac
@@ -53,7 +56,7 @@ function ccryptFunc
 		msgFunc norm "$myccfile Found file!" 
 	 else
 		msgFunc red "$myccfile File out found!"
-		exitHandlerFunc exitout
+		exitHandlerFunc fileerror 
 	 fi
 	 msgFunc blue "ccrypt - encrypt and decrypt files Menu options:-"
 	optionscc=("Encrypt a file " "Decrypt a file" "View encrypted file" \
@@ -91,4 +94,6 @@ function ccryptFunc
 			break
 			done
 			msgFunc green "Done!"
+			msgFunc anykey
+done
 }

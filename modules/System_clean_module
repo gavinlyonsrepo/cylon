@@ -15,7 +15,7 @@ function SystemCleanFunc
 				msgFunc blue "Delete files/folders. options:-"
 				optionsF=("$(msgFunc checkpac bleachbit NOMES) shred file function" "$(msgFunc checkpac bleachbit NOMES) shred folder function" \
 				"Delete Trash folder" \
-	         	"Delete Download folder" "Delete Cylon output folder ($HOME/Documents/Cylon/)" "Return")
+	         	"Delete Download folder" "Delete Cylon output folder $Dest3" "Return")
 	         	select choiceF in "${optionsF[@]}"
 	         	do
 				case "$choiceF" in  
@@ -27,11 +27,13 @@ function SystemCleanFunc
 								clear
 							;;
 							1)
+								clear
 								msgFunc yellow "Exit pressed."
 								return
 							;;
 							255)
-								msgFunc red "Box closed."
+								clear
+								msgFunc yellow "Esc pressed."
 								return
 							;;
 						esac
@@ -56,11 +58,13 @@ function SystemCleanFunc
 								clear
 							;;
 							1)
+								msgFunc norm " "
 								msgFunc yellow "Exit pressed."
 								return
 							;;
 							255)
-								msgFunc red "Box closed."
+								msgFunc norm " "
+								msgFunc yellow "Esc pressed."
 								return
 							;;
 						esac
@@ -83,8 +87,8 @@ function SystemCleanFunc
 					"${optionsF[3]}")  msgFunc green "Deleting Download folder "
 						 rm -rvf "$HOME"/Downloads/*
 					;;
-				   "${optionsF[4]}")  msgFunc green "Deleting Cylon output folder ($HOME/Documents/Cylon/)"
-				   		rm -rvf "$HOME"/Documents/Cylon/*
+				   "${optionsF[4]}")  msgFunc green "Deleting Cylon output folder $Dest3"
+				   		rm -rvf "$Dest3"
 					;;
 					*)  #exit  
 				     msgFunc green "Done!"	
@@ -93,7 +97,6 @@ function SystemCleanFunc
 				esac
 				break
 				done
-				msgFunc green "Done!"	
 			return
 			fi
 			#check bleachbit is installed

@@ -13,6 +13,16 @@ Command line program for an Arch linux distro as possible.
 This script provides numerous tools 
 to Arch Linux users for updates, maintenance, system checks and backups.  
 
+.SH ENVIRONMENT VARIABLES 
+.TP
+.B \ CYLONDEST 
+example= export CYLONDEST="$HOME/.cache/cylon"  ,
+Optional destination for program output.
+Sets the output folder for downloads updates etc
+if variable is not set or does not exist,, cylon uses default path at 
+$HOME/Documents/Cylon
+
+
 .SH OPTIONS
 .TP
 .B \-c --config 
@@ -30,25 +40,32 @@ Runs a full update report with option to execute and exit
 .B \-d --default
 Bleachbit system clean. Use the options set in the GUI/file
 .TP
-.B \* -v --version 
+.B \-v --version 
 Print version information and exit.
 
 .SH FILES
 cylon files 
 .TP
-.B /usr/bin/cylon (the shell script)
+.B \ 
+/usr/bin/cylon (the shell script)
 .TP
-.B /usr/lib/cylon/modules (library functions)
+.B \ 
+/usr/lib/cylon/modules (library functions)
 .TP
-.B /usr/share/doc/cylon/Readme.md
+.B \ 
+/usr/share/doc/cylon/Readme.md
 .TP
-.B /usr/share/doc/cylon/changelog.md
+.B \ 
+/usr/share/doc/cylon/changelog.md
 .TP
-.B /usr/share/licenses/cylon/License.md
+.B \ 
+/usr/share/licenses/cylon/License.md
 .TP
-.B /usr/share/man/man1/cylon.7
+.B \ 
+/usr/share/man/man1/cylon.7
 .TP
-.B $HOME/.config/cylon/cylonCfg.conf (optional, user made, not install)
+.B \ 
+$HOME/.config/cylon/cylonCfg.conf (optional, user made, not installed)
 
 .SH CONFIG FILE OPTIONS
 .TP
@@ -64,11 +81,18 @@ Source for Gdrive backup local Source path 1
 .B \ gdriveSource2="foo/foo2" 
 Source for Gdrive backup local Source path 2
 .TP
+.B \ gdriveSource3="foo/foo2" 
+Source for Gdrive backup local Source path 3
+.TP
 .B \ gdriveDest1="foo123456789" 
 Destination for Gdrive backup path 1 on google drive
 is remote google drive  directory ID(see gdrive readme)
 .TP
 .B \ gdriveDest2="foo2123456789" 
+Destination  for Gdrive backup path 2 on google drive
+is remote google drive  directory ID(see gdrive readme)
+.TP
+.B \ gdriveDest3="foo2123456789" 
 Destination  for Gdrive backup path 2 on google drive
 is remote google drive  directory ID(see gdrive readme)
 .TP
@@ -84,7 +108,8 @@ default file path option for ccrypt
 Most system output (logsfiles, backups, downloads and updates etc) 
 is placed at below path , unless otherwise specified on screen
 output folders are created with following syntax HHMM-DDMONYY-X where X
-is output type i.e backup, update etc
+is output type i.e backup, update etc. 
+This setting can be overwritten by environmental variable see above
 .TP
 .B $HOME/Documents/Cylon
 
@@ -93,17 +118,18 @@ Created by Gavin Lyons. glyons66@hotmail.com
 
 .SH "SEE ALSO"
 upstream repository https://github.com/gavinlyonsrepo/cylon
-Cylon information page option in menu or -h includes optdepends 
-install check.
-Readme.md for full detailed list of menu options and functions
-is displayed on cylon information page which is launched from menu or -h
+Cylon information page option in menu or -h includes depends 
+installlation check.
+This manpage is a TRUNCATED version of the readme.md file.
+Readme.md for FULL detailed list of menu options and functions
+is displayed on cylon information page which is launched from menu or -h option
 
 .SH REPORTING BUGS
 If you should find a bug or any other query , 
 please send a report 
 to upstream repo https://github.com/gavinlyonsrepo/cylon
 or mail glyons66@hotmail.com
-suggestions for improvements and new features welcome
+suggestions for improvements and new features welcome.
 
 .SH COPYRIGHT
 Copyright (C) 2016 G Lyons 

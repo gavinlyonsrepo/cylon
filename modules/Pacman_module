@@ -12,16 +12,15 @@ function PacmanFunc
 		   msgFunc green "Pacman package manager. Number of packages installed = $(pacman -Q | wc -l) "
 		   msgFunc line
 		   msgFunc blue "Pacman package manager options:-"
-			options=("Check network and then check for updates (no download)" "pacman -Syu Upgrade packages" \
+			options=("Check for pacman updates (no download)" "pacman -Syu Upgrade packages" \
 			 "pacman -Si Display extensive information about a given package" "pacman -S Install Package" \
 			 "pacman -Ss Search for packages in the database" \
 			 "pacman -Rs Remove Package" "pacman -Qs Search for already installed packages" \
 			 "pacman -Qi  Display extensive information for locally installed packages" "pacman -Ql  List all files owned by a given package." \
-			  "pacman -Qkk Verify packages" "paccache -r Prune older packages from cache"\
-			 "Write installed package lists to files" "Remove all packages not required as dependencies (orphans)" \
+			  "pacman -Qkk Verify packages" "paccache -r Prune older packages from cache, Keep last 3"\
+			 "Remove all packages not required as dependencies (orphans)" "Make a copy of package lists"  \
 			 "Back-up the local pacman database" "Arch Linux News Rss feed" "$(msgFunc checkpac arch-audit  NOMES)" \
-			 "pactree,    List dependency tree of a package" "pactree -r, Show packages that depend on the named package" \
-			"Edit pacman config file" "Return to main menu")
+			 "pactree options" "Edit pacman config file" "Return to main menu")
 			select choicep in "${options[@]}"
 			do
 			case "$choicep" in
@@ -93,40 +92,35 @@ function PacmanFunc
 							pacman -Qkk > pkgverall
 						fi
 					;;
-					"${options[10]}")  msgFunc green  "Prune older packages from cache."
+					"${options[10]}")  msgFunc green  "Prune older packages from cache, paccache -r Keeps last 3"
 					#The paccache script, deletes all cached  package 
 						#regardless of whether they're installed or not, 
 						#except for the most recent 3, 
 							sudo paccache -r
 					;;
-					"${options[11]}")msgFunc green "Writing installed package lists to files at :"
-						msgFunc dir "-PKGINFO"
-						msgFunc green "All installed  packages" 
-						pacman -Q  | tee pkglistQ.txt
-						msgFunc green "All native explicitly installed packages"
-						pacman -Qqen | tee pkglistQgen.txt
-						msgFunc green "All foreign installed packages"
-						pacman -Qm | tee pkglistQm.txt
-						msgFunc green "All foreign explicitly installed packages"
-						pacman -Qme | tee pkglistQme.txt
-						msgFunc green "List explicitely installed packages not in the base or base-devel groups: "
-						comm -23 <(pacman -Qeq | sort) <(pacman -Qgq base base-devel | sort) | tee pkglistNonbase.txt
-					;;
-					"${options[12]}")   #delete orphans
+					
+					"${options[11]}")   #delete orphans
 						msgFunc green "Delete orphans!"
 						#Remove all packages not required as dependencies (orphans)
 						sudo pacman -Rns "$(pacman -Qtdq)"
 					;;
-					
+
+					"${options[12]}")
+						msgFunc green "Make copy of package lists"
+						pkglistFunc
+					;;
 					"${options[13]}") #backup the pacman database
 						msgFunc green "Back-up the pacman database to :"
 						msgFunc dir "-BACKUPPACMAN"
 						tar -v -cjf pacman_database.tar.bz2 /var/lib/pacman/local
 					;;
+
+					
 					"${options[14]}") #Arch Linux News Rss feed
 						RssFunc
 						;;
-						"${options[15]}") #run arch audit
+						
+					"${options[15]}") #run arch audit
 						msgFunc green "Running arch-audit program :"
 						#check archaudit is installed
 						if ! msgFunc checkpac arch-audit
@@ -144,19 +138,25 @@ function PacmanFunc
 						fi 
 					    ARCHAUDIT=
 					    ;;
-					      "${options[16]}") #To list a dependency tree of a package:
-						msgFunc green "List a dependency tree of a package:"
-						msgFunc norm "Please enter package name"
-						read -r pacString
-                        pactree "$pacString"
+					      
+					     "${options[16]}") #pactree
+									msgFunc green "pactree options"
+									msgFunc norm "List a dependency tree of a package: pactree"
+									msgFunc norm "Show packages that depend on the named package: pactree -r"
+									msgFunc norm "press [A] for pactree or [r] for pactree -r. [A/r]"
+									read -r PACTREE
+									if [ "$PACTREE" != "r" ]
+									then
+										msgFunc norm "Please enter package name"
+										read -r pacString
+										pactree "$pacString"
+									else
+										msgFunc norm "Please enter package name"
+										read -r pacString
+										pactree -r "$pacString"
+									fi
 						;;
-						  "${options[17]}") #  Show packages that depend on the named package.
-						msgFunc green "Show packages that depend on the named package:"
-						msgFunc norm "Please enter package name"
-						read -r pacString
-                        pactree -r "$pacString"
-						;;
-					    "${options[18]}") #edit pacman conf file
+					    "${options[17]}") #edit pacman conf file
 						msgFunc green "Edit Pacman.conf file."
 						sudo nano  /etc/pacman.conf
 						;;
@@ -211,3 +211,55 @@ function RssFunc
 				#end
 }
 
+#FUNCTION HEADER
+# NAME :            pkglistFunc
+#INPUT $1 Backup if called from backup do not create directory
+# DESCRIPTION :creates a copy of packages list seven off see below.
+#OUTPUT seven files see below
+#NOTE called from pacman pacur cower and backup  functions 
+function pkglistFunc
+{
+				msgFunc green "Making a copy of package lists "
+				#check for input if Backup called from backup do not create dir
+				if [ "$1" != "Backup" ]
+				then
+					msgFunc dir "-PKGINFO"
+				fi
+				
+				msgFunc green "All installed packages: pkglistQ.txt" 
+				pacman -Q | wc -l
+				pacman -Q  > pkglistQ.txt
+				
+				msgFunc green "All native packages: pkglistQn.txt" 
+				pacman -Qn | wc -l
+				pacman -Qn > pkglistQn.txt
+				
+				msgFunc green "All explicitly installed packages: pkglistQe.txt" 
+				pacman -Qe | wc -l
+				pacman -Qe  > pkglistQe.txt
+				
+				msgFunc green "ALL explicitly installed native packages that are"
+				msgFunc green "not direct or optional dependencies: pkglistQgent.txt"
+				pacman -Qqent | wc -l
+				pacman -Qqent > pkglistQqent.txt
+				
+				msgFunc green "All foreign installed packages: pkglistQm.txt"
+				pacman -Qm | wc -l
+				pacman -Qm > pkglistQm.txt
+				
+				msgFunc green "All foreign explicitly installed packages: pkglistQme.txt"
+				pacman -Qme | wc -l
+				pacman -Qme > pkglistQme.txt
+				
+				msgFunc green "All explicitly installed packages not in base nor base-devel with size"
+				msgFunc green "and description: pkglistNonBase.txt"
+				expac -H M "%011m\t%-20n\t%10d" $(comm -23 <(pacman -Qqen | sort) <(pacman -Qqg base base-devel | sort))\
+				| sort -hr > pkglistNonBase.txt 
+				wc -l < pkglistNonBase.txt 
+				
+				msgFunc green "All installed packages sorted by size: pkglistSize.txt"
+				expac -H M '%m\t%n' | sort -hr > pkglistSize.txt
+				
+				msgFunc green "All installed packages sorted by install date: pkglistDate.txt"
+				expac --timefmt='%Y-%m-%d %T' '%l\t%n' | sort -hr > pkglistDate.txt
+}

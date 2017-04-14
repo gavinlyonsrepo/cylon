@@ -18,18 +18,13 @@ function pacaurFunc
 		    msgFunc line
 		    #AUR warning
 			msgFunc norm
-	         cat <<-EOF
-			 Note: The Arch User Repository (AUR) is a community-driven repository for Arch users
-			 When installing packages or installing updates > user beware.
-			 Also setting TargetDir in cower config file must not be set.
-			EOF
 			msgFunc blue "Pacaur options:-"
-			optionsP=("Check network and then check for AUR updates (no download), pacaur -k"\
+			optionsP=("Check for AUR updates (no download), pacaur -k"\
 				"Search for package, pacaur -s" "Display information for package, pacaur -i"\
-	         	 "Get updates for installed packages, pacaur -u" "Download and install a package, pacaur -y"\
+	         	 "Get updates for installed packages, pacaur -u" "Download, build and install the package, pacaur -y"\
 	         	 "Download files and build the package(no install), pacaur -m " "Download the package files only, pacaur -d"\
 	         	  "Delete pacaur cache" "Edit pacaur config file" "Update all packages in all repositories, pacaur -Syu"\
-	         	  "List of all foreign packages installed" "List all foreign packages explicitly installed" \
+	         	  "Make a copy of package lists" \
 	         	  "Remove foreign packages explicitly installed menu" "Return")
 	         	select choiceP in "${optionsP[@]}"
 	         	do
@@ -88,7 +83,7 @@ function pacaurFunc
 						#check if custom AURDEST environmental variable defined
 						if [ -d "$AURDEST" ] 
 							then
-								msgFunc red "AURDEST environmental variable set, please do manual delete"
+								msgFunc red "AURDEST environmental variable set, please do manual delete instead."
 							else
 								msgFunc green "Deleting the pacaur cache"
 								if  [ -d "$XDG_CACHE_HOME/pacaur/" ]
@@ -112,7 +107,7 @@ function pacaurFunc
 									then
 									 nano "$HOME/.config/pacaur/config"   
 									 else
-									 msgFunc red "user config File does not exist"
+									 msgFunc red "User config File does not exist"
 									fi
 								fi
 							else #system file
@@ -124,7 +119,7 @@ function pacaurFunc
 									then
 									sudo nano "/etc/xdg/pacaur/config" 
 									else
-									msgFunc red "system config File does not exist"
+									msgFunc red "System config File does not exist"
 									fi
 								fi
 						fi
@@ -135,21 +130,13 @@ function pacaurFunc
 						pacaur -Syu
 						msgFunc anykey
 						;;
-						"${optionsP[10]}") #"List of all foreign packages
-						msgFunc green "List of all foreign packages installed"
-					     msgFunc norm "Number of foreign packages installed = $(pacman -Qm | wc -l)"
-						pacman -Qm 
+						"${optionsP[10]}") #Make copy of package lists
+						msgFunc green "Make copy of package lists"
+						pkglistFunc
 						msgFunc anykey
 						;;
-						
-						 "${optionsP[11]}") #List of all foreign packages explicitly installed
-						msgFunc green "List of all foreign packages explicitly installed"
-					     msgFunc norm "Number of foreign packages explicitly installed = $(pacman -Qme | wc -l)"
-						pacman -Qme 
-						msgFunc anykey
-						;;
-						
-						"${optionsP[12]}") #Delete foreign packages explicitly installed
+
+						"${optionsP[11]}") #Delete foreign packages explicitly installed
 							DelQmeFunc
 						;;
 						*)  #exit  

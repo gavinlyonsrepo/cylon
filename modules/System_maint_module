@@ -12,8 +12,11 @@ function SystemMaintFunc
 	        optionsM2=("Failed Systemd Services and status" "Check Journalctl log for Errors"\
 				"Check Journalctl for fstrim SSD trim" "Analyze system boot-up performance"\
 				"Check for Broken Symlinks" "Find files where no group or User corresponds to file's numeric ID"\
-				"$(msgFunc checkpac lostfiles NOMES)" "Diskspace usage" "Old configuration files scan" "Return")
-			
+				"$(msgFunc checkpac lostfiles NOMES)" "Diskspace usage" "Old configuration files scan"\
+				 "Print sensors information" "Clean journal files"\
+				 "Delete core dumps /var/lib/systemd/coredump/" "Delete files"\
+				  "Password generator" "$(msgFunc checkpac inxi NOMES)" "Return")
+
 		   #change dir for log files
 	        msgFunc dir "-SYSINFO"
 			msgFunc norm "Files report will be written to path above -"
@@ -172,8 +175,55 @@ EOF
 					done
 					printf "%s\n" "${MYARRAY2[@]}" > HOMELOCALSHAREfile
 				;;
-
-			 *)#quit
+				"${optionsM2[9]}")
+						msgFunc green "Print sensor information"
+						sensors
+			    ;;
+			    "${optionsM2[10]}")
+						msgFunc green "Clean journalctl files(systemd logging system)"
+						msgFunc norm "Remove archived journal files until the disk space they use falls "
+						msgFunc norm "below 100M: press y or any other key to quit [y/N]"
+						read -r choiceDJ
+							if [ "$choiceDJ" = "y" ]
+							then
+								journalctl --vacuum-size=100M
+							else
+								return
+							fi
+			    ;;
+			    "${optionsM2[11]}")
+						msgFunc green "Delete core dumps /var/lib/systemd/coredump/"
+						rm -rvf "/var/lib/systemd/coredump/*"
+			    ;;
+			    "${optionsM2[12]}")  # delete folders /files
+						SystemCleanFunc "FOLDERS"
+			    ;;
+				#"Password generator" 
+				"${optionsM2[13]}")
+					msgFunc green "Random Password generator"
+					msgFunc norm "Enter length:-"
+					read -r mylength
+					if [ -z "$mylength" ]; then
+						mylength=50
+					fi
+				   echo -n "$(< /dev/urandom tr -dc "_*?#!A-Z-a-z-0-9" | head -c"${1:-$mylength}";)"	> pg	  
+				;;
+				
+				"${optionsM2[14]}")
+						#check if inxi package  installed
+						if ! msgFunc checkpac inxi
+						then
+							msgFunc anykey 
+							clear
+						break
+						fi
+						# inxi  - Command line system information script for console and IRC
+						msgFunc green "get output of inxi -Fixz"
+						inxi -Fixz | tee inxioutput
+				;;
+			
+				
+				*)#quit
 				msgFunc green "Done!"
 				return
 				;;
@@ -181,7 +231,6 @@ EOF
 			esac
 			break 
 			done
-			
 			msgFunc green "Done!"	
 			msgFunc anykey 
 			clear

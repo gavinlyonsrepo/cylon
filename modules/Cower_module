@@ -16,17 +16,41 @@ function CowerFunc
 			msgFunc line
 		   msgFunc green "AUR packages management by cower. Number of foreign packages installed = $(pacman -Qm | wc -l)"
 		   msgFunc line
-		   	#AUR warning
 			msgFunc norm
-	         cat <<-EOF
-			 Note: The Arch User Repository (AUR) is a community-driven repository for Arch users
-			 When installing packages or installing updates > user beware.
-			 Also setting TargetDir in cower config file must not be set.
-			EOF
+			#check for Targetdir setting in cower file
+			if [ -f  "$XDG_CONFIG_HOME/cower/config" ] 
+					then
+										cowerTD=$( grep  'TargetDir' < "$XDG_CONFIG_HOME/cower/config" )
+										if [[ $cowerTD == *'#'* ]]; then
+											msgFunc norm ""
+										else
+											msgFunc red "WARNING: The setting TargetDir in cower config file detected as set"
+											msgFunc red "Must be commented out as #TargetDir for cylon to work"
+											 grep  'TargetDir' < "$XDG_CONFIG_HOME/cower/config"
+										fi
+					else 
+									 if [ -f "$HOME/.config/cower/config" ] 
+									 then
+										cowerTD=$( grep  'TargetDir' < "$HOME/.config/cower/config" )
+										if [[ $cowerTD == *'#'* ]]; then
+											msgFunc norm ""
+										else
+											msgFunc red "WARNING: The setting TargetDir in cower config file detected as set"
+											msgFunc red "Must be commented out as #TargetDir for cylon to work"
+											grep  'TargetDir' < "$HOME/.config/cower/config"
+																					fi
+									else
+										msgFunc red "config file not found, see man cower"
+									fi
+					fi
+			
+			###
+	         #msgFunc norm "Note: The setting TargetDir in cower config file must not be set."
 	        msgFunc blue "AUR package install and updates by cower, options:-"
-         	optionsC=("Check network and then check for updates (no download), cower -uc" "Information for package, cower -ic" "Search for package, cower -sc" \
-         	"Download package, cower -dc + makepkg -si" "Get updates for installed packages, cower -dvuc + makepkg -si" \
-         	 "List all foreign packages, pacman -Qm " "List all foreign packages explicitly installed, pacman -Qme " \
+         	optionsC=("Check for AUR updates (no download), cower -uc" "Information for package, cower -ic" "Search for package, cower -sc" \
+         	"Download package, cower -dc + optional Install" "Get updates for installed packages, cower -dvuc + Update" \
+         	"Download package only, no install. cower -dc" \
+         	 "Make copy of package lists" "Read AUR Package comments"\
          	 "Edit cower config file" "Remove foreign packages explicitly installed menu" "Return")
          	select choiceCower in "${optionsC[@]}"
 			do
@@ -110,21 +134,33 @@ function CowerFunc
 							msgFunc norm "No updates found for installed AUR packages by Cower."
 						  fi	
 						;;
-						 "${optionsC[5]}") #List of all foreign packages
-						msgFunc green "List of all foreign packages installed"
-					     msgFunc norm "Number of foreign packages installed = $(pacman -Qm | wc -l)"
-						pacman -Qm 
+						
+						"${optionsC[5]}") #cower -d Download AUR package with NO Install.
+							msgFunc green "${GREEN}Download AUR package cower -d"
+							msgFunc dir "-AURDOWNLOAD"
+							#build and install packages
+							msgFunc norm "Type a AUR package name:-"
+							read -r cower1Pac		
+							cower -d -c	 "$cower1Pac" || return
+							msgFunc anykey
+						;;
+						
+						"${optionsC[6]}") #Make copy of package lists"
+						msgFunc green "Make copy of package lists"
+						pkglistFunc
 						msgFunc anykey
 						;;
 						
-						 "${optionsC[6]}") #List of all foreign packages explicitly installed
-						msgFunc green "List of all foreign packages explicitly installed"
-					     msgFunc norm "Number of foreign packages explicitly installed = $(pacman -Qme | wc -l)"
-						pacman -Qme 
-						msgFunc anykey
+						"${optionsC[7]}") #read comments
+								msgFunc green "Read AUR Package comments"
+								msgFunc dir "-AURDOWNLOAD"
+								msgFunc norm "Type a AUR package name:-"
+								read -r cower5Pac		
+								aururl="aur.archlinux.org"
+								curl -s "https://${aururl}/packages/$cower5Pac/?comments=all" | sed -r -n -e "/<div id=\"news\">/,/<!-- End of main content -->/p" | sed -e 's/<[^>]*>//g' > AURcommentfile.
+								msgFunc anykey
 						;;
-						
-						"${optionsC[7]}") #edit the config file see man cower
+						"${optionsC[8]}") #edit the config file see man cower
 						msgFunc green "Edit cower config file"
 								if [ -f  "$XDG_CONFIG_HOME/cower/config" ] 
 								then
@@ -140,11 +176,12 @@ function CowerFunc
 						msgFunc anykey
 					;;
 					
-					"${optionsC[8]}") #Delete  foreign packages explicitly installed
+					"${optionsC[9]}") #Delete foreign packages explicitly installed
 							DelQmeFunc
 					;;
 						
 					*)  #exit to main menu 
+						clear
 						return
 					;;
 				 esac
@@ -167,6 +204,7 @@ function DelQmeFunc
 	dialog --title "Output of pacman -Qmeq:" --begin 1 1  --no-items --menu "Select Package to Remove:" 20 40 10 "${arrayQme[@]}"  2>/tmp/cylontempfile
 				case $? in
 				0)
+					clear
 					msgFunc norm " "
 					mySelection=$(cat /tmp/cylontempfile)
 					msgFunc yellow "\"$mySelection\" is the chosen package."
@@ -186,7 +224,7 @@ function DelQmeFunc
 				;;
 				255)
 					clear
-					msgFunc red "Box closed."
+					msgFunc yellow "Esc pressed."
 					arrayQme=()
 					return
 				;;

@@ -3,15 +3,12 @@
 # HEADER cylon bash shell script
 #================================================================
 #name:cylon
-#Date 100417
+#Date 200417
 #License: 
 #GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
 #see license.md  at repo or /usr/share/licenses/cylon/
-#
 #Written by G lyons 
-#
-#Version 3.5-6  See changelog.md at repo for version control
-#
+#Version 3.6-7  See changelog.md at repo for version control
 #Software repo
 #https://github.com/gavinlyonsrepo/cylon
 #AUR package name = cylon , at aur.archlinux.org by glyons
@@ -20,20 +17,13 @@
 #Aur package name = cylon 
 #A script to do as much maintenance, backups and system checks in 
 #single menu driven optional script Command line program for Arch.  
-#see readme.md  at repo 
-#or usr/share/doc for more info also man page.
-#
 # Usage
 # type cylon in terminal, optional config file cylonCfg.conf 
 # at "$HOME/.config/cylon"
-#options
+#options and dependencies 
 #see readme.md(access thru cylon info page) or manpage "man cylon"
-#
-#optional dependencies see helpFunc or PKGBUILD or reame
 #================================================================
 # END_OF_HEADER
-#================================================================
-
 
 #=======================VARIABLES SETUP=============================
 #colours for printf
@@ -43,20 +33,26 @@ YELLOW=$(printf "\033[33;1m")
 BLUE=$(printf "\033[36;1m")
 HL=$(printf "\033[42;1m")
 NORMAL=$(printf "\033[0m") 
-#make the path for the program output dest3
-mkdir -p "$HOME/Documents/Cylon/"
-#make the path for the optional config file ,left to user to create it
-mkdir -p "$HOME/.config/cylon"
+
 #set the path for the program output
-Dest3="$HOME/Documents/Cylon/"
-#set the path for optional config file dest5
+#if environmental variable exists set it to Dest3
+if [ -z "${CYLONDEST}" ]
+then 
+	Dest3="$HOME/Documents/Cylon/"
+else 
+	Dest3="$CYLONDEST"
+fi
+#set the path for optional config file Dest5
 Dest5="$HOME/.config/cylon"
 #set path for readme.md changlog.md dest6
 Dest6="/usr/share/doc/cylon"
 #prompt for select menus
 PS3="${BLUE}By your command:${NORMAL}"
-
-#====================FUNCTIONS space (4)===============================
+#make the path for the program output dest3
+mkdir -p "$Dest3"
+#make the path for the optional config file ,left to user to create it
+mkdir -p "$Dest5"
+#====================FUNCTIONS space (2)===============================
 #FUNCTION HEADER
 # NAME :            msgFunc
 # DESCRIPTION :     utility and general purpose function,
@@ -164,181 +160,19 @@ function msgFunc
 }
 
 #FUNCTION HEADER
-# NAME :            HelpFunc
-# DESCRIPTION :     two sections one prints various system information the
-# other cylon information and the installed readme file
-# INPUTS : $1 process name either HELP or SYS    
-# OUTPUTS : n/a
-# PROCESS :[1] HELP =cylon info [2] SYS   =system info
-function HelpFunc 
-{
-clear
-msgFunc line
-	if [ "$1" = "HELP" ]
-				then
-				msgFunc green "Cylon information and readme.md file  display." 
-				msgFunc line 
-				#Program details print
-				cat <<-EOF
-				Cylon is an Arch Linux maintenance CLI program written in Bash script.
-				This program provides numerous tools to Arch Linux users to carry 
-				out updates, maintenance, system checks, backups and more. 
-				EOF
-				msgFunc norm "Written by G.Lyons, Reports to  <glyons66@hotmail.com>"
-				msgFunc norm "AUR package name = cylon, at aur.archlinux.org by glyons."
-				msgFunc norm "Version=$(pacman -Qs cylon | head -1 | cut -c 7-20)"
-				msgFunc norm "Cylon program location = $(which cylon)"
-				msgFunc norm "Cylon modules for functions = /usr/lib/cylon/modules/*"
-				msgFunc norm "Folder for Cylon output data = $Dest3"
-				msgFunc norm "Location of cylonCfg.conf = $Dest5"
-				msgFunc norm "Location of readme.md changlog.md = $Dest6"
-				msgFunc norm "Location of License.md = /usr/share/licenses/cylon"
-				msgFunc norm "Man page, Desktop entry  and icon also installed"
-				msgFunc anykey "and check which optional dependencies are installed"
-				#cower  (optional) – AUR package for AUR work
-				msgFunc checkpac cower "NOTE: AUR package"
-				#gdrive  (optional) – AUR package for google drive backup
-				msgFunc checkpac gdrive "NOTE: AUR package"
-				#lostfiles (optional) – AUR package for finding lost files
-				msgFunc checkpac lostfiles "NOTE: AUR package"
-				#pacaur (optional – AUR package for AUR work
-				msgFunc checkpac pacaur  "NOTE: AUR package"
-				#arch-audit(optional) - Arch CVE Monitoring Team data
-				msgFunc checkpac arch-audit 
-				#rmlint (optional) – Finds lint and other unwanted
-				msgFunc checkpac rmlint
-				#rkhunter (optional) – finds root kits malware
-				msgFunc checkpac rkhunter
-				#gnu-netcat (optional) – used for checking network
-				msgFunc checkpac gnu-netcat "NOTE: No need if using openbsd-netcat"
-				#openbsd-netcat(optional) – used for checking network
-				msgFunc checkpac openbsd-netcat "NOTE: No need if using gnu-netcat"
-				#clamav  (optional) – used for finding malware
-				msgFunc checkpac clamav
-				#bleachbit  (optional) – used for system clean
-				msgFunc checkpac bleachbit 
-				#ccrypt (optional) – Encrypt and decrypt files
-				msgFunc checkpac ccrypt
-				#rsync (optional) – backup utility
-				msgFunc checkpac rsync
-				#lynis (optional) – system auditor
-				msgFunc checkpac lynis
-				#inxi (optional) – CLI system information script 
-				msgFunc checkpac inxi
-				#htop (optional) – Command line system information script 
-				msgFunc checkpac htop
-				#wavemon (optional) – wireless network monitor 
-				msgFunc checkpac wavemon
-				#speedtest-cli (optional) – testing internet bandwidth
-				msgFunc checkpac speedtest-cli
-				msgFunc anykey "and view the readme."
-				msgFunc line
-				msgFunc green "Displaying cylonReadme.md file at $Dest6"
-				cd "$Dest6"  || exitHandlerFunc dest6
-				more Readme.md 
-				msgFunc green "Done!" 
-				msgFunc line
-				msgFunc anykey
-				clear
-				return
-			fi
-msgFunc green "System Information display"
-msgFunc line
-msgFunc norm  #set colour back
-msgFunc norm "Uptime = $(uptime -p)"
-msgFunc norm "Operating System + Kernal = $(uname -mosr)"
-msgFunc norm "Network node name = $(uname -n)"
-msgFunc norm "Screen Resolution = $(xrandr |grep "\*" | cut -c 1-15)"
-msgFunc norm "CPU $(grep name /proc/cpuinfo  | tail -1)"
-mem=($(awk -F ':| kB' '/MemTotal|MemAvail/ {printf $2}' /proc/meminfo))
-memused="$((mem[0] - mem[1]))"
-memused="$((memused / 1024))"
-memtotal="$((mem[0] / 1024))"
-memory="${memused}MB / ${memtotal}MB"
-msgFunc norm "RAM used/total = ($memory)"
-msgFunc highlight "Package Information"
-msgFunc norm "Number of All installed  packages = $(pacman -Q | wc -l)"
-msgFunc norm "Number of native explicitly installed packages  = $(pacman -Qgen | wc -l)"
-msgFunc norm "Number of foreign installed packages  = $(pacman -Qm | wc -l)"
-msgFunc norm "Number of foreign explicitly installed packages = $(pacman -Qme | wc -l)"
-msgFunc norm "Accessing archlinux.org Network Database...." 
-msgFunc norm   "Number of Pacman updates ready...>  "
-msgFunc yellow "$(checkupdates | wc -l)"
-if ! msgFunc checkpac cower
-	then
-	msgFunc anykey 
-	return
-fi
-msgFunc norm "Number of updates for installed AUR packages ready ...>"
-msgFunc yellow "$(cower -u | wc -l)"
-if ! msgFunc checkpac arch-audit 
-	then
-	msgFunc anykey 
-	return
-fi
-msgFunc norm "Number of upgradable Arch-audit vulnerable packages ...>"
-msgFunc yellow "$(arch-audit -qu | wc -l)"
-msgFunc anykey 
-clear
-}
-
-#FUNCTION HEADER
-# NAME :           readconfigFunc
-# DESCRIPTION:read the config file into program if not there   
-#use hardcoded defaults config file is for paths for backup function
-# OUTPUTS : sets paths for backup function 
-# PROCESS : read $Dest5/cylonCfg.conf
-#NOTES :   file is optional       
-function readconfigFunc
-{
-	#read cylon.conf for system back up paths 
-	msgFunc green "Reading config file cylonCfg.conf at:-"
-	msgFunc norm "$Dest5"
-	#check if file there if not use defaults.
-	if [ ! -f "$Dest5/cylonCfg.conf" ]
-		then
-		msgFunc red "No config found: Use the default hardcoded paths"
-		#path for an internal hard drive backup
-		Destination1="/run/media/$USER/Linux_backup"
-		#path for an external hard drive backup
-		Destination2="/run/media/$USER/iomeaga_320"
-		#default paths for gdrive sync upload path 1 		#path2 
-		gdriveSource1="$HOME/Documents"
-		gdriveDest1="0B3_YYY"
-		gdriveSource2="$HOME/Pictures"
-		gdriveDest2="0B3_XXXX"
-		gdriveSource3="$HOME/Videos"
-		gdriveDest3="XXXXYYY"
-		#paths for rsync option
-		rsyncsource="$HOME/"
-		rsyncDest="/run/media/$USER/Linux_backup/Hbp_rsync_101016"
-		#ccyptfile
-		myccfile="XXXX"
-		msgFunc green "Done!"
-		return
-	fi
-	cd "$Dest5"  || exitHandlerFunc dest5
-	# shellcheck disable=SC1091
-	source ./cylonCfg.conf
-	msgFunc green  "Custom paths read from file"
-	cat ./cylonCfg.conf
-	msgFunc green "Done!"
-}
-
-#FUNCTION HEADER
 # NAME :  exitHandlerFunc 
 # DESCRIPTION: error handler deal with user 
 #exists and path not found errors and internet failure 
-# INPUTS:  $2 text of internet site down
-# PROCESS : exitout dest 1-5 netdown 
+# INPUTS:  $2 text of internet site down or filename
+# PROCESS : exitout dest 1-6 netdown or file error
 function exitHandlerFunc
 {
 	case "$1" in
 			#dest1 = backup path #dest2 = backup path
 			#dest3 = program output #dest4 = general
 			#dest5 = config file  #dest6  = Documentation
-	        exitout) 
-	        msgFunc yellow "GOODBYE $USER!!"
+	        exitout) #non-error exit
+	        msgFunc yellow "Goodbye $USER!"
 			msgFunc anykey "and exit."
 			exit 0
 	        ;;
@@ -354,101 +188,27 @@ function exitHandlerFunc
 			dest6) msgFunc red "Path not found to destination directory"
 			     msgFunc norm "$Dest6" ;;
 			 netdown) msgFunc red "Internet connectivity test to $2 failed" ;;
+			 fileerror) msgFunc red "File error $2"  ;;
 	 esac
-	msgFunc yellow "GOODBYE $USER!!"
+	msgFunc yellow "Goodbye $USER!"
 	msgFunc anykey "and exit."
 	exit 1
 }
 #==================END OF FUNCTIONS SPACE==============================
-#======================================================================
 
 #==================MAIN CODE HEADER====================================
 #=====================================================================
 #SOURCE THE MODULES for the functions from the cylon library folder
 #for MYFILE in ./modules/*;  #DEBUG ONLY DEBUG ONLY
-#echo $f #debug
 for MYFILE in /usr/lib/cylon/modules/*;
  do
    # shellcheck disable=SC1090
    source "$MYFILE"
 done
-########
-#CHECK INPUT OPTIONS from linux command line arguments passed to program on call
-#-v display version and exit
-#-s display system info and exit
-#-h display cylon info and exit 
-#-c open config file for edit.
-#-u update all
-case "$1" in
-	"");;
-	-u|--update)
-      clear
-      #check if arch-audit package  installed
-		if ! msgFunc checkpac arch-audit
-		then
-			msgFunc anykey 
-			clear
-		return
-		fi
-		#check if pacaur package  installed
-		if ! msgFunc checkpac pacaur
-		then
-			msgFunc anykey 
-			clear
-		return
-		fi
-	  msgFunc line
-		RssFunc
-	  msgFunc anykey
-	  msgFunc line
-	  msgFunc green "Arch-audit upgradable vulnerable packages"
-	  arch-audit -u
-	  arch-audit -q
-	  msgFunc anykey
-	  msgFunc line
-      msgFunc green "Number of Pacman updates ready ..> $(checkupdates | wc -l)"	
-	  checkupdates
-	  msgFunc line
-	  msgFunc green "Number of updates available for installed AUR packages ..> $(cower -u | wc -l)"
-	  cower -uc
-		msgFunc line
-	  msgFunc green "Install ALl updates? pacaur -Syu	 [Y/n]"
-	  read -r choiceIU3
-			if [ "$choiceIU3" != "n" ]
-				then
-					pacaur -Syu	
-			fi
-		msgFunc green "Done!"
-	;;
-  -c|--config)
-		nano  "$HOME/.config/cylon/cylonCfg.conf"
-    ;;
-  -d|--default)
-#Bleachbit system clean. Use the options set in the GUI
-		msgFunc green "Bleachbit system clean"  
-		msgFunc norm "Preset options see $HOME/.config/bleachbit/ or GUI "
-		msgFunc norm  "Running bleachbit -c --preset"
-		bleachbit -c --preset
-		msgFunc green "Done!"
-     ;;
-  -v|--version)
-		msgFunc norm "$(pacman -Qs cylon)" 
-    ;;
-  -s|--system)
-		HelpFunc SYS
-    ;;
-  -h|--help)
-		HelpFunc HELP
-    ;;
-   *) msgFunc yellow "Invalid option, Usage: -c -d -v -s -u -h"
-   ;;
-esac
-if [ -n "$1" ] 
-then
-	exit 0 
-else
-	clear
-fi   
+
+#call check input functions 
+checkinputFunc "$1"
+
 ###################################################
 #MAIN SCREEN, print horizontal line  + Title and datetime
 msgFunc line
@@ -463,13 +223,13 @@ while true; do
 	msgFunc blue "Main Menu:"
 	optionsM=(
 	"pacman" "$(msgFunc checkpac cower NOMES)" 
-	"$(msgFunc checkpac pacaur NOMES)" "System check" 
-	"System backup" "$(msgFunc checkpac bleachbit NOMES)"
-	"Network" "$(msgFunc checkpac rmlint NOMES)" 
+	"$(msgFunc checkpac pacaur NOMES)" "System Maintenance" 
+	"System backup" "Network Maintenance" "$(msgFunc checkpac bleachbit NOMES)"
+	"$(msgFunc checkpac rmlint NOMES)" 
 	"$(msgFunc checkpac clamav NOMES)" "$(msgFunc checkpac rkhunter NOMES)" 
 	"$(msgFunc checkpac lynis NOMES)" "$(msgFunc checkpac htop NOMES)" "xterm"
-	"$(msgFunc checkpac ccrypt NOMES)" "Password generator" "Delete files"
-	"Weather" "$(msgFunc checkpac inxi NOMES)" "System information" "Cylon information" "Exit"
+	"$(msgFunc checkpac ccrypt NOMES)" "Weather" "View/Edit config file"
+	 "System Update" "System information" "Cylon information" "Exit"
 	)
 	select choiceMain in "${optionsM[@]}"
 	do
@@ -489,12 +249,13 @@ while true; do
 		"${optionsM[4]}")  #Full system backup
 		   	SystemBackFunc 
 		   	 ;;
-		 "${optionsM[5]}") #system clean with bleachbit
-		   SystemCleanFunc
-		    ;;
-		"${optionsM[6]}")  # network utiltes
+		 "${optionsM[5]}")  # network utiltes
 			networkFunc
 		    ;;
+		 "${optionsM[6]}") #system clean with bleachbit
+		   SystemCleanFunc
+		    ;;
+
 		"${optionsM[7]}") #rmlint 
 		   RmLintFunc
 		    ;;
@@ -525,48 +286,45 @@ while true; do
 		"${optionsM[13]}")  # ccrypt - encrypt and decrypt files 
 			ccryptFunc
 			;;
-		"${optionsM[14]}")  # password generator 
-			msgFunc green "Random Password generator"
-			msgFunc norm "Enter length:-"
-			read -r mylength
-			if [ -z "$mylength" ]; then
-				mylength=50
-			fi
-			msgFunc dir "-PGINFO"
-		   echo -n "$(< /dev/urandom tr -dc _*?#!A-Z-a-z-0-9 | head -c"${1:-$mylength}";)"	> pg	  
-			msgFunc green "Done!"
-			;;
-		"${optionsM[15]}")  # delete folders /files
-			SystemCleanFunc "FOLDERS"
-			;;
-		"${optionsM[16]}")  # 3 day forecast weather
-			msgFunc norm "3 day weather forecast by WTTR.IN"
-			msgFunc norm "Type a City name, airport code, domain name or area code:-"
-			read -r mycity		
-			clear
-			curl wttr.in/"$mycity"
-			msgFunc anykey 
-			clear
-			;;
-			"${optionsM[17]}") 
-				#check if inxi package  installed
-				if ! msgFunc checkpac inxi
-				then
+			"${optionsM[14]}")  # 3 day forecast weather
+					msgFunc norm "3 day weather forecast by WTTR.IN"
+					msgFunc norm "Type a City name, airport code, domain name or area code:-"
+					read -r mycity		
+					clear
+					curl wttr.in/"$mycity"
 					msgFunc anykey 
 					clear
-				break
-				fi
-				# inxi  - Command line system information script for console and IRC
-				msgFunc green "get output of inxi -Fixz"
-				msgFunc dir "-SYSINXI"
-				inxi -Fixz | tee inxioutput
-				msgFunc green "Done!"
-				msgFunc anykey
 			;;
-		"${optionsM[18]}") #system info
+			"${optionsM[15]}")   
+					 cd "$Dest5"  || exitHandlerFunc dest5
+					 if [ -f "$Dest5/cylonCfg.conf" ] 
+						then
+							msgFunc green "Do you want to edit or view? [e/V]"
+					        read -r choiceCC1
+							if [ "$choiceCC1" = "e" ]
+								then
+									nano  "$Dest5/cylonCfg.conf" || exitHandlerFunc fileerror "$Dest5/cylonCfg.conf"
+									clear
+									msgFunc yellow "Must restart cylon after config file edit"
+									msgFunc anykey "and exit."
+									exit 0
+								else
+								msgFunc green  "Custom paths read from file"
+								cat "$Dest5/cylonCfg.conf" || exitHandlerFunc fileerror "$Dest5/cylonCfg.conf"
+								msgFunc green "Done!"
+								msgFunc anykey
+							fi
+						else
+							exitHandlerFunc fileerror "$Dest5/cylonCfg.conf"
+						fi
+			;;
+			"${optionsM[16]}") #system update.
+					checkinputFunc "-uu"
+			;;
+		"${optionsM[17]}") #system info
 		   HelpFunc "SYS"
 		   ;;
-		"${optionsM[19]}")  # cylon info and cat readme file to screen 
+		"${optionsM[18]}")  # cylon info and cat readme file to screen 
 			HelpFunc "HELP"
 			;;
 		*)  #exit  

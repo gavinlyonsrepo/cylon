@@ -27,11 +27,13 @@ EOF
 					clear
 				;;
 				1)
+					clear
 					msgFunc yellow "Exit pressed."
 					return
 				;;
 				255)
-					msgFunc red "Box closed."
+					clear
+					msgFunc yellow "Esc pressed."
 					return
 				;;
 			esac

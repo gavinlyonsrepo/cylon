@@ -1,0 +1,271 @@
+#FUNCTION HEADER
+# NAME :            HelpFunc
+# DESCRIPTION :     two sections one prints various system information the
+# other cylon information and the installed readme file
+# INPUTS : $1 process name either HELP or SYS    
+# OUTPUTS : n/a
+# PROCESS :[1] HELP =cylon info [2] SYS   =system info
+function HelpFunc 
+{
+clear
+if ! msgFunc checkpac cower
+	then
+	msgFunc anykey 
+	return
+fi
+if ! msgFunc checkpac arch-audit 
+	then
+	msgFunc anykey 
+	return
+fi
+clear
+msgFunc line
+	if [ "$1" = "HELP" ]
+				then
+				msgFunc green "Cylon information and readme.md file  display." 
+				msgFunc line 
+				#Program details print
+				cat <<-EOF
+				Cylon is an Arch Linux maintenance CLI program written in Bash script.
+				This program provides numerous tools to Arch Linux users to carry 
+				out updates, maintenance, system checks, backups and more. 
+				EOF
+				msgFunc norm "Written by G.Lyons, Reports to  <glyons66@hotmail.com>"
+				msgFunc norm "AUR package name = cylon, at aur.archlinux.org by glyons."
+				msgFunc norm "Version=$(pacman -Qs cylon | head -1 | cut -c 7-20)"
+				msgFunc norm "Cylon program location = $(which cylon)"
+				msgFunc norm "Cylon modules for functions = /usr/lib/cylon/modules/*"
+				msgFunc norm "Folder for Cylon output data = $Dest3"
+				msgFunc norm "Location of cylonCfg.conf = $Dest5"
+				msgFunc norm "Location of readme.md changlog.md = $Dest6"
+				msgFunc norm "Location of License.md = /usr/share/licenses/cylon"
+				msgFunc norm "Man page, Desktop entry and icon also installed"
+				msgFunc anykey "and check which dependencies are installed"
+				clear
+				msgFunc norm " "
+				msgFunc green "Dependencies"
+				#dialog   needed to generate GUI menus
+				msgFunc checkpac dialog  "NOTE: non-optional"
+				#cower   needed to generate GUI menus
+				msgFunc checkpac expac  "NOTE: non-optional"
+				#cower  (optional) – AUR package for AUR work
+				msgFunc checkpac cower "NOTE: AUR package"
+				#gdrive  (optional) – AUR package for google drive backup
+				msgFunc checkpac gdrive "NOTE: AUR package"
+				#lostfiles (optional) – AUR package for finding lost files
+				msgFunc checkpac lostfiles "NOTE: AUR package"
+				#pacaur (optional – AUR package for AUR work
+				msgFunc checkpac pacaur  "NOTE: AUR package"
+				#arch-audit(optional) - Arch CVE Monitoring Team data
+				msgFunc checkpac arch-audit 
+				#rmlint (optional) – Finds lint and other unwanted
+				msgFunc checkpac rmlint
+				#rkhunter (optional) – finds root kits malware
+				msgFunc checkpac rkhunter
+				#gnu-netcat (optional) – used for checking network
+				msgFunc checkpac gnu-netcat "NOTE: No need if using openbsd-netcat"
+				#openbsd-netcat(optional) – used for checking network
+				msgFunc checkpac openbsd-netcat "NOTE: No need if using gnu-netcat"
+				#clamav  (optional) – used for finding malware
+				msgFunc checkpac clamav
+				#bleachbit  (optional) – used for system clean
+				msgFunc checkpac bleachbit 
+				#ccrypt (optional) – Encrypt and decrypt files
+				msgFunc checkpac ccrypt
+				#rsync (optional) – backup utility
+				msgFunc checkpac rsync
+				#lynis (optional) – system auditor
+				msgFunc checkpac lynis
+				#inxi (optional) – CLI system information script 
+				msgFunc checkpac inxi
+				#htop (optional) – Command line system information script 
+				msgFunc checkpac htop
+				#wavemon (optional) – wireless network monitor 
+				msgFunc checkpac wavemon
+				#speedtest-cli (optional) – testing internet bandwidth
+				msgFunc checkpac speedtest-cli
+				
+					msgFunc green "Do you want to view readme? [Y/n]"
+					read -r choiceRM1
+							if [ "$choiceRM1" != "n" ]
+								then
+									msgFunc line
+									msgFunc green "Displaying cylonReadme.md file at $Dest6"
+									cd "$Dest6"  || exitHandlerFunc dest6
+									more Readme.md 
+									msgFunc green "Done!" 
+									msgFunc line
+									msgFunc anykey
+							fi
+				clear
+				return
+			fi
+msgFunc green "System Information display"
+msgFunc line
+msgFunc norm  #set colour back
+msgFunc norm "Uptime = $(uptime -p)"
+msgFunc norm "Operating System + Kernal = $(uname -mosr)"
+msgFunc norm "Network node name = $(uname -n)"
+msgFunc norm "Screen Resolution = $(xrandr |grep "\*" | cut -c 1-15)"
+msgFunc norm "CPU $(grep name /proc/cpuinfo  | tail -1)"
+mem=($(awk -F ':| kB' '/MemTotal|MemAvail/ {printf $2}' /proc/meminfo))
+memused="$((mem[0] - mem[1]))"
+memused="$((memused / 1024))"
+memtotal="$((mem[0] / 1024))"
+memory="${memused}MB / ${memtotal}MB"
+msgFunc norm "RAM used/total = ($memory)"
+msgFunc green "Package Information"
+msgFunc norm "All installed packages: $(pacman -Q | wc -l)" 
+msgFunc norm "All native packages: $(pacman -Qn | wc -l)" 
+msgFunc norm "All explicitly installed packages: $(pacman -Qe | wc -l)" 
+msgFunc norm "ALL explicitly installed native packages that are"
+msgFunc norm "not direct or optional dependencies: $(pacman -Qqent | wc -l)"
+msgFunc norm "All explicitely installed pkgs not base/base-devel grps: \
+$(comm -23 <(pacman -Qeq | sort) <(pacman -Qgq base base-devel | sort) | wc -l ) "
+msgFunc norm "All foreign installed packages: $(pacman -Qm | wc -l)"
+msgFunc norm "All foreign explicitly installed packages: $(pacman -Qme | wc -l)"
+msgFunc green "Accessing archlinux.org Network Database...."
+msgFunc norm   "Number of Pacman updates ready: $(checkupdates | wc -l)" 
+msgFunc norm "Number of updates for installed AUR packages ready: $(cower -u | wc -l)"
+msgFunc norm "Number of upgradable Arch-audit vulnerable packages: $(arch-audit -qu | wc -l)"
+msgFunc anykey 
+clear
+}
+
+#FUNCTION HEADER
+# NAME :           readconfigFunc
+# DESCRIPTION:read the config file into program if not there   
+#use hardcoded defaults config file is for paths for backup function
+# OUTPUTS : sets paths for backup function 
+# PROCESS : read $Dest5/cylonCfg.conf
+#NOTES :   file is optional       
+function readconfigFunc
+{
+	#read cylon.conf for system back up paths 
+	msgFunc green "Reading config file cylonCfg.conf at:-"
+	msgFunc norm "$Dest5"
+	#check if file there if not use defaults.
+	if [ ! -f "$Dest5/cylonCfg.conf" ]
+		then
+		msgFunc red "No config found: Use the default hardcoded paths"
+		#path for an internal hard drive backup
+		Destination1="/run/media/$USER/Linux_backup"
+		#path for an external hard drive backup
+		Destination2="/run/media/$USER/iomeaga_320"
+		#default paths for gdrive sync upload path 1 		#path2 
+		gdriveSource1="$HOME/Documents"
+		gdriveDest1="0B3_YYY"
+		gdriveSource2="$HOME/Pictures"
+		gdriveDest2="0B3_XXXX"
+		gdriveSource3="$HOME/Videos"
+		gdriveDest3="XXXXYYY"
+		#paths for rsync option
+		rsyncsource="$HOME/"
+		rsyncDest="/run/media/$USER/Linux_backup/Hbp_rsync_101016"
+		#ccyptfile
+		myccfile="XXXX"
+		msgFunc green "Done!"
+		return
+	fi
+	cd "$Dest5"  || exitHandlerFunc dest5
+	# shellcheck disable=SC1091
+	source ./cylonCfg.conf || exitHandlerFunc fileerror "$Dest5/cylonCfg.conf"
+	msgFunc green  "Custom paths read from file"
+	cat ./cylonCfg.conf || exitHandlerFunc fileerror "$Dest5/cylonCfg.conf"
+	msgFunc green "Done!"
+}
+
+#FUNCTION HEADER
+# NAME :           checkinputFunc
+# DESCRIPTION:CHECK INPUT OPTIONS from linux command line arguments passed to program on call
+# INPUTS :  $1 user input option
+#-v display version and exit
+#-s display system info and exit
+#-h display cylon info and exit 
+#-c open config file for edit.
+#-u update all
+#-d run bleachbit default as set in GUI
+function checkinputFunc
+{
+case "$1" in
+	"");;
+	-u|--update|-uu) #update system
+      clear
+      #check if arch-audit package  installed
+		if ! msgFunc checkpac arch-audit
+		then
+			msgFunc anykey 
+			clear
+		return
+		fi
+		#check if pacaur package  installed
+		if ! msgFunc checkpac pacaur
+		then
+			msgFunc anykey 
+			clear
+		return
+		fi
+	  msgFunc line
+		RssFunc
+	  msgFunc anykey
+	  msgFunc line
+	  msgFunc green "Arch-audit upgradable vulnerable packages"
+	  arch-audit -u
+	  arch-audit -q
+	  msgFunc anykey
+	  msgFunc line
+      msgFunc green "Number of Pacman updates ready ..> $(checkupdates | wc -l)"	
+	  checkupdates
+	  msgFunc line
+	  msgFunc green "Number of updates available for installed AUR packages ..> $(cower -u | wc -l)"
+	  cower -uc
+		msgFunc line
+	  msgFunc green "Install ALl updates? pacaur -Syu	 [Y/n]"
+	  read -r choiceIU3
+			if [ "$choiceIU3" != "n" ]
+				then
+					pacaur -Syu	
+			fi
+		msgFunc green "Done!"
+	;;
+  -c|--config)
+		if [ -f "$Dest5/cylonCfg.conf" ] 
+		then
+			nano  "$Dest5/cylonCfg.conf" || exitHandlerFunc fileerror
+		else
+			exitHandlerFunc fileerror
+		fi
+    ;;
+  -d|--default)
+#Bleachbit system clean. Use the options set in the GUI
+		msgFunc green "Bleachbit system clean"  
+		msgFunc norm "Preset options see $HOME/.config/bleachbit/ or GUI "
+		msgFunc norm  "Running bleachbit -c --preset"
+		bleachbit -c --preset
+		msgFunc green "Done!"
+     ;;
+  -v|--version)
+		msgFunc norm "$(pacman -Qs cylon)" 
+    ;;
+  -s|--system)
+		HelpFunc SYS
+    ;;
+  -h|--help)
+		HelpFunc HELP
+    ;;
+   *) msgFunc yellow "Invalid option, Usage: -c -d -v -s -u -h , See readme.md for details"
+   ;;
+esac
+#was there a input?
+if [ -n "$1" ] 
+then
+	#was the update report called from menu -uu?
+	if [ "$1" = "-uu" ]
+	then
+		msgFunc norm ""
+	else
+		exit 0 
+	fi
+fi
+clear  
+}
