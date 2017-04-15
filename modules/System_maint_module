@@ -193,7 +193,7 @@ EOF
 			    ;;
 			    "${optionsM2[11]}")
 						msgFunc green "Delete core dumps /var/lib/systemd/coredump/"
-						rm -rvf "/var/lib/systemd/coredump/*"
+						sudo rm -rvf /var/lib/systemd/coredump/*
 			    ;;
 			    "${optionsM2[12]}")  # delete folders /files
 						SystemCleanFunc "FOLDERS"
