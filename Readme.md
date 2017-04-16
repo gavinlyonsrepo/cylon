@@ -1,14 +1,14 @@
 ﻿Cylon
 --------------------------------------------
+* Name: cylon 
 * Date: 200417
-* Version control: 3.6-7 See changelog.md for details
-* Author: G Lyons
-* Contact: Upstream repository at github  or glyons66@hotmail.com
+* Version control: 3.6-1-8 See changelog.md for details
+* Author: Gavin Lyons
+* Contact: Upstream repository at github "gavinlyonsrepo"
+* Upstream repository: https://github.com/gavinlyonsrepo/cylon
 * Title : Arch Linux distro maintenance  a Bash shell script. 
 * AUR package name : cylon
 * AUR location: https://aur.archlinux.org/packages/cylon/
-* Upstream repository: https://github.com/gavinlyonsrepo/cylon
-* Name: cylon 
 * Description: A menu driven script which provides updates, maintenance, 
 backups and system checks for an Arch based linux distribution.
 This script provides numerous tools 
@@ -132,7 +132,7 @@ cylon will check this and display warning.
 the arch linux installation guide on wiki. If you install Arch some other way
 It may not be there, so included as depends.
 
-Functions/menu options
+Features and Functions 
 ----------------------
 * pacman options
 	* Check for updates (no download)
@@ -275,11 +275,16 @@ and readme file to screen (function can also run by option -h )
 cylon will check this and display warning.
 * Note 2: NANO is used as default text editor for editing config files.
 
+Media
+-----------
+There are screenshots of cylon in the upstream repo and a video demo
+is available at  https://vid.me/eB6u
+
 Bug reports and communication
 -----------
 
 If you should find a bug or any other query , 
-please send a report to upstream repo or mail glyons66@hotmail.com
+please send a report to upstream repo 
 suggestions for improvements and new features welcome
 Upstream repo: https://github.com/gavinlyonsrepo/cylon
 
