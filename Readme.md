@@ -1,8 +1,8 @@
 ﻿Cylon
 --------------------------------------------
 * Name: cylon 
-* Date: 200417
-* Version control: 3.6-1-8 See changelog.md for details
+* Date: 1005417
+* Version control: 3.7-9 See changelog.md for details
 * Author: Gavin Lyons
 * Contact: Upstream repository at github "gavinlyonsrepo"
 * Upstream repository: https://github.com/gavinlyonsrepo/cylon
@@ -27,6 +27,8 @@ options:
 * -c --config Opens the cylon config file for editing and exit
 * -d --default Bleachbit system clean. 
 This will execute options selected in bleachbit GUI or bleachbit config file.
+* -b --bleachbit opens the bleachbit select menus 
+* -m --maint Runs Automatic system maintenance scan 
 * -u --update Runs a full update report with option to execute and exit.
 Report provides Arch news rss reader + arch-audit vulnerable 
 packages output + number and type of updates available for all repos.
@@ -59,19 +61,24 @@ Config file: You can create an optional config file for custom system backup.
 (see gdrive readme for setup and how to get file id numbers)
 and "gdriveSourceX" is the local directory source.
 "myccfile" is a setting for ccrypt utility, a path to a default file.
-If config file missing the System uses hard-coded defaults.
+If config file missing the System uses hard-coded dummy defaults.
 The config file can be edited from a main menu option or by option -c
 
-File setup example (Note:remove bullet points in actual file)
+File setup example:
+
+Just copy and paste this into file and change paths for your setup.
+(Note:remove markdown bullet points in actual file)
 
 * Destination1="/run/media/$USER/Linux_backup"
 * Destination2="/run/media/$USER/iomega_320"
 * gdriveSource1="$HOME/Documents"
 * gdriveSource2="$HOME/Pictures"
 * gdriveSource3="$HOME/Videos"
+* gdriveSource4="$HOME/.config"
 * gdriveDest1="foo123456789"
 * gdriveDest2="foo125656789"
 * gdriveDest3="foo123666689"
+* gdriveDest4="foo123666ttt689"
 * rsyncsource="$HOME/"
 * rsyncDest="/run/media/$USER/Linux_backup/foo"
 * myccfile="$HOME/TEST/test.cpt"
@@ -82,8 +89,9 @@ Most system output (logfiles, backups, downloads and updates etc)
 is placed at below path, unless otherwise specified on screen.
 Output folders are created with following syntax HHMM-DDMONYY-X where X
 is output type i.e backup, update etc. The default path is:
-$HOME/Documents/Cylon
-Optional Environment variable
+$HOME/Documents/Cylon .
+
+Optional Environment variable:
 example= export CYLONDEST="$HOME/.cache/cylon"
 This optional Environment variable is provided for users
 who wish to use different destination path for program output folder
@@ -97,7 +105,23 @@ The optional dependencies are left to user discretion.
 Software will check for missing dependencies and report if user 
 tries to use a function which requires a missing one.
 Software will display installed dependencies packages on cylon info page.
-also "n/a" is displayed besides uninstalled options in menus
+also "n/a" is displayed besides uninstalled options in menus.
+
+gnu-netcat and openbsd-netcat peform same function, 
+only 1 can be or needs to be installed, both included because of conflicts.
+
+cower and pacaur are both AUR helpers you can install 
+just cower or both depending on preference. pacaur wraps cower 
+and needs it installed. The setting TargetDir in cower config file must not be used
+cylon will check this and display warning.
+
+gdrive readme for config https://github.com/prasmussen/gdrive
+gdrive option Syncs will Delete extraneous remote files as of V3.4-5
+
+dialog should already be installed in an arch linux system installed by
+the arch linux installation guide on wiki. If you install Arch some other way
+It may not be there, so included as depends.
+
 * dialog –  used for GUIs menus (Non-optional)
 * expac –   used for create package lists (Non-optional)
 * ccrypt –  used for encrypting
@@ -118,19 +142,6 @@ also "n/a" is displayed besides uninstalled options in menus
 * cower(AUR) – for AUR helper functions
 * gdrive(AUR) – to sync to google drive
 * lostfiles(AUR) – to scan for lostfiles
-
-* Note1 : gnu-netcat and openbsd-netcat peform same function, 
-only 1 can be or needs to be installed, both included because of conflicts.
-* Note2 : cower and pacaur are both AUR helpers you can install 
-just cower or both depending on preference. pacaur wraps cower 
-and needs it installed.
-* Note3 : the setting TargetDir in cower config file must not be used
-cylon will check this and display warning.
-* Note4 : gdrive readme for config https://github.com/prasmussen/gdrive
-* Note5 : gdrive option Syncs will Delete extraneous remote files as of V3.4-5
-* Note6 : dialog should already be installed in an arch linux system installed by
-the arch linux installation guide on wiki. If you install Arch some other way
-It may not be there, so included as depends.
 
 Features and Functions 
 ----------------------
@@ -154,6 +165,7 @@ Features and Functions
 	* pactree List a dependency tree of a package
 	* pactree -r Show packages that depend on a package
 	* Edit pacman config file
+	
 * AUR cower options 
 	* Check for updates ( NO downloads)
 	* Get Information for AUR package 
@@ -165,6 +177,7 @@ Features and Functions
 	* Read AUR Package comments
 	* Edit cower config file
 	* Remove foreign packages explicitly installed menu
+	
 * AUR pacaur options
 	* Check for updates ( NO downloads)
 	* Get Information for AUR package 
@@ -178,7 +191,11 @@ Features and Functions
 	* Update all packages in all repositories, pacaur -Syu
 	* Write installed package lists to files (REF1)
 	* Remove foreign packages explicitly installed menu
-* system maintenance check
+	
+* Full System update 
+	* Runs the same report that is called by cylon option -u
+	
+* System maintenance menu
 	* All Failed Systemd Services and system status
 	* All Failed Active Systemd Services
 	* Check log Journalctl for Errors
@@ -197,8 +214,25 @@ Features and Functions
 	* Delete Trash 
 	* Delete Download directory
 	* Delete Cylon output folder $HOME/Documents/Cylon/ or $CYLONDEST
-	* password generator
 	* inxi - system information display with logging of results
+	* Clean system with bleachbit
+		* Preset option based on the same options as in the GUI 
+		* Custom options involved for user to pick cleaners and options
+			* preview
+			* clean (without overwrite, BB checks the config in GUI).
+			* clean + overwrite (with overwrite permanent deletion)
+	* Rmlint remove duplicates and other lint
+		* Find bad UID, GID or files with both.
+		* Find bad symlinks pointing nowhere.
+		* Find empty directories.
+		* Find empty files.
+		* Find nonstripped binaries.
+		* Find duplicate files.
+		* Find duplicate directories.
+		* option to view results file
+		* option to execute shell script with results
+	* Option to launch htop - interactive process viewer
+	 
 * System backup
 	* Optional destination path as defined in script or custom path
 	* Make copy of first 512 bytes MBR with dd
@@ -212,53 +246,46 @@ Features and Functions
 		* Sync local directory to google drive (path 1)
 		* Sync local directory to google drive (path 2)
 		* Sync local directory to google drive (path 3)
+		* Sync local directory to google drive (path 4)
 		* List content of syncable directory
 		* Google drive metadata, quota usage
 		* List files
 		* Get file info
-* Clean system with bleachbit
-	* Preset option based on the same options as in the GUI 
-	* Custom options involved for user to pick cleaners and options
-		* preview
-		* clean (without overwrite, BB checks the config in GUI).
-		* clean + overwrite (with overwrite permanent deletion)
-* System and package information display
-	* Function also run by -s standalone option.
-* Rmlint remove duplicates and other lint
-	* Find bad UID, GID or files with both.
-	* Find bad symlinks pointing nowhere.
-	* Find empty directories.
-	* Find empty files.
-	* Find nonstripped binaries.
-	* Find duplicate files.
-	* Find duplicate directories.
-	* option to view results file
-	* option to execute shell script with results 
-* ClamAv anti-malware scan (Check for updates feature)
-* RootKit hunter scan (check for updates feature)
-* ccrypt - encrypt and decrypt files:
-	* config file path option for ease of use.
-	* Encrypt a file 		     
-    * Decrypt a file
-    * Edit decrypted file
-    * Change the key of encrypted file
-    * View encrypted file	
-* Cylon information: Display cylon with depends installation check, info 
-and readme file to screen (function can also run by option -h )
-* Lynis system audit (summary of logfiles feature)
-* 3 day weather forecast by wttr.in
-* Option to open xterm terminal in new window
-* Option to launch htop - interactive process viewer
+		
+* System security menu
+	* Lynis system audit (summary of logfiles feature)
+	* ClamAv anti-malware scan (Check for updates and logging feature)
+	* RootKit hunter scan (check for updates feature)
+	* ccrypt - encrypt and decrypt files:
+		* config file path option for ease of use.
+		* Encrypt a file 		     
+		* Decrypt a file
+		* Edit decrypted file
+		* Change the key of encrypted file
+		* View encrypted file	
+	* password generator
+	
 * Network options
 	* launch wavemon network monitor
 	* Run speedtest-cli to measure bandwidth 
 	with options for server list and file save
 	* various misc network commands
 	* firewall status and details check
-* System update runs the same report that is called by cylon option -u
+	
+* Option to open xterm terminal in new window
+
 * Config file view/edit option.
 
-* REF1: packages list 
+* System and package information display
+	* Function also run by -s standalone option.
+
+* Cylon information: 
+	* Dependencies installation check, info and display readme file to screen 
+	* Function can also run by option -h 
+
+* 3 day weather forecast by wttr.in
+
+* REF1: packages list referenced above
 	* All installed packages: pkglistQ.txt
 	* All native packages: pkglistQn.txt
 	* All explicitly installed packages: pkglistQe.txt
@@ -277,8 +304,7 @@ cylon will check this and display warning.
 
 Media
 -----------
-There are screenshots of cylon in the upstream repo and a video demo
-is available at  https://vid.me/eB6u
+There are screenshots of cylon in the upstream repo.
 
 Bug reports and communication
 -----------

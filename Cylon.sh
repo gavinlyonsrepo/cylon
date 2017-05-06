@@ -1,14 +1,14 @@
 #!/bin/bash
-#================================================================
-# HEADER cylon bash shell script
+#=========================HEADER=================================
+# cylon bash shell script
 #================================================================
 #name:cylon
-#Date 200417
+#Date 100517
 #License: 
 #GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
 #see license.md  at repo or /usr/share/licenses/cylon/
 #Written by G lyons 
-#Version 3.6-7  See changelog.md at repo for version control
+#Version 3.7-9 See changelog.md at repo for version control
 #Software repo
 #https://github.com/gavinlyonsrepo/cylon
 #AUR package name = cylon , at aur.archlinux.org by glyons
@@ -34,10 +34,14 @@ BLUE=$(printf "\033[36;1m")
 HL=$(printf "\033[42;1m")
 NORMAL=$(printf "\033[0m") 
 
-#set the path for the program output
+#prompt for select menus
+PS3="${BLUE}By your command:${NORMAL}"
+
+#set the path for the program output path Dest3
 #if environmental variable exists set it to Dest3
 if [ -z "${CYLONDEST}" ]
 then 
+	#default path for program output
 	Dest3="$HOME/Documents/Cylon/"
 else 
 	Dest3="$CYLONDEST"
@@ -46,13 +50,12 @@ fi
 Dest5="$HOME/.config/cylon"
 #set path for readme.md changlog.md dest6
 Dest6="/usr/share/doc/cylon"
-#prompt for select menus
-PS3="${BLUE}By your command:${NORMAL}"
 #make the path for the program output dest3
 mkdir -p "$Dest3"
 #make the path for the optional config file ,left to user to create it
 mkdir -p "$Dest5"
-#====================FUNCTIONS space (2)===============================
+
+#====================FUNCTIONS space (3)===============================
 #FUNCTION HEADER
 # NAME :            msgFunc
 # DESCRIPTION :     utility and general purpose function,
@@ -89,7 +92,7 @@ function msgFunc
 			if [ "$2" = "" ]
 				then
 				#just change colour to norm if no text sent
-				printf '%s' "${NORMAL}"
+					printf '%s' "${NORMAL}"
 				return
 			fi
 			printf '%s\n' "${NORMAL}$2" ;;
@@ -97,8 +100,8 @@ function msgFunc
 		dir) #makes dirs for output appends passed text to name
 			#check if coming from system backup other path
 			if [ "$3" != 1 ]
-			then 
-			cd "$Dest3" || exitHandlerFunc dest3
+				then 
+				cd "$Dest3" || exitHandlerFunc dest3
 			fi
 			TODAYSDIR=$(date +%H%M-%d%b%y)"$2"
 			mkdir "$TODAYSDIR"
@@ -160,6 +163,55 @@ function msgFunc
 }
 
 #FUNCTION HEADER
+# NAME :  SystemSecFunc
+# DESCRIPTION: display security menu called from main menu
+function SystemSecFunc
+{
+	 #change dir for log files
+	 clear
+
+	while true; do
+	msgFunc blue "System Security Menu options:-"
+	optionsSS=("$(msgFunc checkpac ccrypt NOMES)" "$(msgFunc checkpac clamav NOMES)" "$(msgFunc checkpac rkhunter NOMES)" 
+	"$(msgFunc checkpac lynis NOMES)" "Password generator" "Return")
+			select choiceSS in "${optionsSS[@]}"
+			do
+			case "$choiceSS" in 
+			 "${optionsSS[0]}") # ccrypt - encrypt and decrypt files 
+				ccryptFunc
+			 ;;
+			 "${optionsSS[1]}") #Anti-virus clamav
+				AntiMalwareFunc "CLAMAV"
+			 ;;
+			 "${optionsSS[2]}") #rootkit hunter 
+				AntiMalwareFunc "RKHUNTER"
+			 ;;
+			 "${optionsSS[3]}") # Lynis - System and security auditing tool
+				AntiMalwareFunc "LYNIS"
+			 ;;
+			 "${optionsSS[4]}") #Password generator
+				msgFunc dir "-SYSSECURITY"
+				msgFunc green "Random Password generator"
+				msgFunc norm "Enter length:-"
+				read -r mylength
+				if [ -z "$mylength" ]; then
+					mylength=50
+				fi
+			   echo -n "$(< /dev/urandom tr -dc "_*?#!A-Z-a-z-0-9" | head -c"${1:-$mylength}";)"	> pg	  
+				msgFunc green "Done!"
+			 ;;
+			 
+			 *)  #exit  
+			     clear
+				return
+			;;
+			esac
+			break
+			done
+done
+
+}
+#FUNCTION HEADER
 # NAME :  exitHandlerFunc 
 # DESCRIPTION: error handler deal with user 
 #exists and path not found errors and internet failure 
@@ -199,103 +251,68 @@ function exitHandlerFunc
 #==================MAIN CODE HEADER====================================
 #=====================================================================
 #SOURCE THE MODULES for the functions from the cylon library folder
-#for MYFILE in ./modules/*;  #DEBUG ONLY DEBUG ONLY
-for MYFILE in /usr/lib/cylon/modules/*;
+for MYFILE in ./modules/*;  #THIS LINE IS FOR DEBUG ONLY
+#for MYFILE in /usr/lib/cylon/modules/*;
  do
    # shellcheck disable=SC1090
    source "$MYFILE"
 done
 
-#call check input functions 
+#call check for user input options
 checkinputFunc "$1"
 
-###################################################
-#MAIN SCREEN, print horizontal line  + Title and datetime
+#Display MAIN opening screen, print horizontal line  + Title and datetime
 msgFunc line
 msgFunc highlight "$(pacman -Qs cylon | head -1 | cut -c 7-20) CYbernetic LifefOrm Node"
 msgFunc yellow "$(date +%T-%d-%A-Week%U-%B-%Y)"
 msgFunc yellow "Unix epoch time $(date +%s)"
 msgFunc line
-#main program loop    
+
+#Main menu program, loop until user exit 
 while true; do
 	cd ~ || exitHandlerFunc dest4
 	#make the main menu 
 	msgFunc blue "Main Menu:"
 	optionsM=(
-	"pacman" "$(msgFunc checkpac cower NOMES)" 
-	"$(msgFunc checkpac pacaur NOMES)" "System Maintenance" 
-	"System backup" "Network Maintenance" "$(msgFunc checkpac bleachbit NOMES)"
-	"$(msgFunc checkpac rmlint NOMES)" 
-	"$(msgFunc checkpac clamav NOMES)" "$(msgFunc checkpac rkhunter NOMES)" 
-	"$(msgFunc checkpac lynis NOMES)" "$(msgFunc checkpac htop NOMES)" "xterm"
-	"$(msgFunc checkpac ccrypt NOMES)" "Weather" "View/Edit config file"
-	 "System Update" "System information" "Cylon information" "Exit"
+	"pacman" "$(msgFunc checkpac cower NOMES)" \
+	"$(msgFunc checkpac pacaur NOMES)" "System Update" "System Maintenance" \
+	"System backup" "System Security" "Network Maintenance" \
+	"xterm terminal" "View/Edit config file"\
+	  "System information" "Cylon information" "Weather" "Exit"\
 	)
 	select choiceMain in "${optionsM[@]}"
 	do
 	case "$choiceMain" in
-		"${optionsM[0]}")   #pacman update
-			 PacmanFunc
-			  ;;
-		"${optionsM[1]}") #cower AUR helper
-		    CowerFunc
-		     ;;
-		"${optionsM[2]}") #pacaur AUR helper
-		    pacaurFunc
-		     ;;
-		"${optionsM[3]}") #system maintenance
-			SystemMaintFunc 
+			"${optionsM[0]}")   #pacman update
+				PacmanFunc
 			;;
-		"${optionsM[4]}")  #Full system backup
-		   	SystemBackFunc 
-		   	 ;;
-		 "${optionsM[5]}")  # network utiltes
-			networkFunc
-		    ;;
-		 "${optionsM[6]}") #system clean with bleachbit
-		   SystemCleanFunc
-		    ;;
+			"${optionsM[1]}") #cower AUR helper
+				CowerFunc
+			;;
+			"${optionsM[2]}") #pacaur AUR helper
+				pacaurFunc
+			;;
+			"${optionsM[3]}") #full system update.
+				checkinputFunc "-uu"
+			;;
+			"${optionsM[4]}") #system maintenance
+				SystemMaintFunc 
+			;;
+			"${optionsM[5]}")  #Full system backup
+				SystemBackFunc 
+			;;
+			"${optionsM[6]}")  #System security
+				SystemSecFunc "$@"
+			;;
+			"${optionsM[7]}")  # network utiltes
+				networkFunc
+			;;
+			"${optionsM[8]}")  # open a terminal
+				xterm -e "cd $Dest3  && /bin/bash"
+				msgFunc anykey
+			;;
 
-		"${optionsM[7]}") #rmlint 
-		   RmLintFunc
-		    ;;
-		"${optionsM[8]}") 	#Anti-virus clamav
-			AntiMalwareFunc "CLAMAV"
-			 ;;
-		 "${optionsM[9]}")  #rootkit hunter 
-			AntiMalwareFunc "RKHUNTER"
-			;;
-		"${optionsM[10]}")  # Lynis - System and security auditing tool
-			AntiMalwareFunc "LYNIS"
-			 ;;
-		"${optionsM[11]}")  # htop - interactive process viewer
-			#check if htop package  installed
-				if ! msgFunc checkpac htop
-				then
-					msgFunc anykey 
-					clear
-				break
-				fi
-			xterm -e "htop" &  
-			msgFunc anykey
-			;;
-		"${optionsM[12]}")  # open a terminal
-			xterm &
-			msgFunc anykey
-			;;
-		"${optionsM[13]}")  # ccrypt - encrypt and decrypt files 
-			ccryptFunc
-			;;
-			"${optionsM[14]}")  # 3 day forecast weather
-					msgFunc norm "3 day weather forecast by WTTR.IN"
-					msgFunc norm "Type a City name, airport code, domain name or area code:-"
-					read -r mycity		
-					clear
-					curl wttr.in/"$mycity"
-					msgFunc anykey 
-					clear
-			;;
-			"${optionsM[15]}")   
+			"${optionsM[9]}")   #config file edit or view
 					 cd "$Dest5"  || exitHandlerFunc dest5
 					 if [ -f "$Dest5/cylonCfg.conf" ] 
 						then
@@ -318,17 +335,24 @@ while true; do
 							exitHandlerFunc fileerror "$Dest5/cylonCfg.conf"
 						fi
 			;;
-			"${optionsM[16]}") #system update.
-					checkinputFunc "-uu"
+			"${optionsM[10]}") #system info
+				HelpFunc "SYS"
 			;;
-		"${optionsM[17]}") #system info
-		   HelpFunc "SYS"
-		   ;;
-		"${optionsM[18]}")  # cylon info and cat readme file to screen 
-			HelpFunc "HELP"
+			"${optionsM[11]}")  # cylon info and cat readme file to screen 
+				HelpFunc "HELP"
 			;;
-		*)  #exit  
-			exitHandlerFunc exitout ;;
+			"${optionsM[12]}")  # 3 day forecast weather
+					msgFunc norm "3 day weather forecast by WTTR.IN"
+					msgFunc norm "Type a City name, airport code, domain name or area code:-"
+					read -r mycity		
+					clear
+					curl wttr.in/"$mycity"
+					msgFunc anykey 
+					clear
+			;;
+			*)  #exit  
+				exitHandlerFunc exitout 
+			;;
 	esac
 	break
 	done

@@ -1,3 +1,6 @@
+#!/bin/bash
+#module containing functions called from cylon package
+
 #FUNCTION HEADER
 # NAME :          SystemBackFunc
 # DESCRIPTION:carries out Full system backup + gdrive sync 

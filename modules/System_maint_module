@@ -1,3 +1,6 @@
+#!/bin/bash
+#module containing functions called from cylon package
+
 #FUNCTION HEADER
 # NAME :           SystemMaintFunc
 # DESCRIPTION:carries out 6 maintenance checks  
@@ -15,11 +18,12 @@ function SystemMaintFunc
 				"$(msgFunc checkpac lostfiles NOMES)" "Diskspace usage" "Old configuration files scan"\
 				 "Print sensors information" "Clean journal files"\
 				 "Delete core dumps /var/lib/systemd/coredump/" "Delete files"\
-				  "Password generator" "$(msgFunc checkpac inxi NOMES)" "Return")
+				  "$(msgFunc checkpac inxi NOMES)"\
+				  "$(msgFunc checkpac bleachbit NOMES)"\
+				"$(msgFunc checkpac rmlint NOMES)" "$(msgFunc checkpac htop NOMES)" "Return")
 
 		   #change dir for log files
 	        msgFunc dir "-SYSINFO"
-			msgFunc norm "Files report will be written to path above -"
 			msgFunc blue "System Maintenance options"
 			select  choiceM in "${optionsM2[@]}"
 			do
@@ -186,7 +190,7 @@ EOF
 						read -r choiceDJ
 							if [ "$choiceDJ" = "y" ]
 							then
-								journalctl --vacuum-size=100M
+								sudo journalctl --vacuum-size=100M
 							else
 								return
 							fi
@@ -198,18 +202,9 @@ EOF
 			    "${optionsM2[12]}")  # delete folders /files
 						SystemCleanFunc "FOLDERS"
 			    ;;
-				#"Password generator" 
-				"${optionsM2[13]}")
-					msgFunc green "Random Password generator"
-					msgFunc norm "Enter length:-"
-					read -r mylength
-					if [ -z "$mylength" ]; then
-						mylength=50
-					fi
-				   echo -n "$(< /dev/urandom tr -dc "_*?#!A-Z-a-z-0-9" | head -c"${1:-$mylength}";)"	> pg	  
-				;;
 				
-				"${optionsM2[14]}")
+				
+				"${optionsM2[13]}")
 						#check if inxi package  installed
 						if ! msgFunc checkpac inxi
 						then
@@ -221,10 +216,26 @@ EOF
 						msgFunc green "get output of inxi -Fixz"
 						inxi -Fixz | tee inxioutput
 				;;
-			
+				"${optionsM2[14]}") #system clean with bleachbit
+					SystemCleanFunc
+				;;
+				"${optionsM2[15]}") #rmlint 
+					RmLintFunc
+				;;
+				"${optionsM2[16]}")  # htop - interactive process viewer
+					#check if htop package  installed
+				if ! msgFunc checkpac htop
+				then
+					msgFunc anykey 
+					clear
+				break
+				fi
+				xterm -e "htop" &  
+				;;
 				
 				*)#quit
 				msgFunc green "Done!"
+				clear
 				return
 				;;
 				
@@ -232,6 +243,90 @@ EOF
 			break 
 			done
 			msgFunc green "Done!"	
+			msgFunc anykey 
+			clear
+}
+
+#FUNCTION HEADER
+# NAME :           SystemMaintAutoFunc
+# DESCRIPTION:carries out most of the maintenance checks done by  
+#SystemMaintFunc BUT in one auto pass as opposed to menu selection 
+#run by cylon -m
+# OUTPUTS : various output files 
+# PROCESS : systemd , SSD trim , broken syslinks ,journalcontrol errors
+#lostfiles check with lostfiles package, systemdanalysis boot, 
+#NOTES :    needs lostfiles (AUR)  installed       
+function SystemMaintAutoFunc
+{
+clear 
+		   #change dir for log files
+	        msgFunc dir "-SYSINFOAUTO"
+			msgFunc norm "Files report will be written to path above -"
+			msgFunc green "System Maintenance Scan"
+			# -systemd --failed:
+			msgFunc green "Systemd status"
+			msgFunc green "Done!"
+			systemctl status > Systemdstatus
+			msgFunc green "All Failed Systemd Services"
+			systemctl --failed --all
+			systemctl --failed --all > Systemderrlog
+			msgFunc green "Done!"
+			msgFunc green "All Failed Active Systemd Services"
+			systemctl --failed
+			systemctl --failed >> Systemderrlog
+			# -Logfiles:
+			msgFunc green "Check log Journalctl for Errors"
+			journalctl -p 3 -xb > Journalctlerrlog
+			#check if ssd trim functioning  ok in log
+			#am I on a sdd drive? , 0 for SDD 1 for HDD from command
+			SDX="$(df /boot/ --output=source | tail -1 | cut -c 6-8)"
+			SDX=$(grep 0 /sys/block/"$SDX"/queue/rotational) 
+				if [ "$SDX" = "0" ] 
+						then
+							msgFunc green "Check Journalctl for fstrim SSD trim"
+							echo "SSD trim" > JournalctlerrSDDlog
+							journalctl -u fstrim > JournalctlerrSDDlog
+						else 
+							msgFunc red "HDD detected no SSD trim check done"
+				fi
+			# systemd-analyze - Analyze system boot-up performance
+			msgFunc green "Analyze system boot-up performance"
+            {
+            echo "Analyze boot-up performance"  
+            systemd-analyze time 
+            echo "CRITICAL-CHAIN" 
+            systemd-analyze critical-chain 
+            echo "BLAME" 
+            systemd-analyze blame 
+		     } >>  systemdanalyzelog
+		      #Checking for broken symlinks:
+			msgFunc green "Checking for Broken Symlinks"
+			#root or home?
+			msgFunc norm "Do you want to scan / or $HOME? [R/h]"
+			read -r choiceSYM
+			if [ "$choiceSYM" = "h" ]
+			then
+				find "$HOME" -type l -! -exec test -e {} \; -print > symlinkerr
+            else
+				find / -path /proc -prune -o -type l -! -exec test -e {} \; -print 2>/dev/null > symlinkerr
+			fi
+			#Find files where no group or User corresponds to file's numeric user/group ID.
+			msgFunc green "Find files where no group or User corresponds to file's numeric user/group ID."
+			find / -nogroup > filenogrouplog 2> /dev/null
+			find / -nouser  > filenouserlog  2> /dev/null
+			#check if lostfiles package (AUR) installed
+		    if ! msgFunc checkpac lostfiles
+			then
+				msgFunc anykey 
+			return
+			fi
+			msgFunc green "Lostfiles :-Search for files which are not part of installed Arch Linux packages"
+			msgFunc norm  "Lostfiles strict scan running, outputing to file"
+			sudo bash -c "lostfiles strict  > lostfilesStrictlist.txt" 
+			msgFunc green "Done!"
+			msgFunc norm  "Lostfiles relaxed scan running, outputing to file"
+		    sudo bash -c  "lostfiles relaxed > lostfilesRelaxedlist.txt" 
+		    msgFunc green "Done!"	
 			msgFunc anykey 
 			clear
 }

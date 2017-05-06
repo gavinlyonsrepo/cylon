@@ -1,3 +1,6 @@
+#!/bin/bash
+#module containing gdrive function called from cylon package
+
 #FUNCTION HEADER
 # NAME :         gdriveFunc
 # DESCRIPTION:gdrive sync to google drive
@@ -9,12 +12,12 @@ function gdriveFunc
 clear
 msgFunc green "gdrive, connect to google drive via the terminal" 
 gdrive version
-msgFunc yellow "NOTE Options 2,3 & 4 Include Delete extraneous remote files as of V3.4-5"
+msgFunc yellow "NOTE Options 2 3 4 5, Include Delete extraneous remote files as of v3.4"
 msgFunc blue "gdrive options"
 optionsGD=("List all syncable directories on drive" "Sync local directory to google drive (path 1)" \
 "Sync local directory to google drive (path 2)" "Sync local directory to google drive (path 3)" \
- "List content of syncable directory" "Google drive metadata, quota usage" \
- "List files" "Get file info" \
+ "Sync local directory to google drive (path 4)" "List content of syncable directory" \
+ "Google drive metadata, quota usage" "List files" "Get file info" \
   "Return")
 			select  choiceGD in "${optionsGD[@]}"
 			do
@@ -44,18 +47,25 @@ optionsGD=("List all syncable directories on drive" "Sync local directory to goo
 				msgFunc anykey
 				gdrive sync upload --delete-extraneous "$gdriveSource3" "$gdriveDest3"
 			   ;;
-			    "${optionsGD[4]}")#List content of syncable directory
+			   "${optionsGD[4]}")#Sync upload to remote directory  path 4
+			     msgFunc green "gdrive sync with remote directory path 4:-"
+			    msgFunc norm "Source: $gdriveSource4"
+				msgFunc norm "Destination: $gdriveDest4"
+				msgFunc anykey
+				gdrive sync upload --delete-extraneous "$gdriveSource4" "$gdriveDest4"
+			   ;;
+			    "${optionsGD[5]}")#List content of syncable directory
 					msgFunc dir "-SYNCINFO"
 					msgFunc green "List content of syncable directory (output to file)"
 					msgFunc norm "Enter fileId:-"
 					read -r  FID
 					gdrive sync content "$FID" > Syncinfo
 			    ;;
-			    "${optionsGD[5]}")#gdrive about
+			    "${optionsGD[6]}")#gdrive about
 					msgFunc green "Google drive metadata, quota usage"
 					gdrive about
 			   ;;
-			     "${optionsGD[6]}")#gdrive list files
+			     "${optionsGD[7]}")#gdrive list files
 					msgFunc green "List files "
 					msgFunc norm "Enter Max files to list, Just press enter for all:-"
 					read -r  num
@@ -78,7 +88,7 @@ optionsGD=("List all syncable directories on drive" "Sync local directory to goo
 								gdrive list  -q "$quy" --order "$order" -m "$num" 
 						fi
 					;;
-				"${optionsGD[7]}")# get file info
+				"${optionsGD[8]}")# get file info
 					msgFunc green "Get file info"
 					msgFunc norm "Enter fileId:-"
 					read -r  ID

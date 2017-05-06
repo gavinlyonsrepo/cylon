@@ -65,7 +65,7 @@
 	* Arch-Audit in cylon -u option now consists of two options -q & -u.
 	* Arch-Audit was moved from AUR to main repos SW changed to reflect this.
 
-* version 3.6-7 200417
+* version 3.6-7 + 3.6.1-8 200417 
 	* packages dialog and expac added as depends
 	* new file misc_module added (coding optimisation)
 	* cower -dc download only option added + AUR comment reader
@@ -73,3 +73,14 @@
 	* warning check added for setting of TargetDir in cower config
 	* new options added and others moved to System maintenance menu
 	* Added environmental variable user can now set output directory path.
+	
+* version 3.7-9 100517
+	* corrected minor issue of no pause at end after system update run 
+	* Changed menu layout added system security option etc
+	* added extra drive option to config file now 4 syncs options.
+	* added -b flag to run bleachbit wrapper
+	* added -m flag to run a auto scan of most maintenance menu functions.
+	* xterm terminal now opens on cylon program output folder path.
+	
+	
+	

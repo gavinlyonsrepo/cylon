@@ -1,3 +1,6 @@
+#!/bin/bash
+#module containing functions called from cylon package
+
 #FUNCTION HEADER
 # NAME :           networkFunc
 # DESCRIPTION: provides network utuiles and commands 

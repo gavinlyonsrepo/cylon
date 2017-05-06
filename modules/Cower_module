@@ -1,3 +1,6 @@
+#!/bin/bash
+#module containing functions called from cylon package
+
 #FUNCTION HEADER
 # NAME :           CowerFunc
 # DESCRIPTION:use cower and makepkg utility to mange AUR packages

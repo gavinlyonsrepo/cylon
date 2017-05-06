@@ -1,3 +1,6 @@
+#!/bin/bash
+#module containing functions called from cylon package
+
 #FUNCTION HEADER
 # NAME :            ccryptFunc
 # DESCRIPTION :      function to use ccrpyt encrypt and decrypt files
@@ -85,9 +88,8 @@ function ccryptFunc
 				ccrypt -x "$myccfile"
 			 ;;
 			 *)  #exit  
-				     msgFunc green "Done!"	
-				     msgFunc anykey
-				     clear
+
+				    clear
 					return
 					;;
 			esac

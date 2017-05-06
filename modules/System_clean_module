@@ -1,3 +1,6 @@
+#!/bin/bash
+#module containing function called from cylon package
+
 #FUNCTION HEADER
 # NAME :  SystemCleanFunc 
 # DESCRIPTION: Function for cleaning programs files and system  
@@ -89,6 +92,8 @@ function SystemCleanFunc
 					;;
 				   "${optionsF[4]}")  msgFunc green "Deleting Cylon output folder $Dest3"
 				   		rm -rvf "$Dest3"
+				   		#remake the path for the program output dest3
+						mkdir -p "$Dest3"
 					;;
 					*)  #exit  
 				     msgFunc green "Done!"	
@@ -107,8 +112,9 @@ function SystemCleanFunc
 			fi
 			#system clean with bleachbit (if this function called without "FOLDERS" input)
 			#query for preset option or custom?
-			msgFunc green "Bleachbit system clean. Use the Preset options set in the GUI? [y/N]"  
 			msgFunc norm "Note: For Preset options see $HOME/.config/bleachbit/ or GUI "
+			msgFunc green "Bleachbit system clean. Use the Preset options set in the GUI? [y/N]"  
+			
 									read -r choiceBBBB
 									if [ "$choiceBBBB" = "y" ]
 										then
@@ -201,5 +207,4 @@ function SystemCleanFunc
 						break
 						done
 					 msgFunc anykey
-					 msgFunc green "Done!"	
 }

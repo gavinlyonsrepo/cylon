@@ -1,3 +1,7 @@
+#!/bin/bash
+#module containing help cofig file read and check user 
+#input functions called from cylon package
+
 #FUNCTION HEADER
 # NAME :            HelpFunc
 # DESCRIPTION :     two sections one prints various system information the
@@ -159,6 +163,8 @@ function readconfigFunc
 		gdriveDest2="0B3_XXXX"
 		gdriveSource3="$HOME/Videos"
 		gdriveDest3="XXXXYYY"
+		gdriveSource4="$HOME/.config"
+		gdriveDest4="0B3_RVJ50UWFAdm"
 		#paths for rsync option
 		rsyncsource="$HOME/"
 		rsyncDest="/run/media/$USER/Linux_backup/Hbp_rsync_101016"
@@ -185,11 +191,12 @@ function readconfigFunc
 #-c open config file for edit.
 #-u update all
 #-d run bleachbit default as set in GUI
+#-b run the bleachbit function
 function checkinputFunc
 {
 case "$1" in
 	"");;
-	-u|--update|-uu) #update system
+	-u|--update|-uu) #update system report NOTE main menu passes -uu 
       clear
       #check if arch-audit package  installed
 		if ! msgFunc checkpac arch-audit
@@ -211,6 +218,8 @@ case "$1" in
 	  msgFunc line
 	  msgFunc green "Arch-audit upgradable vulnerable packages"
 	  arch-audit -u
+	  msgFunc norm " "
+	  msgFunc green "Arch-audit vulnerable packages"
 	  arch-audit -q
 	  msgFunc anykey
 	  msgFunc line
@@ -227,6 +236,7 @@ case "$1" in
 					pacaur -Syu	
 			fi
 		msgFunc green "Done!"
+		msgFunc anykey
 	;;
   -c|--config)
 		if [ -f "$Dest5/cylonCfg.conf" ] 
@@ -240,6 +250,7 @@ case "$1" in
 #Bleachbit system clean. Use the options set in the GUI
 		msgFunc green "Bleachbit system clean"  
 		msgFunc norm "Preset options see $HOME/.config/bleachbit/ or GUI "
+		msgFunc anykey "To run bleachbit -c --preset"
 		msgFunc norm  "Running bleachbit -c --preset"
 		bleachbit -c --preset
 		msgFunc green "Done!"
@@ -253,13 +264,20 @@ case "$1" in
   -h|--help)
 		HelpFunc HELP
     ;;
-   *) msgFunc yellow "Invalid option, Usage: -c -d -v -s -u -h , See readme.md for details"
+   -b|--bleachbit)
+		SystemCleanFunc
+   ;;
+   -m|--maint)
+		SystemMaintAutoFunc
+   ;;
+   *) msgFunc yellow "Invalid option, Usage: -b -c -d -h -m -s -u -v"
+	  msgFunc yellow "See readme.md for details at cylon -h "
    ;;
 esac
 #was there a input?
 if [ -n "$1" ] 
 then
-	#was the update report called from menu -uu?
+	#was the update report called from main menu -uu?
 	if [ "$1" = "-uu" ]
 	then
 		msgFunc norm ""

@@ -1,3 +1,7 @@
+#!/bin/bash
+#module containing pacman pkglist generator and arch news rss reader
+#function called from cylon package
+
 #FUNCTION HEADER
 # NAME :            PacmanFunc
 # DESCRIPTION :     Pacman package manager options
@@ -107,7 +111,7 @@ function PacmanFunc
 
 					"${options[12]}")
 						msgFunc green "Make copy of package lists"
-						pkglistFunc
+						pkglistFunc 
 					;;
 					"${options[13]}") #backup the pacman database
 						msgFunc green "Back-up the pacman database to :"
@@ -163,6 +167,7 @@ function PacmanFunc
 					    
 						*)  #exit  
 						msgFunc green "Done!"	
+						clear
 						return
 						;;
 			esac
@@ -214,7 +219,7 @@ function RssFunc
 #FUNCTION HEADER
 # NAME :            pkglistFunc
 #INPUT $1 Backup if called from backup do not create directory
-# DESCRIPTION :creates a copy of packages list seven off see below.
+# DESCRIPTION :creates a copy of packages list see below.
 #OUTPUT seven files see below
 #NOTE called from pacman pacur cower and backup  functions 
 function pkglistFunc
