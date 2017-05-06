@@ -251,8 +251,8 @@ function exitHandlerFunc
 #==================MAIN CODE HEADER====================================
 #=====================================================================
 #SOURCE THE MODULES for the functions from the cylon library folder
-for MYFILE in ./modules/*;  #THIS LINE IS FOR DEBUG ONLY
-#for MYFILE in /usr/lib/cylon/modules/*;
+#for MYFILE in ./modules/*;  #THIS LINE IS FOR DEBUG ONLY
+for MYFILE in /usr/lib/cylon/modules/*;
  do
    # shellcheck disable=SC1090
    source "$MYFILE"
