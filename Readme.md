@@ -1,13 +1,13 @@
 ﻿Cylon
 --------------------------------------------
-* Name: cylon 
-* Date: 1005417
-* Version control: 3.7-9 See changelog.md for details
+* Package name: cylon 
+* Last Update: 1005417
+* Version : 3.7-9 See changelog.md/release notes for version control
 * Author: Gavin Lyons
-* Contact: Upstream repository at github "gavinlyonsrepo"
+* Contact: Upstream repo at github "gavinlyonsrepo" or glyons66@hotmail.com
 * Upstream repository: https://github.com/gavinlyonsrepo/cylon
-* Title : Arch Linux distro maintenance  a Bash shell script. 
-* AUR package name : cylon
+* Title : Arch Linux distribution maintenance program.
+* AUR(Arch user repository ) package name : cylon
 * AUR location: https://aur.archlinux.org/packages/cylon/
 * Description: A menu driven script which provides updates, maintenance, 
 backups and system checks for an Arch based linux distribution.
@@ -17,28 +17,33 @@ The program is mainly console text based but also uses dialog GUI's
 at a few points for directory and file selection.
 A detailed list of features is provided below in features section.
 
-Options
+Options/Usage
 -------------------------------------------
-Type cylon to run :- cylon [options]
-options:
-* -h --help Print cylon information and exit.
-* -s --system  Print system information and exit
-* -v --version Print version information and exit.
-* -c --config Opens the cylon config file for editing and exit
-* -d --default Bleachbit system clean. 
+The program installs an icon in system application menus under system.
+It can be also run in a terminal by typing cylon: cylon -[options]
+
+Options(standalone cannot be combined):
+* -h --help , Print cylon information and exit.
+* -s --system , Print system information and exit
+* -v --version  , Print version information and exit.
+* -c --config  , Opens the cylon config file for editing and exit
+* -d --default , Bleachbit system clean. 
 This will execute options selected in bleachbit GUI or bleachbit config file.
-* -b --bleachbit opens the bleachbit select menus 
-* -m --maint Runs Automatic system maintenance scan 
-* -u --update Runs a full update report with option to execute and exit.
-Report provides Arch news rss reader + arch-audit vulnerable 
-packages output + number and type of updates available for all repos.
+* -b --bleachbit , Opens the bleachbit select menus 
+* -m --maint , Runs Automatic system maintenance scan
+This carries many of the menu functions in system maintenance menu in 
+a single sweep, It will not change system just create report files.
+* -u --update , Runs a full update report with option to execute and exit.
+Report provides Arch news rss reader & arch-audit vulnerable 
+packages output CVE data(Common Vulnerabilities and Exposures) 
+& number and type of updates available for all repos.
 
 Files
 -----------------------------------------
 Cylon is a bash script installed to /usr/bin by package 
 build.
 
-* /usr/bin/cylon (the shell script)
+* /usr/bin/cylon (the main shell script)
 * /usr/lib/cylon/modules/*_module (modular functions called by script)
 * /usr/share/doc/cylon/Readme.md
 * /usr/share/doc/cylon/changelog.md
@@ -49,10 +54,12 @@ build.
 * /usr/share/man/man7/cylon.7 (manpage)
 
 Readme.md is displayed to screen by a menu option on cylon info page.
-Type man cylon for manpage. 
-The manpage is a truncated version of this readme file.
+Type "man cylon" to display manpage. 
+The manpage is a truncated version of the readme file.
 
-Config file: You can create an optional config file for custom system backup. 
+Config file: You can create an optional config file, used mainly 
+for custom system backup. If the user is not using the system backup 
+or ccrypt menu functions the user does not need config file.
 * NAME: cylonCfg.conf 
 * PATH: $HOME/.config/cylon/cylonCfg.conf.
 * SETTINGS:
@@ -60,12 +67,14 @@ Config file: You can create an optional config file for custom system backup.
 "gdrivedestX" is remote google drive directory file ID
 (see gdrive readme for setup and how to get file id numbers)
 and "gdriveSourceX" is the local directory source.
-"myccfile" is a setting for ccrypt utility, a path to a default file.
+"rsyncsource" and "rsyncdest" provide the source and destination paths 
+for rsync option in backup menu.
+"myccfile" is a setting for ccrypt utility, 
+a path to a default file for ease of use.
 If config file missing the System uses hard-coded dummy defaults.
 The config file can be edited from a main menu option or by option -c
 
-File setup example:
-
+cylonCfg.conf file setup example:
 Just copy and paste this into file and change paths for your setup.
 (Note:remove markdown bullet points in actual file)
 
@@ -87,12 +96,12 @@ Output folder
 -------------------------------------
 Most system output (logfiles, backups, downloads and updates etc) 
 is placed at below path, unless otherwise specified on screen.
-Output folders are created with following syntax HHMM-DDMONYY-X where X
-is output type i.e backup, update etc. The default path is:
-$HOME/Documents/Cylon .
+Output folders are created with following time/date stamp syntax HHMM-DDMONYY-X 
+where X is output type i.e backup, update etc. The default path is:
+$HOME/Documents/Cylon.
 
-Optional Environment variable:
-example= export CYLONDEST="$HOME/.cache/cylon"
+Optional Environment variable: $CYLONDEST
+How to set example: export CYLONDEST="$HOME/.cache/cylon"
 This optional Environment variable is provided for users
 who wish to use different destination path for program output folder
 if variable is not set or does not exist, cylon uses the default path.
@@ -112,7 +121,8 @@ only 1 can be or needs to be installed, both included because of conflicts.
 
 cower and pacaur are both AUR helpers you can install 
 just cower or both depending on preference. pacaur wraps cower 
-and needs it installed. The setting TargetDir in cower config file must not be used
+and needs it installed. 
+The setting TargetDir in cower config file must not be used
 cylon will check this and display warning.
 
 gdrive readme for config https://github.com/prasmussen/gdrive
@@ -120,10 +130,11 @@ gdrive option Syncs will Delete extraneous remote files as of V3.4-5
 
 dialog should already be installed in an arch linux system installed by
 the arch linux installation guide on wiki. If you install Arch some other way
-It may not be there, so included as depends.
+It may not be there, so included as depends. expac is used a lot and will 
+be already installed on many systems.
 
-* dialog –  used for GUIs menus (Non-optional)
-* expac –   used for create package lists (Non-optional)
+* dialog –  used to make GUIs menus (Non-optional)
+* expac –   used to create package lists (Non-optional)
 * ccrypt –  used for encrypting
 * bleachbit – for system clean and shredding
 * clamav –  for malware  check
@@ -145,6 +156,32 @@ It may not be there, so included as depends.
 
 Features and Functions 
 ----------------------
+
+The program functions are divided into 6 main sections:
+update, maintenance, backup, security, network and misc.
+
+The update section is the core of the program and provides a wrapper for 
+pacman, pacaur and cower. It provides an extension to cower 
+to allow it to install and update packages. It also provides 
+a full system update report function and various other options. 
+The setting TargetDir in cower config file must not be used
+cylon will check this and display warning.
+
+The maintenance section provides a variety of scans and checks, it also 
+a provides command line wrapper for rmlint and bleach-bit. 
+
+The backup section provides a wrapper for gdrive program. as well as ability
+to backup system using various tools.
+
+The security section provides a wrapper for ccrypt and a extended launcher 
+for various security tools as well as a password generator.
+
+The network section provides various tools to check network and configuration.
+
+Other misc functions include an option to edit config file, information menus for
+system and cylon. Weather forecast and terminal launcher. NANO is used 
+as default text editor for editing config files.
+
 * pacman options
 	* Check for updates (no download)
 	* pacman -Syu Upgrade packages
@@ -285,7 +322,7 @@ Features and Functions
 
 * 3 day weather forecast by wttr.in
 
-* REF1: packages list referenced above
+	* (REF1): packages list referenced above
 	* All installed packages: pkglistQ.txt
 	* All native packages: pkglistQn.txt
 	* All explicitly installed packages: pkglistQe.txt
@@ -298,9 +335,6 @@ Features and Functions
 	* All installed packages sorted by size: pkglistSize.txt
 	* All installed packages sorted by install date: pkglistDate.txt
 
-* Note1: The setting TargetDir in cower config file must not be used
-cylon will check this and display warning.
-* Note 2: NANO is used as default text editor for editing config files.
 
 Media
 -----------
@@ -309,10 +343,11 @@ There are screenshots of cylon in the upstream repo.
 Bug reports and communication
 -----------
 
-If you should find a bug or any other query , 
-please send a report to upstream repo 
-suggestions for improvements and new features welcome
+If you should find a bug or you have any other query, 
+please send a report to upstream repo,
+Suggestions for improvements and new features welcome
 Upstream repo: https://github.com/gavinlyonsrepo/cylon
+or contact glyons66@hotmail.com
 
 Copyright
 ---------
