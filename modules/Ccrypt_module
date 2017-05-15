@@ -15,7 +15,7 @@ function ccryptFunc
 	myccfile=""
 	msgFunc blue "ccrypt - encrypt and decrypt files:-"
 	#check if ccrypt installed
-    if ! msgFunc checkpac ccrypt
+	if ! msgFunc checkpac ccrypt
 	then
 		msgFunc anykey 
 	return
@@ -67,29 +67,28 @@ function ccryptFunc
 			select choicecc in "${optionscc[@]}"
 			do
 			case "$choicecc" in 
-			 "${optionscc[0]}") #Encrypt.
-			   msgFunc green "Decrypt  a files to standard output., ccrypt -e"
+			"${optionscc[0]}") #Encrypt.
+				msgFunc green "Decrypt  a files to standard output., ccrypt -e"
 				ccrypt -e "$myccfile"
-			 ;;
-			 "${optionscc[1]}") #Decrypt
-			 msgFunc green "Decrypt  a files to standard output., ccrypt -d"
-			   ccrypt -d "$myccfile"
-			 ;;
-			 "${optionscc[2]}") #Decrypt  files to standard output.
+			;;
+			"${optionscc[1]}") #Decrypt
+				msgFunc green "Decrypt  a files to standard output., ccrypt -d"
+				ccrypt -d "$myccfile"
+			;;
+			"${optionscc[2]}") #Decrypt  files to standard output.
 				msgFunc green "Decrypt  file to standard output., ccrypt -c"
-				 ccrypt -c "$myccfile"
-			 ;;
-			 "${optionscc[3]}") #Edit a Decrypted file
-			    msgFunc green "Edit a Decrypted file with nano text editor, nano"
+				ccrypt -c "$myccfile"
+			;;
+			"${optionscc[3]}") #Edit a Decrypted file
+				msgFunc green "Edit a Decrypted file with nano text editor, nano"
 				nano "$myccfile"
-			 ;;
-			 "${optionscc[4]}") #Change the key of encrypted data
+			;;
+			"${optionscc[4]}") #Change the key of encrypted data
 				msgFunc green "Change the key of encrypted file, ccrypt -x"
 				ccrypt -x "$myccfile"
-			 ;;
-			 *)  #exit  
-
-				    clear
+			;;
+			*)  #exit  
+					clear
 					return
 					;;
 			esac

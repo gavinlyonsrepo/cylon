@@ -9,7 +9,7 @@
 # OUTPUTS : backups see OptionsB2 array
 # PROCESS : system backup(5 options) + option to call gdriveFunc  +rsync option
 #NOTES :    needs rsync installed if using rsync option
-#
+
 function SystemBackFunc
 {
 			#get paths from config file if exists
@@ -104,13 +104,13 @@ function SystemBackFunc
 				msgFunc norm "$myddpath"
 				sudo dd if="$myddpath" of=hda-mbr.bin bs=512 count=1
 				msgFunc green "Done!"
-            ;;&
+			;;&
 			"${optionsB2[1]}"|"${optionsB2[5]}")#etc
 				msgFunc green "Make a copy of etc dir"
 				sudo cp -a -v -u /etc .
 				msgFunc green "Done!"
-            ;;&
-            "${optionsB2[2]}"|"${optionsB2[5]}")#home
+			;;&
+			"${optionsB2[2]}"|"${optionsB2[5]}")#home
 				msgFunc green "Make a copy of home dir"
 				sudo cp -a -v -u /home .
 				msgFunc green "Done!"
@@ -119,17 +119,17 @@ function SystemBackFunc
 			"${optionsB2[3]}"|"${optionsB2[5]}")#packages
 				#pass Backup to pkglistFunc to not create directory
 				pkglistFunc "Backup"
-            ;;&
-            "${optionsB2[4]}"|"${optionsB2[5]}")#tar
+			;;&
+			"${optionsB2[4]}"|"${optionsB2[5]}")#tar
 				msgFunc green "Make tarball of all except tmp dev proc sys run"
 				sudo tar --one-file-system --exclude=/tmp/* --exclude=/dev/* --exclude=/proc/* --exclude=/sys/* --exclude=/run/* -pzcvf RootFS_backup.tar.gz /
 				msgFunc green "Done!"
 				sync 
-				;;&
-			  *)#quit
+			;;&
+			*)#quit
 				msgFunc green "ALL Done!"
 				return
-				;;
+			;;
 			esac
 			break 
 			done

@@ -11,8 +11,8 @@
 
 function SystemMaintFunc
 {
-	        clear 
-	        optionsM2=("Failed Systemd Services and status" "Check Journalctl log for Errors"\
+			clear 
+			optionsM2=("Failed Systemd Services and status" "Check Journalctl log for Errors"\
 				"Check Journalctl for fstrim SSD trim" "Analyze system boot-up performance"\
 				"Check for Broken Symlinks" "Find files where no group or User corresponds to file's numeric ID"\
 				"$(msgFunc checkpac lostfiles NOMES)" "Diskspace usage" "Old configuration files scan"\
@@ -22,8 +22,8 @@ function SystemMaintFunc
 				  "$(msgFunc checkpac bleachbit NOMES)"\
 				"$(msgFunc checkpac rmlint NOMES)" "$(msgFunc checkpac htop NOMES)" "Return")
 
-		   #change dir for log files
-	        msgFunc dir "-SYSINFO"
+			#change dir for log files
+			msgFunc dir "-SYSINFO"
 			msgFunc blue "System Maintenance options"
 			select  choiceM in "${optionsM2[@]}"
 			do
@@ -40,14 +40,14 @@ function SystemMaintFunc
 				msgFunc green "All Failed Active Systemd Services"
 				systemctl --failed
 				systemctl --failed >> Systemderrlog
-            ;;
+			;;
 			"${optionsM2[1]}")
 					# -Logfiles:
 					msgFunc green "Check log Journalctl for Errors"
 					journalctl -p 3 -xb > Journalctlerrlog
-            ;;
-            
-            "${optionsM2[2]}")
+			;;
+
+			"${optionsM2[2]}")
 				#check if ssd trim functioning  ok in log
 				#am I on a sdd drive? , 0 for SDD 1 for HDD from command
 				SDX="$(df /boot/ --output=source | tail -1 | cut -c 6-8)"
@@ -65,16 +65,16 @@ function SystemMaintFunc
 			"${optionsM2[3]}")
 					# systemd-analyze - Analyze system boot-up performance
 					msgFunc green "Analyze system boot-up performance"
-		            {
-		            echo "Analyze boot-up performance"  
-		            systemd-analyze time 
-		            echo "CRITICAL-CHAIN" 
-		            systemd-analyze critical-chain 
-		            echo "BLAME" 
-		            systemd-analyze blame 
-				     } >>  systemdanalyzelog   
-            ;;
-            "${optionsM2[4]}")
+					{
+					echo "Analyze boot-up performance"  
+					systemd-analyze time 
+					echo "CRITICAL-CHAIN" 
+					systemd-analyze critical-chain 
+					echo "BLAME" 
+					systemd-analyze blame 
+					} >>  systemdanalyzelog   
+			;;
+			"${optionsM2[4]}")
 					#Checking for broken symlinks:
 					msgFunc green "Checking for Broken Symlinks"
 					#root or home?
@@ -83,7 +83,7 @@ function SystemMaintFunc
 					if [ "$choiceSYM" = "h" ]
 					then
 						find "$HOME" -type l -! -exec test -e {} \; -print > symlinkerr
-		            else
+					else
 						find / -path /proc -prune -o -type l -! -exec test -e {} \; -print 2>/dev/null > symlinkerr
 					fi
 					;;
@@ -96,7 +96,7 @@ function SystemMaintFunc
 			
 			 "${optionsM2[6]}")
 				#check if lostfiles package (AUR) installed
-		    if ! msgFunc checkpac lostfiles
+			if ! msgFunc checkpac lostfiles
 			then
 				msgFunc anykey 
 			return
@@ -106,7 +106,7 @@ function SystemMaintFunc
 			sudo bash -c "lostfiles strict  > lostfilesStrictlist.txt" 
 			msgFunc green "Done!"
 			msgFunc norm  "Lostfiles relaxed scan running, outputing to file"
-		    sudo bash -c  "lostfiles relaxed > lostfilesRelaxedlist.txt" 
+			sudo bash -c  "lostfiles relaxed > lostfilesRelaxedlist.txt" 
 			;;
 			
 			"${optionsM2[7]}")
@@ -117,10 +117,10 @@ function SystemMaintFunc
 					if [ "$choiceDU" = "h" ]
 					then
 						du -H "$HOME" 2> /dev/null | sort -n -r >> diskspace
-		            else
+					else
 						du -H / 2> /dev/null | sort -n -r >> diskspace
 					fi
-			       ;;
+			;;
 			 "${optionsM2[8]}") #old config files
 			 msgFunc green "Old configuration files scan"
 cat <<-EOF
@@ -182,8 +182,8 @@ EOF
 				"${optionsM2[9]}")
 						msgFunc green "Print sensor information"
 						sensors
-			    ;;
-			    "${optionsM2[10]}")
+				;;
+				"${optionsM2[10]}")
 						msgFunc green "Clean journalctl files(systemd logging system)"
 						msgFunc norm "Remove archived journal files until the disk space they use falls "
 						msgFunc norm "below 100M: press y or any other key to quit [y/N]"
@@ -194,14 +194,14 @@ EOF
 							else
 								return
 							fi
-			    ;;
-			    "${optionsM2[11]}")
+				;;
+				"${optionsM2[11]}")
 						msgFunc green "Delete core dumps /var/lib/systemd/coredump/"
 						sudo rm -rvf /var/lib/systemd/coredump/*
-			    ;;
-			    "${optionsM2[12]}")  # delete folders /files
+				;;
+				"${optionsM2[12]}")  # delete folders /files
 						SystemCleanFunc "FOLDERS"
-			    ;;
+				;;
 				
 				
 				"${optionsM2[13]}")
@@ -259,8 +259,8 @@ EOF
 function SystemMaintAutoFunc
 {
 clear 
-		   #change dir for log files
-	        msgFunc dir "-SYSINFOAUTO"
+			#change dir for log files
+			msgFunc dir "-SYSINFOAUTO"
 			msgFunc norm "Files report will be written to path above -"
 			msgFunc green "System Maintenance Scan"
 			# -systemd --failed:
@@ -291,15 +291,15 @@ clear
 				fi
 			# systemd-analyze - Analyze system boot-up performance
 			msgFunc green "Analyze system boot-up performance"
-            {
-            echo "Analyze boot-up performance"  
-            systemd-analyze time 
-            echo "CRITICAL-CHAIN" 
-            systemd-analyze critical-chain 
-            echo "BLAME" 
-            systemd-analyze blame 
-		     } >>  systemdanalyzelog
-		      #Checking for broken symlinks:
+			{
+			echo "Analyze boot-up performance"  
+			systemd-analyze time 
+			echo "CRITICAL-CHAIN" 
+			systemd-analyze critical-chain 
+			echo "BLAME" 
+			systemd-analyze blame 
+			} >>  systemdanalyzelog
+			#Checking for broken symlinks:
 			msgFunc green "Checking for Broken Symlinks"
 			#root or home?
 			msgFunc norm "Do you want to scan / or $HOME? [R/h]"
@@ -307,7 +307,7 @@ clear
 			if [ "$choiceSYM" = "h" ]
 			then
 				find "$HOME" -type l -! -exec test -e {} \; -print > symlinkerr
-            else
+			else
 				find / -path /proc -prune -o -type l -! -exec test -e {} \; -print 2>/dev/null > symlinkerr
 			fi
 			#Find files where no group or User corresponds to file's numeric user/group ID.
@@ -315,7 +315,7 @@ clear
 			find / -nogroup > filenogrouplog 2> /dev/null
 			find / -nouser  > filenouserlog  2> /dev/null
 			#check if lostfiles package (AUR) installed
-		    if ! msgFunc checkpac lostfiles
+			if ! msgFunc checkpac lostfiles
 			then
 				msgFunc anykey 
 			return
@@ -325,8 +325,8 @@ clear
 			sudo bash -c "lostfiles strict  > lostfilesStrictlist.txt" 
 			msgFunc green "Done!"
 			msgFunc norm  "Lostfiles relaxed scan running, outputing to file"
-		    sudo bash -c  "lostfiles relaxed > lostfilesRelaxedlist.txt" 
-		    msgFunc green "Done!"	
+			sudo bash -c  "lostfiles relaxed > lostfilesRelaxedlist.txt" 
+			msgFunc green "Done!"	
 			msgFunc anykey 
 			clear
 }

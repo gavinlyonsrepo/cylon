@@ -3,43 +3,41 @@
 
 #FUNCTION HEADER
 # NAME :           networkFunc
-# DESCRIPTION: provides network utuiles and commands 
-# OUTPUTS : no output or inputs
-# PROCESS : 5 options see options array
-#NOTES :   new in version 3.0-1
+# DESCRIPTION: provides network functions
+# PROCESS : See options array
 function networkFunc
 {
 	clear        
 	 #change dir for log files
 	 msgFunc dir "-NETINFO"
-     msgFunc norm "Files report will be written to path above -"
+	msgFunc norm "Files report will be written to path above -"
 	msgFunc blue "Network. options:-"
 				optionsN=("$(msgFunc checkpac wavemon NOMES) -wireless network monitor" "$(msgFunc checkpac speedtest-cli  NOMES) -testing internet bandwidth"\
-	         	"Check if website up with netcat and ping" "ip addr" "netstat -r & route" "Check the status of UFW  Uncomplicated Firewall" "Return")
-	         	select choiceN in "${optionsN[@]}"
-	         	do
+				"Check if website up with netcat and ping" "ip addr" "netstat -r & route" "Check the status of UFW  Uncomplicated Firewall" "Return")
+				select choiceN in "${optionsN[@]}"
+				do
 				case "$choiceN" in  
 				
 					"${optionsN[0]}") #wavemon - wireless network monitor"
-				     #check wavemon is installed
+					#check wavemon is installed
 					if ! msgFunc checkpac wavemon 
 					then
 						msgFunc anykey 
 					return
 					fi
 					msgFunc green "Opening wavemon"
-				    xterm -e "wavemon" &  
+					xterm -e "wavemon" &  
 					;;
 					
 					"${optionsN[1]}")  #speedtest-cli testing internet bandwidth
-					   #check speedtest-cli  is installed
+					#check speedtest-cli  is installed
 					if ! msgFunc checkpac speedtest-cli
 					then
 						msgFunc anykey 
 					return
 					fi
 					msgFunc green "Speedtest-cli"
-					 msgFunc norm "Do you want to generate server list [y/N]"
+					msgFunc norm "Do you want to generate server list [y/N]"
 									read -r choiceST
 									if [ "$choiceST" = "y" ]
 									then
@@ -47,7 +45,7 @@ function networkFunc
 											speedtest-cli --list > stclilist
 											head -n20 stclilist 
 									fi		
-					 msgFunc norm "Do you want to specify a server ID [y/N]"
+					msgFunc norm "Do you want to specify a server ID [y/N]"
 									read -r choiceST
 									if [ "$choiceST" = "y" ]
 										then
@@ -57,9 +55,9 @@ function networkFunc
 											speedtest-cli --server "$SERVERID" | tee stclilog
 											return
 									fi		
-					 clear
-					 msgFunc green "Running Speedtest-cli "
-					 speedtest-cli  | tee stclilog
+					clear
+					msgFunc green "Running Speedtest-cli "
+					speedtest-cli  | tee stclilog
 					;;
 					
 					"${optionsN[2]}")  #netcat 
@@ -70,18 +68,18 @@ function networkFunc
 					ping -c 10 "$WEBSITE"
 
 					;;
-				   "${optionsN[3]}")  #ip a
-				     ip a | tee ifconfiglog
+					"${optionsN[3]}")  #ip a
+						ip a | tee ifconfiglog
 					;;
-					 "${optionsN[4]}")  #netstat  andview route table
-				     netstat -r 
-				     route
+					"${optionsN[4]}")  #netstat  andview route table
+						netstat -r 
+						route
 					;;
 					"${optionsN[5]}") #check firewall status
 					sudo ufw status verbose
 					;;
 					*)  #exit  
-				     msgFunc green "Done!"	
+						msgFunc green "Done!"	
 					return
 					;;
 				esac

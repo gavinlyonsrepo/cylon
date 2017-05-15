@@ -1,27 +1,18 @@
 #!/bin/bash
 #=========================HEADER=================================
-# cylon bash shell script
+# cylon : bash shell script
 #================================================================
 #name:cylon
 #Date 100517
-#License: 
-#GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
-#see license.md  at repo or /usr/share/licenses/cylon/
-#Written by G lyons 
+#License: see license.md 
+#Written by Gavin lyons 
 #Version 3.7-9 See changelog.md at repo for version control
-#Software repo
-#https://github.com/gavinlyonsrepo/cylon
-#AUR package name = cylon , at aur.archlinux.org by glyons
-#Description:
-#Arch Linux distro maintenance Bash script. 
-#Aur package name = cylon 
-#A script to do as much maintenance, backups and system checks in 
-#single menu driven optional script Command line program for Arch.  
-# Usage
-# type cylon in terminal, optional config file cylonCfg.conf 
-# at "$HOME/.config/cylon"
-#options and dependencies 
-#see readme.md(access thru cylon info page) or manpage "man cylon"
+#Software repo: https://github.com/gavinlyonsrepo/cylon
+#AUR package name : cylon , at aur.archlinux.org by glyons
+#Title : Arch Linux distro maintenance Bash script. 
+#Updates, maintenance, backups and system checks in 
+#single menu driven optional script Command line program for Arch linx users. 
+#see readme.md(access thru cylon info page) or manpage "man cylon" for info.
 #================================================================
 # END_OF_HEADER
 
@@ -37,6 +28,11 @@ NORMAL=$(printf "\033[0m")
 #prompt for select menus
 PS3="${BLUE}By your command:${NORMAL}"
 
+#Paths
+#dest1 #dest2= backup path from config file
+#dest3 = program output #dest4 = general use
+#dest5 = config file  #dest6  = Documentation
+
 #set the path for the program output path Dest3
 #if environmental variable exists set it to Dest3
 if [ -z "${CYLONDEST}" ]
@@ -48,7 +44,7 @@ else
 fi
 #set the path for optional config file Dest5
 Dest5="$HOME/.config/cylon"
-#set path for readme.md changlog.md dest6
+#set path for readme.md changlog.md Dest6
 Dest6="/usr/share/doc/cylon"
 #make the path for the program output dest3
 mkdir -p "$Dest3"
@@ -167,9 +163,8 @@ function msgFunc
 # DESCRIPTION: display security menu called from main menu
 function SystemSecFunc
 {
-	 #change dir for log files
-	 clear
 
+	clear
 	while true; do
 	msgFunc blue "System Security Menu options:-"
 	optionsSS=("$(msgFunc checkpac ccrypt NOMES)" "$(msgFunc checkpac clamav NOMES)" "$(msgFunc checkpac rkhunter NOMES)" 
@@ -197,19 +192,18 @@ function SystemSecFunc
 				if [ -z "$mylength" ]; then
 					mylength=50
 				fi
-			   echo -n "$(< /dev/urandom tr -dc "_*?#!A-Z-a-z-0-9" | head -c"${1:-$mylength}";)"	> pg	  
+				echo -n "$(< /dev/urandom tr -dc "_*?#!A-Z-a-z-0-9" | head -c"${1:-$mylength}";)"	> pg	  
 				msgFunc green "Done!"
 			 ;;
 			 
 			 *)  #exit  
-			     clear
+				clear
 				return
 			;;
 			esac
 			break
 			done
 done
-
 }
 #FUNCTION HEADER
 # NAME :  exitHandlerFunc 
@@ -220,27 +214,24 @@ done
 function exitHandlerFunc
 {
 	case "$1" in
-			#dest1 = backup path #dest2 = backup path
-			#dest3 = program output #dest4 = general
-			#dest5 = config file  #dest6  = Documentation
-	        exitout) #non-error exit
-	        msgFunc yellow "Goodbye $USER!"
+			exitout) #non-error exit
+			msgFunc yellow "Goodbye $USER!"
 			msgFunc anykey "and exit."
 			exit 0
-	        ;;
+			;;
 			dest1) msgFunc red "Path not found to destination directory"	
-				  msgFunc norm "$Destination1" ;;
+				msgFunc norm "$Destination1" ;;
 			dest2) msgFunc red "Path not found to destination directory"
-				  msgFunc norm "$Destination2" ;;			
+				msgFunc norm "$Destination2" ;;			
 			dest3) msgFunc red "Path not found to destination directory"
-			     msgFunc norm "$Dest3" ;;
+				msgFunc norm "$Dest3" ;;
 			dest4) msgFunc red "Path not found to directory"  ;;
 			dest5) msgFunc red "Path not found to destination directory"
-			     msgFunc norm "$Dest5" ;;
+				msgFunc norm "$Dest5" ;;
 			dest6) msgFunc red "Path not found to destination directory"
-			     msgFunc norm "$Dest6" ;;
-			 netdown) msgFunc red "Internet connectivity test to $2 failed" ;;
-			 fileerror) msgFunc red "File error $2"  ;;
+				msgFunc norm "$Dest6" ;;
+			netdown) msgFunc red "Internet connectivity test to $2 failed" ;;
+			fileerror) msgFunc red "File error $2"  ;;
 	 esac
 	msgFunc yellow "Goodbye $USER!"
 	msgFunc anykey "and exit."
@@ -317,7 +308,7 @@ while true; do
 					 if [ -f "$Dest5/cylonCfg.conf" ] 
 						then
 							msgFunc green "Do you want to edit or view? [e/V]"
-					        read -r choiceCC1
+							read -r choiceCC1
 							if [ "$choiceCC1" = "e" ]
 								then
 									nano  "$Dest5/cylonCfg.conf" || exitHandlerFunc fileerror "$Dest5/cylonCfg.conf"

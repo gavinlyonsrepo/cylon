@@ -197,8 +197,8 @@ function checkinputFunc
 case "$1" in
 	"");;
 	-u|--update|-uu) #update system report NOTE main menu passes -uu 
-      clear
-      #check if arch-audit package  installed
+		clear
+		#check if arch-audit package  installed
 		if ! msgFunc checkpac arch-audit
 		then
 			msgFunc anykey 
@@ -212,25 +212,25 @@ case "$1" in
 			clear
 		return
 		fi
-	  msgFunc line
-		RssFunc
-	  msgFunc anykey
-	  msgFunc line
-	  msgFunc green "Arch-audit upgradable vulnerable packages"
-	  arch-audit -u
-	  msgFunc norm " "
-	  msgFunc green "Arch-audit vulnerable packages"
-	  arch-audit -q
-	  msgFunc anykey
-	  msgFunc line
-      msgFunc green "Number of Pacman updates ready ..> $(checkupdates | wc -l)"	
-	  checkupdates
-	  msgFunc line
-	  msgFunc green "Number of updates available for installed AUR packages ..> $(cower -u | wc -l)"
-	  cower -uc
 		msgFunc line
-	  msgFunc green "Install ALl updates? pacaur -Syu	 [Y/n]"
-	  read -r choiceIU3
+		RssFunc
+		msgFunc anykey
+		msgFunc line
+		msgFunc green "Arch-audit upgradable vulnerable packages"
+		arch-audit -u
+		msgFunc norm " "
+		msgFunc green "Arch-audit vulnerable packages"
+		arch-audit -q
+		msgFunc anykey
+		msgFunc line
+		msgFunc green "Number of Pacman updates ready ..> $(checkupdates | wc -l)"	
+		checkupdates
+		msgFunc line
+		msgFunc green "Number of updates available for installed AUR packages ..> $(cower -u | wc -l)"
+		cower -uc
+		msgFunc line
+		msgFunc green "Install ALl updates? pacaur -Syu	 [Y/n]"
+		read -r choiceIU3
 			if [ "$choiceIU3" != "n" ]
 				then
 					pacaur -Syu	
@@ -238,15 +238,15 @@ case "$1" in
 		msgFunc green "Done!"
 		msgFunc anykey
 	;;
-  -c|--config)
+	-c|--config)
 		if [ -f "$Dest5/cylonCfg.conf" ] 
 		then
 			nano  "$Dest5/cylonCfg.conf" || exitHandlerFunc fileerror
 		else
 			exitHandlerFunc fileerror
 		fi
-    ;;
-  -d|--default)
+		;;
+	-d|--default)
 #Bleachbit system clean. Use the options set in the GUI
 		msgFunc green "Bleachbit system clean"  
 		msgFunc norm "Preset options see $HOME/.config/bleachbit/ or GUI "
@@ -254,25 +254,25 @@ case "$1" in
 		msgFunc norm  "Running bleachbit -c --preset"
 		bleachbit -c --preset
 		msgFunc green "Done!"
-     ;;
-  -v|--version)
+		;;
+	-v|--version)
 		msgFunc norm "$(pacman -Qs cylon)" 
-    ;;
-  -s|--system)
+		;;
+	-s|--system)
 		HelpFunc SYS
-    ;;
-  -h|--help)
+		;;
+	-h|--help)
 		HelpFunc HELP
-    ;;
-   -b|--bleachbit)
+		;;
+	-b|--bleachbit)
 		SystemCleanFunc
-   ;;
-   -m|--maint)
+	;;
+	-m|--maint)
 		SystemMaintAutoFunc
-   ;;
-   *) msgFunc yellow "Invalid option, Usage: -b -c -d -h -m -s -u -v"
+	;;
+	*) msgFunc yellow "Invalid option, Usage: -b -c -d -h -m -s -u -v"
 	  msgFunc yellow "See readme.md for details at cylon -h "
-   ;;
+	;;
 esac
 #was there a input?
 if [ -n "$1" ] 
@@ -285,5 +285,5 @@ then
 		exit 0 
 	fi
 fi
-clear  
+clear
 }

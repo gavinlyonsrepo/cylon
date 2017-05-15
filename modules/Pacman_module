@@ -3,28 +3,27 @@
 #function called from cylon package
 
 #FUNCTION HEADER
-# NAME :            PacmanFunc
-# DESCRIPTION :     Pacman package manager options
+# NAME : PacmanFunc
+# DESCRIPTION : Pacman package manager options
 # PROCESS : See options array      
 #NOTE gnu-netcat is neeeded for the first option.      
-#CHANGES : rss news feed added in v2.2
 function PacmanFunc 
 {
 			clear
-		   #Pacman package manager options:
-		   msgFunc line
-		   msgFunc green "Pacman package manager. Number of packages installed = $(pacman -Q | wc -l) "
-		   msgFunc line
-		   msgFunc blue "Pacman package manager options:-"
+			#Pacman package manager options:
+			msgFunc line
+			msgFunc green "Pacman package manager. Number of packages installed = $(pacman -Q | wc -l) "
+			msgFunc line
+			msgFunc blue "Pacman package manager options:-"
 			options=("Check for pacman updates (no download)" "pacman -Syu Upgrade packages" \
-			 "pacman -Si Display extensive information about a given package" "pacman -S Install Package" \
-			 "pacman -Ss Search for packages in the database" \
-			 "pacman -Rs Remove Package" "pacman -Qs Search for already installed packages" \
-			 "pacman -Qi  Display extensive information for locally installed packages" "pacman -Ql  List all files owned by a given package." \
-			  "pacman -Qkk Verify packages" "paccache -r Prune older packages from cache, Keep last 3"\
-			 "Remove all packages not required as dependencies (orphans)" "Make a copy of package lists"  \
-			 "Back-up the local pacman database" "Arch Linux News Rss feed" "$(msgFunc checkpac arch-audit  NOMES)" \
-			 "pactree options" "Edit pacman config file" "Return to main menu")
+			"pacman -Si Display extensive information about a given package" "pacman -S Install Package" \
+			"pacman -Ss Search for packages in the database" \
+			"pacman -Rs Remove Package" "pacman -Qs Search for already installed packages" \
+			"pacman -Qi  Display extensive information for locally installed packages" "pacman -Ql  List all files owned by a given package." \
+			"pacman -Qkk Verify packages" "paccache -r Prune older packages from cache, Keep last 3"\
+			"Remove all packages not required as dependencies (orphans)" "Make a copy of package lists"  \
+			"Back-up the local pacman database" "Arch Linux News Rss feed" "$(msgFunc checkpac arch-audit  NOMES)" \
+			"pactree options" "Edit pacman config file" "Return to main menu")
 			select choicep in "${options[@]}"
 			do
 			case "$choicep" in
@@ -44,43 +43,43 @@ function PacmanFunc
 						msgFunc green "Display information  for Package."
 						msgFunc norm "Please enter package name"
 						read -r pacString
-                        pacman -Si "$pacString"
+						pacman -Si "$pacString"
 					;;
 					"${options[3]}") #pacman -S Install Package
 						msgFunc green "Install package."
 						msgFunc norm "Please enter package name"
 						read -r pacString
-                        sudo pacman -S "$pacString"
+						sudo pacman -S "$pacString"
 					;;
 					"${options[4]}")   #pacman -Ss Search Repos for Package
 						msgFunc green "Search for packages in the database."
 						msgFunc norm "Please enter package name"
 						read -r pacString
-                        pacman -Ss "$pacString"
+						pacman -Ss "$pacString"
 					;;
 					"${options[5]}") #pacman -Rs Delete Package
 						msgFunc green "Remove Package."
 						msgFunc norm "Please enter package name"
 						read -r pacString
-                        sudo pacman -Rs "$pacString"
+						sudo pacman -Rs "$pacString"
 					;;
 					"${options[6]}")   #pacman -Qs Search for already installed packages
 						msgFunc green "Search for already installed packages."
 						msgFunc norm "Please enter package name"
 						read -r pacString
-                        pacman -Qs "$pacString"
+						pacman -Qs "$pacString"
 					;;
 					"${options[7]}") #pacman -Qi Display extensive information about a given package(local install)
 						msgFunc green "Display information  for Package."
 						msgFunc norm "Please enter package name"
 						read -r pacString
-                        pacman -Qi "$pacString"
+						pacman -Qi "$pacString"
 					;;
 					"${options[8]}") #pacman -Ql  List all files owned by a given package.
 						msgFunc green "List all files owned by a given package."
 						msgFunc norm "Please enter package name"
 						read -r pacString
-                        pacman -Ql "$pacString"
+						pacman -Ql "$pacString"
 					;;
 					"${options[9]}") #pacman -Qkk  Verify all packages
 						msgFunc dir "-PKGINFO"
@@ -133,17 +132,17 @@ function PacmanFunc
 							return
 						fi
 						msgFunc norm "Press [A] for full output: or other options> -q=quiet, -u=upgradable, -uq."
-					    read -r ARCHAUDIT
-					    if [ "$ARCHAUDIT" = "A" ] 
+						read -r ARCHAUDIT
+						if [ "$ARCHAUDIT" = "A" ] 
 							then
 							arch-audit
 							else
 							 arch-audit "$ARCHAUDIT"
 						fi 
-					    ARCHAUDIT=
-					    ;;
-					      
-					     "${options[16]}") #pactree
+						ARCHAUDIT=
+						;;
+					
+						"${options[16]}") #pactree
 									msgFunc green "pactree options"
 									msgFunc norm "List a dependency tree of a package: pactree"
 									msgFunc norm "Show packages that depend on the named package: pactree -r"
@@ -160,15 +159,15 @@ function PacmanFunc
 										pactree -r "$pacString"
 									fi
 						;;
-					    "${options[17]}") #edit pacman conf file
-						msgFunc green "Edit Pacman.conf file."
-						sudo nano  /etc/pacman.conf
+						"${options[17]}") #edit pacman conf file
+							msgFunc green "Edit Pacman.conf file."
+							sudo nano  /etc/pacman.conf
 						;;
-					    
+							
 						*)  #exit  
-						msgFunc green "Done!"	
-						clear
-						return
+							msgFunc green "Done!"	
+							clear
+							return
 						;;
 			esac
 			break

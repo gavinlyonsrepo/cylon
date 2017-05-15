@@ -18,14 +18,14 @@ function SystemCleanFunc
 				msgFunc blue "Delete files/folders. options:-"
 				optionsF=("$(msgFunc checkpac bleachbit NOMES) shred file function" "$(msgFunc checkpac bleachbit NOMES) shred folder function" \
 				"Delete Trash folder" \
-	         	"Delete Download folder" "Delete Cylon output folder $Dest3" "Return")
-	         	select choiceF in "${optionsF[@]}"
-	         	do
+				"Delete Download folder" "Delete Cylon output folder $Dest3" "Return")
+				select choiceF in "${optionsF[@]}"
+				do
 				case "$choiceF" in  
 					"${optionsF[0]}")
-				    	mydelfile=$(dialog --title "Bleachbit Delete file" --output-fd 1 --title "Please choose a file" --fselect "$HOME/" 14 48)
+						mydelfile=$(dialog --title "Bleachbit Delete file" --output-fd 1 --title "Please choose a file" --fselect "$HOME/" 14 48)
 						#echo "${FILE} file chosen."
-				    	case $? in
+						case $? in
 							0)
 								clear
 							;;
@@ -54,7 +54,7 @@ function SystemCleanFunc
 					;;
 					
 					"${optionsF[1]}")
-				    msgFunc green "Shred specific folder"
+					msgFunc green "Shred specific folder"
 					mydelpath=$(dialog --title "Bleachbit Delete folder" --output-fd 1 --begin 1 1 --cancel-label "Exit" --title  "Select folder to delete:" --dselect / 10 40) 
 						case $? in
 							0)
@@ -90,13 +90,13 @@ function SystemCleanFunc
 					"${optionsF[3]}")  msgFunc green "Deleting Download folder "
 						 rm -rvf "$HOME"/Downloads/*
 					;;
-				   "${optionsF[4]}")  msgFunc green "Deleting Cylon output folder $Dest3"
-				   		rm -rvf "$Dest3"
-				   		#remake the path for the program output dest3
+					"${optionsF[4]}")  msgFunc green "Deleting Cylon output folder $Dest3"
+						rm -rvf "$Dest3"
+						#remake the path for the program output dest3
 						mkdir -p "$Dest3"
 					;;
 					*)  #exit  
-				     msgFunc green "Done!"	
+						msgFunc green "Done!"	
 					return
 					;;
 				esac
@@ -125,8 +125,8 @@ function SystemCleanFunc
 									fi		
 		  
 					#custom bleachbit -c cleaner.option
-				    #get cleaner list and put it in array
-				    msgFunc green "Scanning bleachbit cleaners:"
+					#get cleaner list and put it in array
+					msgFunc green "Scanning bleachbit cleaners:"
 					myarray=$(bleachbit --list | awk -F"." '{ print $1 }' | sort -u)
 					#Sort array
 					IFS=$'\n' myarraysorted=($(sort <<<"${myarray[*]}"))
@@ -136,10 +136,10 @@ function SystemCleanFunc
 					# use for loop read all installed packages exception for deepscan
 					for (( i=0; i<"${tLen}"; i++ ));
 					do
-					  if [ "${myarraysorted[i]}" != "deepscan" ]
-					  then 
-							  
-							  if ! msgFunc checkpac "${myarraysorted[i]}"
+						if [ "${myarraysorted[i]}" != "deepscan" ]
+							then 
+							
+							if ! msgFunc checkpac "${myarraysorted[i]}"
 								then
 									unset "myarraysorted[i]"
 								fi
@@ -152,8 +152,8 @@ function SystemCleanFunc
 					#get cleaner input from user
 					select cleaner in "${myarraysorted[@]}"
 					do
-					    #get list of options for selected cleaner and put in array
-					    myarray2=$(bleachbit --list | awk -F"."  ''/"${cleaner}"/' {print $2}')
+							#get list of options for selected cleaner and put in array
+							myarray2=$(bleachbit --list | awk -F"."  ''/"${cleaner}"/' {print $2}')
 						break
 					done
 					#check for valid selection
@@ -199,12 +199,12 @@ function SystemCleanFunc
 								else
 								bleachbit  -c "${cleaner}.${options}"
 							fi
-						  ;;
-						  *)
-						  return
-						  ;;
+						;;
+						*)
+							return
+						;;
 						esac
 						break
 						done
-					 msgFunc anykey
+						msgFunc anykey
 }
