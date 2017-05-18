@@ -119,9 +119,9 @@ function exitHandlerFunc
 {
 	case "$1" in
 			exitout) #non-error exit
-			msgFunc yellow "Goodbye $USER!"
-			msgFunc anykey "and exit."
-			exit 0
+				msgFunc yellow "Goodbye $USER!"
+				msgFunc anykey "and exit."
+				exit 0
 			;;
 			dest1) msgFunc red "Path not found to destination directory"	
 				msgFunc norm "$Destination1" ;;
@@ -168,7 +168,7 @@ msgFunc blue "Main Menu:"
 				pacaurFunc
 			;;
 			"${optionsM[3]}") #full system update.
-				checkinputFunc "-uu"
+				updateFunc
 			;;
 			"${optionsM[4]}") #system maintenance
 				SystemMaintFunc 
@@ -196,13 +196,7 @@ msgFunc blue "Main Menu:"
 				HelpFunc "HELP"
 			;;
 			"${optionsM[12]}")  # 3 day forecast weather
-					msgFunc norm "3 day weather forecast by WTTR.IN"
-					msgFunc norm "Type a City name, airport code, domain name or area code:-"
-					read -r mycity		
-					clear
-					curl wttr.in/"$mycity"
-					msgFunc anykey 
-					clear
+				WeatherFunc
 			;;
 			*)  #exit  
 				exitHandlerFunc exitout 
@@ -437,7 +431,67 @@ function checkinputFunc
 {
 case "$1" in
 	"");;
-	-u|--update|-uu) #update system report NOTE main menu passes -uu 
+	-u|--update) #update system report 
+		updateFunc
+	;;
+	-c|--config)
+		readconfigFunc "USERCALL"
+		;;
+	-d|--default)
+#Bleachbit system clean. Use the options set in the GUI
+		msgFunc green "Bleachbit system clean"  
+		msgFunc norm "Preset options see $HOME/.config/bleachbit/ or GUI "
+		msgFunc anykey "To run bleachbit -c --preset"
+		msgFunc norm  "Running bleachbit -c --preset"
+		bleachbit -c --preset
+		msgFunc green "Done!"
+		;;
+	-v|--version)
+		msgFunc norm "$(pacman -Qs cylon)" 
+		;;
+	-s|--system)
+		HelpFunc SYS
+		;;
+	-h|--help)
+		HelpFunc HELP
+		;;
+	-b|--bleachbit)
+		SystemCleanFunc
+	;;
+	-m|--maint)
+		SystemMaintAutoFunc
+	;;
+	*) msgFunc yellow "Invalid option, Usage: -b -c -d -h -m -s -u -v"
+	  msgFunc yellow "See readme.md for details at cylon -h "
+	;;
+esac
+#was there a input if yes quit?
+if [ -n "$1" ] 
+	then
+		exit 0 
+fi
+clear
+}
+
+#FUNCTION HEADER
+# NAME :  WeatherFunc
+# DESCRIPTION:3 day weather forecast
+function WeatherFunc
+{
+					msgFunc norm "3 day weather forecast by WTTR.IN"
+					msgFunc norm "Type a City name, airport code, domain name or area code:-"
+					read -r mycity		
+					clear
+					curl wttr.in/"$mycity"
+					msgFunc anykey 
+					clear
+}
+
+##FUNCTION HEADER
+# NAME :  updatefunc
+# DESCRIPTION: called from checkinputfunc or main menu.
+function updateFunc
+{
 		clear
 		#check if arch-audit package  installed
 		if ! msgFunc checkpac arch-audit
@@ -478,48 +532,4 @@ case "$1" in
 			fi
 		msgFunc green "Done!"
 		msgFunc anykey
-	;;
-	-c|--config)
-		readconfigFunc "USERCALL"
-		;;
-	-d|--default)
-#Bleachbit system clean. Use the options set in the GUI
-		msgFunc green "Bleachbit system clean"  
-		msgFunc norm "Preset options see $HOME/.config/bleachbit/ or GUI "
-		msgFunc anykey "To run bleachbit -c --preset"
-		msgFunc norm  "Running bleachbit -c --preset"
-		bleachbit -c --preset
-		msgFunc green "Done!"
-		;;
-	-v|--version)
-		msgFunc norm "$(pacman -Qs cylon)" 
-		;;
-	-s|--system)
-		HelpFunc SYS
-		;;
-	-h|--help)
-		HelpFunc HELP
-		;;
-	-b|--bleachbit)
-		SystemCleanFunc
-	;;
-	-m|--maint)
-		SystemMaintAutoFunc
-	;;
-	*) msgFunc yellow "Invalid option, Usage: -b -c -d -h -m -s -u -v"
-	  msgFunc yellow "See readme.md for details at cylon -h "
-	;;
-esac
-#was there a input?
-if [ -n "$1" ] 
-then
-	#was the update report called from main menu -uu?
-	if [ "$1" = "-uu" ]
-	then
-		msgFunc norm ""
-	else
-		exit 0 
-	fi
-fi
-clear
 }
