@@ -1,88 +1,92 @@
 #!/bin/bash
-#module containing gdrive function called from cylon package
+#module containing function called from cylon package
+#Functions:  pacaurFunc
 
 #FUNCTION HEADER
 # NAME : pacaurFunc
 # DESCRIPTION:use pacaur utility to mange AUR packages
 # downloads, updates and searches
-# PROCESS : 8 options, see options array 
+# PROCESS :  see options array 
 #NOTES : needs pacaur(AUR) installed  gnu-netcat is needed 1 option      
 function pacaurFunc
 {
 			#check if installed
-			if ! msgFunc checkpac pacaur
+			if ! checkPacFunc pacaur
 				then
 				msgFunc anykey 
 				return
 			fi
 			clear
+			local choicePVar=""
+			local pacaurPVar=""
 			msgFunc line
 			msgFunc green "AUR packages management by pacaur. Number of foreign packages installed = $(pacman -Qm | wc -l)"
 			msgFunc line
 			msgFunc norm
 			msgFunc blue "Pacaur options:-"
-			optionsP=("Check for AUR updates (no download), pacaur -k"\
+			local optionsPArr=("Check Network and check for AUR updates (no download), pacaur -k"\
 				"Search for package, pacaur -s" "Display information for package, pacaur -i"\
 				"Get updates for installed packages, pacaur -u" "Download, build and install the package, pacaur -y"\
 				"Download and build the package, pacaur -m " "Download the package, pacaur -d"\
 				"Delete pacaur cache" "Edit pacaur config file" "Update all packages in all repositories, pacaur -Syu"\
 				"Make a copy of package lists" \
 				"Remove foreign packages explicitly installed menu" "Return")
-				select choiceP in "${optionsP[@]}"
+				select choicePVar in "${optionsPArr[@]}"
 				do
-				case "$choiceP" in  
-					"${optionsP[0]}")    #check updates
+				case "$choicePVar" in  
+					"${optionsPArr[0]}")    #check updates
 						msgFunc green  "Check network and then check for updates, pacaur -k"
 						#check network connectivity if good get updates numbers from arch
-						msgFunc checkNet "aur.archlinux.org"
+						checkNetFunc "aur.archlinux.org"
 						msgFunc norm "Number of updates available for installed AUR packages :..."
 						pacaur -k | wc -l
 						pacaur -k
 						msgFunc anykey
 					;;
-					"${optionsP[1]}") #search
+					"${optionsPArr[1]}") #search
 						msgFunc green "Search for package in AUR pacaur -s"
 						msgFunc norm "Type a AUR package name:-"
-						read -r pacaurP		
-						pacaur -s "$pacaurP" || return
+						read -r pacaurPVar
+						pacaur -s "$pacaurPVar" || return
 						msgFunc anykey
 					;;
-					"${optionsP[2]}") #info
+					"${optionsPArr[2]}") #info
 						msgFunc green "Display information for package in AUR pacaur -i"
 						msgFunc norm "Type a AUR package name:-"
-						read -r pacaurP		
-						pacaur -i "$pacaurP" || return
+						read -r pacaurPVar		
+						pacaur -i "$pacaurPVar" || return
 						msgFunc anykey
 					;;
 
-				"${optionsP[3]}")  #get updates
+				"${optionsPArr[3]}")  #get updates
 					msgFunc green "Update AUR packages.  pacaur -u  "	
 					pacaur -u
 					msgFunc anykey
 					;;
-					"${optionsP[4]}")  #download build and install from AUR by pacaur
+					"${optionsPArr[4]}")  #download build and install from AUR by pacaur
 						msgFunc green "Download package. pacaur -y"
 						msgFunc norm "Type a AUR package name:-"
-						read -r pacaurP		
-						pacaur -y "$pacaurP" || return
+						read -r pacaurPVar		
+						pacaur -y "$pacaurPVar" || return
 						msgFunc anykey
 					;;
-					"${optionsP[5]}") #Clone build files and build target package
+					"${optionsPArr[5]}") #Clone build files and build target package
 						msgFunc green "Clone build files and build target package in AUR. pacaur -m"
 						msgFunc norm "Type a AUR package name:-"
-						read -r pacaurP		
-						pacaur -m "$pacaurP" || return
+						read -r pacaurPVar		
+						pacaur -m "$pacaurPVar" || return
 						msgFunc anykey
 					;;
-					"${optionsP[6]}") #Clone the target(s) build files
+					"${optionsPArr[6]}") #Clone the target(s) build files
 						msgFunc green "Clone the package build files  in AUR. pacaur -d"
 						msgFunc norm "Type a AUR package name:-"
-						read -r pacaurP		
-						pacaur -d "$pacaurP" || return
+						read -r pacaurPVar		
+						pacaur -d "$pacaurPVar" || return
 						msgFunc anykey
 					;;
-					"${optionsP[7]}")  #delete pacaur cache see man pacaur for details
+					"${optionsPArr[7]}")  #delete pacaur cache see man pacaur for details
 						#check if custom AURDEST environmental variable defined
+						#see man pacaur
 						if [ -d "$AURDEST" ] 
 							then
 								msgFunc red "AURDEST environmental variable set, please do manual delete instead."
@@ -96,10 +100,10 @@ function pacaurFunc
 								fi
 						fi
 					;;
-					"${optionsP[8]}") #edit the config file see man pacaur for details
+					"${optionsPArr[8]}") #edit the config file see man pacaur for details
 						msgFunc green "Do you wish to edit the user pacaur config file or system [u/S]?"
-						read -r pacaurP	
-						if [ "$pacaurP" = "u" ] 
+						read -r pacaurPVar	
+						if [ "$pacaurPVar" = "u" ] 
 							then #user file
 								if [ -f  "$XDG_CONFIG_HOME/pacaur/config" ] 
 								then
@@ -127,19 +131,19 @@ function pacaurFunc
 						fi
 						msgFunc anykey
 					;;
-					"${optionsP[9]}") #update all repos
+					"${optionsPArr[9]}") #update all repos
 						msgFunc green "Update all packages in all repositories, pacaur -Syu"
 						pacaur -Syu
 						msgFunc anykey
 						;;
-						"${optionsP[10]}") #Make copy of package lists
+						"${optionsPArr[10]}") #Make copy of package lists
 						msgFunc green "Make copy of package lists"
 						pkglistFunc
 						msgFunc anykey
 						;;
 
-						"${optionsP[11]}") #Delete foreign packages explicitly installed
-							DelQmeFunc
+						"${optionsPArr[11]}") #Delete foreign packages 
+							DelQmFunc
 						;;
 						*)  #exit  
 						 msgFunc green "Done!"	

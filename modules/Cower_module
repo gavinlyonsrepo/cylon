@@ -1,16 +1,17 @@
 #!/bin/bash
-#module containing functions called from cylon package
+#Module containing functions called from cylon package
+#Functions: DelQmeFunc and cowerFunc
 
 #FUNCTION HEADER
-# NAME :           CowerFunc
-# DESCRIPTION:use cower and makepkg utility to mange AUR packages
+# NAME : CowerFunc
+# DESCRIPTION:use cower and makepkg utility to manage AUR packages
 # downloads, updates and searches
-# PROCESS : eight options, see optionsC array 
-#NOTES :    needs cower(AUR) installed  gnu-netcat is needed for option 5     
+# PROCESS : see options array 
+#NOTES : Needs cower(AUR) installed  gnu-netcat is needed for option 5     
 function CowerFunc
 {
 			 #check cower is installed
-			if ! msgFunc checkpac cower
+			if ! checkPacFunc cower
 				then
 				msgFunc anykey 
 				return
@@ -20,11 +21,19 @@ function CowerFunc
 			msgFunc green "AUR packages management by cower. Number of foreign packages installed = $(pacman -Qm | wc -l)"
 			msgFunc line
 			msgFunc norm
+			#local variables
+			local cowerTDVar=""
+			local choiceCmVar=""
+			local cowerPacVar=""
+			local choiceCpVar=""
+			local choiceCvVar=""
+			local choiceCiVar=""
+			
 			#check for Targetdir setting in cower file
 			if [ -f  "$XDG_CONFIG_HOME/cower/config" ] 
 					then
-						cowerTD=$( grep  'TargetDir' < "$XDG_CONFIG_HOME/cower/config" )
-						if [[ $cowerTD == *'#'* ]]; then
+						cowerTDVar=$( grep  'TargetDir' < "$XDG_CONFIG_HOME/cower/config" )
+						if [[ $cowerTDVar == *'#'* ]]; then
 							msgFunc norm ""
 						else
 							msgFunc red "WARNING: The setting TargetDir in cower config file detected as set"
@@ -34,8 +43,8 @@ function CowerFunc
 					else 
 						if [ -f "$HOME/.config/cower/config" ] 
 						then
-							cowerTD=$( grep  'TargetDir' < "$HOME/.config/cower/config" )
-							if [[ $cowerTD == *'#'* ]]; then
+							cowerTDVar=$( grep  'TargetDir' < "$HOME/.config/cower/config" )
+							if [[ $cowerTDVar == *'#'* ]]; then
 								msgFunc norm ""
 							else
 								msgFunc red "WARNING: The setting TargetDir in cower config file detected as set"
@@ -50,62 +59,62 @@ function CowerFunc
 			###
 			#msgFunc norm "Note: The setting TargetDir in cower config file must not be set."
 			msgFunc blue "AUR package install and updates by cower, options:-"
-			optionsC=("Check for AUR updates (no download), cower -uc" "Information for package, cower -ic" "Search for package, cower -sc" \
+			local optionsCArr=("Check network and check for AUR updates (no download), cower -uc" "Information for package, cower -ic" "Search for package, cower -sc" \
 			"Download package, cower -dc + optional Install" "Get updates for installed packages, cower -dvuc + Update" \
 			"Download package only, no install. cower -dc" \
 			"Make copy of package lists" "Read AUR Package comments"\
 			"Edit cower config file" "Remove foreign packages explicitly installed menu" "Return")
-			select choiceCower in "${optionsC[@]}"
+			select choiceCmVar in "${optionsCArr[@]}"
 			do
-			case "$choiceCower" in    
-						"${optionsC[0]}") #check for updates 
+			case "$choiceCmVar" in    
+						"${optionsCArr[0]}") #check for updates 
 							msgFunc green  "Check network and then check for updates"
 							#check network connectivity if good get updates numbers from arch
-							msgFunc checkNet "aur.archlinux.org"
+							checkNetFunc "aur.archlinux.org"
 							msgFunc norm "Number of updates available for installed AUR packages :..."
 							cower -u | wc -l
 							cower -uc
 							msgFunc anykey
 						;;
 						#search AUR with cower with optional install
-						"${optionsC[1]}")msgFunc green "${GREEN}Information for AUR package , cower -i"
+						"${optionsCArr[1]}")msgFunc green "${GREEN}Information for AUR package , cower -i"
 							msgFunc norm "Type a AUR package name:-"
-							read -r cowerPac
+							read -r cowerPacVar
 							msgFunc norm " " 
-							cower -i -c "$cowerPac" 
+							cower -i -c "$cowerPacVar" 
 							msgFunc anykey
 						;;
 						
-						"${optionsC[2]}") msgFunc green "${GREEN}Search for AUR package, cower -s"
+						"${optionsCArr[2]}") msgFunc green "${GREEN}Search for AUR package, cower -s"
 						#cower -s 
 							msgFunc norm "Type a AUR package name:-"
-							read -r cowerPac		
+							read -r cowerPacVar		
 							msgFunc norm " " 
-							cower -s -c "$cowerPac" 
+							cower -s -c "$cowerPacVar" 
 							msgFunc anykey
 						;;
 						
-						"${optionsC[3]}")#cower -d Download AUR package with an optional install
+						"${optionsCArr[3]}")#cower -d Download AUR package with an optional install
 							msgFunc green "${GREEN}Download AUR package cower -d with an optional install"
 							msgFunc dir "-AURDOWNLOAD"
 							#build and install packages
 							msgFunc norm "Type a AUR package name:-"
-							read -r cowerPac		
-							cower -d -c	 "$cowerPac" || return
-							cd "$cowerPac" || return
-							msgFunc green "$cowerPac PKGBUILD: Please read"
+							read -r cowerPacVar		
+							cower -d -c	 "$cowerPacVar" || return
+							cd "$cowerPacVar" || return
+							msgFunc green "$cowerPacVar PKGBUILD: Please read"
 							cat PKGBUILD
 							msgFunc green "PKGBUILDS displayed above. Install  [Y/n]"
-							read -r choiceIU3
-							if [ "$choiceIU3" != "n" ]
+							read -r choiceCpVar
+							if [ "$choiceCpVar" != "n" ]
 								then
-									msgFunc norm  "Installing package $cowerPac"
+									msgFunc norm  "Installing package $cowerPacVar"
 									makepkg -si		
 							fi
 						 ;;
 						
 						#check for updates cower and optional install 
-						"${optionsC[4]}")msgFunc green "Update AUR packages  cower -du  "		
+						"${optionsCArr[4]}")msgFunc green "Update AUR packages  cower -du  "		
 						#make cower update directory
 						msgFunc dir "-AURUPDATES" 
 						cower -d -vuc || return
@@ -116,8 +125,8 @@ function CowerFunc
 							ls 
 							msgFunc norm " "
 							msgFunc green "Press any key to View package builds or n to quit"
-							read -r choiceIU2
-								if [ "$choiceIU2" != "n" ]
+							read -r choiceCvVar
+								if [ "$choiceCvVar" != "n" ]
 									then
 									msgFunc green " Viewing  PKGBUILDS of updates :-" 
 									#cat PKGBUILDs to screen
@@ -125,8 +134,8 @@ function CowerFunc
 									msgFunc anykey
 									msgFunc line
 									msgFunc green "PKGBUILDS displayed above. Install all [Y/n]"  
-									read -r choiceIU1
-									if [ "$choiceIU1" != "n" ]
+									read -r choiceCiVar
+									if [ "$choiceCiVar" != "n" ]
 										then
 											#build and install all donwloaded PKGBUILD files 
 											msgFunc norm  "Installing packages"
@@ -138,32 +147,32 @@ function CowerFunc
 						fi	
 						;;
 						
-						"${optionsC[5]}") #cower -d Download AUR package with NO Install.
+						"${optionsCArr[5]}") #cower -d Download AUR package with NO Install.
 							msgFunc green "${GREEN}Download AUR package cower -d"
 							msgFunc dir "-AURDOWNLOAD"
 							#build and install packages
 							msgFunc norm "Type a AUR package name:-"
-							read -r cower1Pac		
-							cower -d -c	 "$cower1Pac" || return
+							read -r cowerPacVar		
+							cower -d -c	 "$cowerPacVar" || return
 							msgFunc anykey
 						;;
 						
-						"${optionsC[6]}") #Make copy of package lists"
+						"${optionsCArr[6]}") #Make copy of package lists"
 						msgFunc green "Make copy of package lists"
 						pkglistFunc
 						msgFunc anykey
 						;;
 						
-						"${optionsC[7]}") #read comments
+						"${optionsCArr[7]}") #read comments
 								msgFunc green "Read AUR Package comments"
 								msgFunc dir "-AURDOWNLOAD"
 								msgFunc norm "Type a AUR package name:-"
-								read -r cower5Pac		
+								read -r cowerPacVar		
 								aururl="aur.archlinux.org"
-								curl -s "https://${aururl}/packages/$cower5Pac/?comments=all" | sed -r -n -e "/<div id=\"news\">/,/<!-- End of main content -->/p" | sed -e 's/<[^>]*>//g' > AURcommentfile.
+								curl -s "https://${aururl}/packages/$cowerPacVar/?comments=all" | sed -r -n -e "/<div id=\"news\">/,/<!-- End of main content -->/p" | sed -e 's/<[^>]*>//g' > AURcommentfile.
 								msgFunc anykey
 						;;
-						"${optionsC[8]}") #edit the config file see man cower
+						"${optionsCArr[8]}") #edit the config file see man cower
 						msgFunc green "Edit cower config file"
 								if [ -f  "$XDG_CONFIG_HOME/cower/config" ] 
 								then
@@ -179,8 +188,8 @@ function CowerFunc
 						msgFunc anykey
 					;;
 					
-					"${optionsC[9]}") #Delete foreign packages explicitly installed
-							DelQmeFunc
+					"${optionsCArr[9]}") #Delete foreign packages 
+							DelQmFunc
 					;;
 						
 					*)  #exit to main menu 
@@ -195,40 +204,42 @@ function CowerFunc
 
 
 #FUNCTION HEADER
-# NAME :  DelQmeFunc
-# DESCRIPTION:Delete  foreign packages explicitly installed
-# PROCESS : pacman -Qme pacman -Rs
+# NAME :  DelQmFunc
+# DESCRIPTION:Delete  foreign packages 
+# PROCESS : pacman -Qm pacman -Rs
 #Note called from cowerFunc and pacaurFunc
-function DelQmeFunc
+function DelQmFunc
 {
-	arrayQme=$(pacman -Qmeq)
-	IFS=$'\n' arrayQme=($(sort <<<"${arrayQme[*]}"))
+	local DelQmArr
+	DelQmArr=$(pacman -Qmq)
+	IFS=$'\n' DelQmArr=($(sort <<<"${DelQmArr[*]}"))
 	unset IFS
-	dialog --title "Output of pacman -Qmeq:" --begin 1 1  --no-items --menu "Select Package to Remove:" 20 40 10 "${arrayQme[@]}"  2>/tmp/cylontempfile
+	dialog --title "Output of pacman -Qmq:" --begin 1 1  --no-items --menu "Select Package to Remove:" 20 40 10 "${DelQmArr[@]}"  2>/tmp/cylontempfile
 				case $? in
 				0)
 					clear
 					msgFunc norm " "
-					mySelection=$(cat /tmp/cylontempfile)
-					msgFunc yellow "\"$mySelection\" is the chosen package."
+					local mySelectionVar=""
+					mySelectionVar=$(cat /tmp/cylontempfile)
+					msgFunc yellow "\"$mySelectionVar\" is the chosen package."
 					msgFunc anykey "and uninstall it. pacman -Rs"
-					sudo pacman -Rs "$mySelection"
-					mySelection=""
+					sudo pacman -Rs "$mySelectionVar"
+					mySelectionVar=""
 					rm /tmp/cylontempfile
 					msgFunc anykey
-					arrayQme=()
+					DelQmArr=()
 					clear
 				;;
 				1)
 					clear
 					msgFunc yellow "Cancel pressed."
-					arrayQme=()
+					DelQmArr=()
 					return
 				;;
 				255)
 					clear
 					msgFunc yellow "Esc pressed."
-					arrayQme=()
+					DelQmArr=()
 					return
 				;;
 			esac

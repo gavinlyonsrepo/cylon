@@ -1,18 +1,16 @@
 #!/bin/bash
-#module containing help, read config file,  check user input, display main menu.
-# exit Handler  msgFunc functions called from cylon package
+#module containing functions called from cylon package
+#Functions: checkinputFunc, DisplayFunc.
+# exitHandlerFunc, HelpFunc, msgFunc, readconfigFunc, weatherFunc
 
 #FUNCTION HEADER
-# NAME :            msgFunc
-# DESCRIPTION :     utility and general purpose function,
-#prints line, text and anykey prompts, makes dir for system output,
+# NAME : msgFunc
+# DESCRIPTION :   prints to screen
+#prints line, text and anykey prompts, also makes dir for system output,
 #checks network and package install
-# INPUTS : $1 process name $2 text input $3 text input    
-# OUTPUTS : checkpac returns 1 or 0 
-# PROCESS :[1]   line [2]    anykey
-# [3]   "green , red ,blue , norm yellow and highlight" ,                 
-# [4]   checkpac [5]   checkNet v
-#NOTES :   needs gnu-cat installed for checkNet        
+# INPUTS : $1 process name $2 text input, $3 bit flag  "D3var"
+# PROCESS :[1]  print line [2] anykey prompt
+# [3] print text  "green , red ,blue , norm yellow and highlight" ,                       
 function msgFunc
 {
 	case "$1" in 
@@ -47,61 +45,15 @@ function msgFunc
 			#check if coming from system backup other path
 			if [ "$3" != 1 ]
 				then 
-				cd "$Dest3" || exitHandlerFunc dest3
+				cd "$DEST3" || exitHandlerFunc DEST3
 			fi
-			TODAYSDIR=$(date +%H%M-%d%b%y)"$2"
-			mkdir "$TODAYSDIR"
-			cd "$TODAYSDIR" || exitHandlerFunc dest4
+			local dirVar=""
+			dirVar=$(date +%H%M-%d%b%y)"$2"
+			mkdir "$dirVar"
+			cd "$dirVar" || exitHandlerFunc DEST4
 			msgFunc norm "Directory for output made at:-"
 			pwd	 ;;
-			 
-		checkpac) #check if package(passed text 2) installed 
-		          #returns 1 or 0  and appends passed text 3
-		          #if NOMES passed as $3 goto menu display mode
-			x=$(pacman -Qqs "$2")
-			if [ -n "$x" ]
-			then #installed
-				#if text input is NOMES skip install good message
-				if [ "$3" = "NOMES" ] 
-				then 
-					printf '%s' "$2"
-				else
-					printf '%s\n' "$2 is Installed $3"
-				fi
-				return 0
-			else #not installed
-				#if text input is NOMES skip install bad message
-				if [ "$3" = "NOMES" ] 
-				then
-					printf '%s' "$2 n/a"
-				else
-					printf '%s\n' "${RED}$2 is Not installed${NORMAL} $3"
-				fi
-				return 1
-			fi ;;
 			
-		checkNet) #checks network with netcat 
-					#check netcat is installed
-					if ! msgFunc checkpac gnu-netcat  
-					then
-						if ! msgFunc checkpac openbsd-netcat 
-						then
-							msgFunc red "Install gnu-netcat or openbsd-netcat for Network check"
-							msgFunc anykey 
-							exitHandlerFunc exitout
-						fi
-					fi
-					#This uses netcat (nc) in its port scan mode, 
-					#a quick poke (-z is zero-I/O mode [used for 
-					#scanning]) with a quick timeout 
-					#(-w 1 waits at most one second
-					#It checks Google on port 80 (HTTP).
-					if nc -zw1 "$2" 80; then
-						msgFunc norm   "We have connectivity $2"
-					else
-						exitHandlerFunc netdown "$2"
-					fi
-		;;
 		*) #for debug catch typos etc
 			printf '%s\n' "Error bad input to msgFunc"
 			 ;;
@@ -114,31 +66,34 @@ function msgFunc
 # DESCRIPTION: error handler deal with user 
 #exists and path not found errors and internet failure 
 # INPUTS:  $2 text of internet site down or filename
-# PROCESS : exitout dest 1-6 netdown or file error
+# PROCESS : exitout DEST 1-6 netdown or file error
 function exitHandlerFunc
 {
+	#double square brackets without use of quotes on matching pattern 
+	#for glob support
+	if [[ "$1" = DEST* ]]
+	then
+		msgFunc red "Path not found to Destination directory"
+	fi
 	case "$1" in
-			exitout) #non-error exit
-				msgFunc yellow "Goodbye $USER!"
-				msgFunc anykey "and exit."
-				exit 0
-			;;
-			dest1) msgFunc red "Path not found to destination directory"	
-				msgFunc norm "$Destination1" ;;
-			dest2) msgFunc red "Path not found to destination directory"
-				msgFunc norm "$Destination2" ;;			
-			dest3) msgFunc red "Path not found to destination directory"
-				msgFunc norm "$Dest3" ;;
-			dest4) msgFunc red "Path not found to directory"  ;;
-			dest5) msgFunc red "Path not found to destination directory"
-				msgFunc norm "$Dest5" ;;
-			dest6) msgFunc red "Path not found to destination directory"
-				msgFunc norm "$Dest6" ;;
+			exitout) msgFunc norm "";;
+			DEST1) msgFunc norm "$Destination1" ;;
+			DEST2) msgFunc norm "$Destination2" ;;
+			DEST3) msgFunc norm "$DEST3" ;;
+			DEST4) msgFunc red "Path not found to directory"  ;;
+			DEST5) msgFunc norm "$DEST5" ;;
+			DEST6) msgFunc norm "$DEST6" ;;
 			netdown) msgFunc red "Internet connectivity test to $2 failed" ;;
 			fileerror) msgFunc red "File error $2"  ;;
+			*) msgFunc yellow "unknown input to error handler";;
 	 esac
 	msgFunc yellow "Goodbye $USER!"
 	msgFunc anykey "and exit."
+	if [ "$1" = "exitout" ]
+	then
+		#non-error exit
+		exit 0
+	fi 
 	exit 1
 }
 
@@ -148,57 +103,58 @@ function exitHandlerFunc
 function DisplayFunc
 {
 msgFunc blue "Main Menu:"
-	optionsM=(
-	"pacman" "$(msgFunc checkpac cower NOMES)" \
-	"$(msgFunc checkpac pacaur NOMES)" "System Update" "System Maintenance" \
+	local choiceMainVar
+	local optionsMArr=(
+	"pacman" "$(checkPacFunc cower NOMES)" \
+	"$(checkPacFunc pacaur NOMES)" "System Update" "System Maintenance" \
 	"System backup" "System Security" "Network Maintenance" \
 	"xterm terminal" "View/Edit config file"\
 	  "System information" "Cylon information" "Weather" "Exit"\
 	)
-	select choiceMain in "${optionsM[@]}"
+	select choiceMainVar in "${optionsMArr[@]}"
 	do
-	case "$choiceMain" in
-			"${optionsM[0]}")   #pacman update
+	case "$choiceMainVar" in
+			"${optionsMArr[0]}")   #pacman update
 				PacmanFunc
 			;;
-			"${optionsM[1]}") #cower AUR helper
+			"${optionsMArr[1]}") #cower AUR helper
 				CowerFunc
 			;;
-			"${optionsM[2]}") #pacaur AUR helper
+			"${optionsMArr[2]}") #pacaur AUR helper
 				pacaurFunc
 			;;
-			"${optionsM[3]}") #full system update.
+			"${optionsMArr[3]}") #full system update.
 				updateFunc
 			;;
-			"${optionsM[4]}") #system maintenance
+			"${optionsMArr[4]}") #system maintenance
 				SystemMaintFunc 
 			;;
-			"${optionsM[5]}")  #Full system backup
+			"${optionsMArr[5]}")  #Full system backup
 				SystemBackFunc 
 			;;
-			"${optionsM[6]}")  #System security
+			"${optionsMArr[6]}")  #System security
 				SystemSecFunc "$@"
 			;;
-			"${optionsM[7]}")  # network utiltes
+			"${optionsMArr[7]}")  # network utiltes
 				networkFunc
 			;;
-			"${optionsM[8]}")  # open a terminal
-				xterm -e "cd $Dest3  && /bin/bash"
+			"${optionsMArr[8]}")  # open a terminal
+				xterm -e "cd $DEST3  && /bin/bash"
 				msgFunc anykey
 			;;
-			"${optionsM[9]}")   #config file edit or view
+			"${optionsMArr[9]}")   #config file edit or view
 				readconfigFunc "USERCALL"
 			;;
-			"${optionsM[10]}") #system info
+			"${optionsMArr[10]}") #system info
 				HelpFunc "SYS"
 			;;
-			"${optionsM[11]}")  # cylon info and cat readme file to screen 
+			"${optionsMArr[11]}")  # cylon info and cat readme file to screen 
 				HelpFunc "HELP"
 			;;
-			"${optionsM[12]}")  # 3 day forecast weather
+			"${optionsMArr[12]}")  # 3 day forecast weather
 				WeatherFunc
 			;;
-			*)  #exit  
+			*)#exit
 				exitHandlerFunc exitout 
 			;;
 	esac
@@ -217,12 +173,12 @@ msgFunc blue "Main Menu:"
 function HelpFunc 
 {
 clear
-if ! msgFunc checkpac cower
+if ! checkPacFunc cower
 	then
 	msgFunc anykey 
 	return
 fi
-if ! msgFunc checkpac arch-audit 
+if ! checkPacFunc arch-audit 
 	then
 	msgFunc anykey 
 	return
@@ -244,9 +200,9 @@ msgFunc line
 				msgFunc norm "Version=$(pacman -Qs cylon | head -1 | cut -c 7-20)"
 				msgFunc norm "Cylon program location = $(which cylon)"
 				msgFunc norm "Cylon modules for functions = /usr/lib/cylon/modules/*"
-				msgFunc norm "Folder for Cylon output data = $Dest3"
-				msgFunc norm "Location of cylonCfg.conf = $Dest5"
-				msgFunc norm "Location of readme.md changlog.md = $Dest6"
+				msgFunc norm "Folder for Cylon output data = $DEST3"
+				msgFunc norm "Location of cylonCfg.conf = $DEST5"
+				msgFunc norm "Location of readme.md changlog.md = $DEST6"
 				msgFunc norm "Location of License.md = /usr/share/licenses/cylon"
 				msgFunc norm "Man page, Desktop entry and icon also installed"
 				msgFunc anykey "and check which dependencies are installed"
@@ -254,53 +210,53 @@ msgFunc line
 				msgFunc norm " "
 				msgFunc green "Dependencies"
 				#dialog   needed to generate GUI menus
-				msgFunc checkpac dialog  "NOTE: non-optional"
+				checkPacFunc dialog  "NOTE: non-optional"
 				#cower   needed to generate GUI menus
-				msgFunc checkpac expac  "NOTE: non-optional"
+				checkPacFunc expac  "NOTE: non-optional"
 				#cower  (optional) – AUR package for AUR work
-				msgFunc checkpac cower "NOTE: AUR package"
+				checkPacFunc cower "NOTE: AUR package"
 				#gdrive  (optional) – AUR package for google drive backup
-				msgFunc checkpac gdrive "NOTE: AUR package"
+				checkPacFunc gdrive "NOTE: AUR package"
 				#lostfiles (optional) – AUR package for finding lost files
-				msgFunc checkpac lostfiles "NOTE: AUR package"
+				checkPacFunc lostfiles "NOTE: AUR package"
 				#pacaur (optional – AUR package for AUR work
-				msgFunc checkpac pacaur  "NOTE: AUR package"
+				checkPacFunc pacaur  "NOTE: AUR package"
 				#arch-audit(optional) - Arch CVE Monitoring Team data
-				msgFunc checkpac arch-audit 
+				checkPacFunc arch-audit 
 				#rmlint (optional) – Finds lint and other unwanted
-				msgFunc checkpac rmlint
+				checkPacFunc rmlint
 				#rkhunter (optional) – finds root kits malware
-				msgFunc checkpac rkhunter
+				checkPacFunc rkhunter
 				#gnu-netcat (optional) – used for checking network
-				msgFunc checkpac gnu-netcat "NOTE: No need if using openbsd-netcat"
+				checkPacFunc gnu-netcat "NOTE: No need if using openbsd-netcat"
 				#openbsd-netcat(optional) – used for checking network
-				msgFunc checkpac openbsd-netcat "NOTE: No need if using gnu-netcat"
+				checkPacFunc openbsd-netcat "NOTE: No need if using gnu-netcat"
 				#clamav  (optional) – used for finding malware
-				msgFunc checkpac clamav
+				checkPacFunc clamav
 				#bleachbit  (optional) – used for system clean
-				msgFunc checkpac bleachbit 
+				checkPacFunc bleachbit 
 				#ccrypt (optional) – Encrypt and decrypt files
-				msgFunc checkpac ccrypt
+				checkPacFunc ccrypt
 				#rsync (optional) – backup utility
-				msgFunc checkpac rsync
+				checkPacFunc rsync
 				#lynis (optional) – system auditor
-				msgFunc checkpac lynis
+				checkPacFunc lynis
 				#inxi (optional) – CLI system information script 
-				msgFunc checkpac inxi
+				checkPacFunc inxi
 				#htop (optional) – Command line system information script 
-				msgFunc checkpac htop
+				checkPacFunc htop
 				#wavemon (optional) – wireless network monitor 
-				msgFunc checkpac wavemon
+				checkPacFunc wavemon
 				#speedtest-cli (optional) – testing internet bandwidth
-				msgFunc checkpac speedtest-cli
-				
+				checkPacFunc speedtest-cli
+					local choiceRmVar=""
 					msgFunc green "Do you want to view readme? [Y/n]"
-					read -r choiceRM1
-							if [ "$choiceRM1" != "n" ]
+					read -r choiceRmVar
+							if [ "$choiceRmVar" != "n" ]
 								then
 									msgFunc line
-									msgFunc green "Displaying cylonReadme.md file at $Dest6"
-									cd "$Dest6"  || exitHandlerFunc dest6
+									msgFunc green "Displaying cylonReadme.md file at $DEST6"
+									cd "$DEST6"  || exitHandlerFunc DEST6
 									more Readme.md 
 									msgFunc green "Done!" 
 									msgFunc line
@@ -349,70 +305,71 @@ clear
 # passed USERCALL
 # INPUTS $1 USERCALL when called by user
 # OUTPUTS : sets paths for backup function 
-# PROCESS : read $Dest5/cylonCfg.conf
+# PROCESS : read $DEST5/cylonCfg.conf
 #NOTES :   file is optional       
 function readconfigFunc
 {
 	#check input if called by user from menu or option
 	if [ "$1" = "USERCALL" ]
 		then
-		cd "$Dest5"  || exitHandlerFunc dest5
-		if [ -f "$Dest5/cylonCfg.conf" ] 
+		cd "$DEST5"  || exitHandlerFunc DEST5
+		if [ -f "$DEST5/cylonCfg.conf" ] 
 			then
+				local choiceCCVar
 				msgFunc green "Do you want to edit or view? [e/V]"
-				read -r choiceCC1
-				if [ "$choiceCC1" = "e" ]
+				read -r choiceCCVar
+				if [ "$choiceCCVar" = "e" ]
 					then
-						nano  "$Dest5/cylonCfg.conf" || exitHandlerFunc fileerror "$Dest5/cylonCfg.conf"
+						nano  "$DEST5/cylonCfg.conf" || exitHandlerFunc fileerror "$DEST5/cylonCfg.conf"
 						clear
 						msgFunc green "Exiting config file edit option"
 						msgFunc anykey "and exit cylon."
 						exit 0
 					else
 					msgFunc green  "Custom paths read from file"
-					cat "$Dest5/cylonCfg.conf" || exitHandlerFunc fileerror "$Dest5/cylonCfg.conf"
+					cat "$DEST5/cylonCfg.conf" || exitHandlerFunc fileerror "$DEST5/cylonCfg.conf"
 					msgFunc green "Done!"
 					msgFunc anykey
 					return
 				fi
 			else
-				exitHandlerFunc fileerror "$Dest5/cylonCfg.conf"
+				exitHandlerFunc fileerror "$DEST5/cylonCfg.conf"
 		fi
 	fi
 	
 	#read cylon.conf for system back up paths 
 	msgFunc green "Reading config file cylonCfg.conf at:-"
-	msgFunc norm "$Dest5"
+	msgFunc norm "$DEST5"
 	#check if file there if not use defaults.
-	if [ ! -f "$Dest5/cylonCfg.conf" ]
+	if [ ! -f "$DEST5/cylonCfg.conf" ]
 		then
 		msgFunc red "No config found: Use the default hardcoded paths"
 		#path for an internal hard drive backup
-		Destination1="/run/media/$USER/Linux_backup"
+		Destination1="/run/media/$USER/Linux_backup/foo"
 		#path for an external hard drive backup
-		Destination2="/run/media/$USER/iomeaga_320"
-		#default paths for gdrive sync upload path 1 		#path2 
+		Destination2="/run/media/$USER/iomega_320/foo"
+		#default paths for gdrive sync uploads 
 		gdriveSource1="$HOME/Documents"
-		gdriveDest1="0B3_YYY"
+		gdriveDest1="0B3_YYYfoo"
 		gdriveSource2="$HOME/Pictures"
-		gdriveDest2="0B3_XXXX"
+		gdriveDest2="0B3_XXXXfoo"
 		gdriveSource3="$HOME/Videos"
-		gdriveDest3="XXXXYYY"
+		gdriveDest3="0B7_XXXXYYYfoo"
 		gdriveSource4="$HOME/.config"
-		gdriveDest4="0B3_RVJ50UWFAdm"
+		gdriveDest4="0B1_XXXYYYfoo"
 		#paths for rsync option
 		rsyncsource="$HOME/"
-		rsyncDest="/run/media/$USER/Linux_backup/Hbp_rsync_101016"
+		rsyncDest="/run/media/$USER/Linux_backup/foo"
 		#ccyptfile
-		myccfile="XXXX"
+		myccfile="/foo/foo/XXXX"
 		msgFunc green "Done!"
 		return
 	fi
-	cd "$Dest5"  || exitHandlerFunc dest5
+	cd "$DEST5"  || exitHandlerFunc DEST5
 	# shellcheck disable=SC1091
-	source ./cylonCfg.conf || exitHandlerFunc fileerror "$Dest5/cylonCfg.conf"
+	source ./cylonCfg.conf || exitHandlerFunc fileerror "$DEST5/cylonCfg.conf"
 	msgFunc green  "Custom paths read from file"
-	cat ./cylonCfg.conf || exitHandlerFunc fileerror "$Dest5/cylonCfg.conf"
+	cat ./cylonCfg.conf || exitHandlerFunc fileerror "$DEST5/cylonCfg.conf"
 	msgFunc green "Done!"
 }
 
@@ -480,56 +437,11 @@ function WeatherFunc
 {
 					msgFunc norm "3 day weather forecast by WTTR.IN"
 					msgFunc norm "Type a City name, airport code, domain name or area code:-"
-					read -r mycity		
+					local mycityVar=""
+					read -r mycityVar		
 					clear
-					curl wttr.in/"$mycity"
+					curl wttr.in/"$mycityVar"
 					msgFunc anykey 
 					clear
 }
 
-##FUNCTION HEADER
-# NAME :  updatefunc
-# DESCRIPTION: called from checkinputfunc or main menu.
-function updateFunc
-{
-		clear
-		#check if arch-audit package  installed
-		if ! msgFunc checkpac arch-audit
-		then
-			msgFunc anykey 
-			clear
-		return
-		fi
-		#check if pacaur package  installed
-		if ! msgFunc checkpac pacaur
-		then
-			msgFunc anykey 
-			clear
-		return
-		fi
-		msgFunc line
-		RssFunc
-		msgFunc anykey
-		msgFunc line
-		msgFunc green "Arch-audit upgradable vulnerable packages"
-		arch-audit -u
-		msgFunc norm " "
-		msgFunc green "Arch-audit vulnerable packages"
-		arch-audit -q
-		msgFunc anykey
-		msgFunc line
-		msgFunc green "Number of Pacman updates ready ..> $(checkupdates | wc -l)"	
-		checkupdates
-		msgFunc line
-		msgFunc green "Number of updates available for installed AUR packages ..> $(cower -u | wc -l)"
-		cower -uc
-		msgFunc line
-		msgFunc green "Install ALl updates? pacaur -Syu	 [Y/n]"
-		read -r choiceIU3
-			if [ "$choiceIU3" != "n" ]
-				then
-					pacaur -Syu	
-			fi
-		msgFunc green "Done!"
-		msgFunc anykey
-}

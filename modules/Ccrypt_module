@@ -1,9 +1,10 @@
 #!/bin/bash
 #module containing functions called from cylon package
+#Function: ccryptFunc
 
 #FUNCTION HEADER
-# NAME :            ccryptFunc
-# DESCRIPTION :      function to use ccrpyt encrypt and decrypt files
+# NAME : ccryptFunc
+# DESCRIPTION : Function to use ccrypt encrypt and decrypt files
 # PROCESS :[1]   Encrypt. a file [2] decrypt  
 # [3]   view a encrypted file                 
 # [4]   view a decrypted file [5]  keychange
@@ -12,17 +13,21 @@ function ccryptFunc
 {
 	while true; do
 	clear
-	myccfile=""
+	
+	local myccfile=""
+	local choiceCyVar=""
+	local choiceCcVar=""
+	
 	msgFunc blue "ccrypt - encrypt and decrypt files:-"
 	#check if ccrypt installed
-	if ! msgFunc checkpac ccrypt
+	if ! checkPacFunc ccrypt
 	then
 		msgFunc anykey 
 	return
 	fi
 	msgFunc green "Do you want to use the path(myccfile) defined in Config file  [y/N]"
-	read -r choiceccy
-	if [ "$choiceccy" = "y" ]
+	read -r choiceCyVar
+	if [ "$choiceCyVar" = "y" ]
 	then
 	#path from file
 	readconfigFunc
@@ -48,7 +53,7 @@ function ccryptFunc
 					return
 				;;
 			esac
-			cd "$myccfile" || exitHandlerFunc dest4
+			cd "$myccfile" || exitHandlerFunc DEST4
 			msgFunc blue "Contents of $myccfile "
 			ls -la
 			msgFunc blue "Type the file name  you want to work with:-"
@@ -62,28 +67,28 @@ function ccryptFunc
 		exitHandlerFunc fileerror 
 	 fi
 	 msgFunc blue "ccrypt - encrypt and decrypt files Menu options:-"
-	optionscc=("Encrypt a file " "Decrypt a file" "View encrypted file" \
+	local optionsccArr=("Encrypt a file " "Decrypt a file" "View encrypted file" \
 "Edit decrypted file with NANO" "Change the key of encrypted file" "Return")
-			select choicecc in "${optionscc[@]}"
+			select choiceCcVar in "${optionsccArr[@]}"
 			do
-			case "$choicecc" in 
-			"${optionscc[0]}") #Encrypt.
+			case "$choiceCcVar" in 
+			"${optionsccArr[0]}") #Encrypt.
 				msgFunc green "Decrypt  a files to standard output., ccrypt -e"
 				ccrypt -e "$myccfile"
 			;;
-			"${optionscc[1]}") #Decrypt
+			"${optionsccArr[1]}") #Decrypt
 				msgFunc green "Decrypt  a files to standard output., ccrypt -d"
 				ccrypt -d "$myccfile"
 			;;
-			"${optionscc[2]}") #Decrypt  files to standard output.
+			"${optionsccArr[2]}") #Decrypt  files to standard output.
 				msgFunc green "Decrypt  file to standard output., ccrypt -c"
 				ccrypt -c "$myccfile"
 			;;
-			"${optionscc[3]}") #Edit a Decrypted file
+			"${optionsccArr[3]}") #Edit a Decrypted file
 				msgFunc green "Edit a Decrypted file with nano text editor, nano"
 				nano "$myccfile"
 			;;
-			"${optionscc[4]}") #Change the key of encrypted data
+			"${optionsccArr[4]}") #Change the key of encrypted data
 				msgFunc green "Change the key of encrypted file, ccrypt -x"
 				ccrypt -x "$myccfile"
 			;;

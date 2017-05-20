@@ -1,6 +1,6 @@
 #!/bin/bash
-#module containing pacman pkglist generator and arch news rss reader
-#function called from cylon package
+#Module containing functions called from cylon package
+#Functions: pacmanFunc, pkglistFunc,updateFunc,checkPacFunc and rssFunc
 
 #FUNCTION HEADER
 # NAME : PacmanFunc
@@ -15,135 +15,138 @@ function PacmanFunc
 			msgFunc green "Pacman package manager. Number of packages installed = $(pacman -Q | wc -l) "
 			msgFunc line
 			msgFunc blue "Pacman package manager options:-"
-			options=("Check for pacman updates (no download)" "pacman -Syu Upgrade packages" \
+			local choicePMVar=""
+			local pacStingVar=""
+			local optionsPMArr=("Check Network and check for pacman updates (no download)" "pacman -Syu Upgrade packages" \
 			"pacman -Si Display extensive information about a given package" "pacman -S Install Package" \
 			"pacman -Ss Search for packages in the database" \
 			"pacman -Rs Remove Package" "pacman -Qs Search for already installed packages" \
 			"pacman -Qi  Display extensive information for locally installed packages" "pacman -Ql  List all files owned by a given package." \
 			"pacman -Qkk Verify packages" "paccache -r Prune older packages from cache, Keep last 3"\
 			"Remove all packages not required as dependencies (orphans)" "Make a copy of package lists"  \
-			"Back-up the local pacman database" "Arch Linux News Rss feed" "$(msgFunc checkpac arch-audit  NOMES)" \
+			"Back-up the local pacman database" "Arch Linux News Rss feed" "$(checkPacFunc arch-audit  NOMES)" \
 			"pactree options" "Edit pacman config file" "Return to main menu")
-			select choicep in "${options[@]}"
+			select choicePMVar in "${optionsPMArr[@]}"
 			do
-			case "$choicep" in
-					"${options[0]}")
+			case "$choicePMVar" in
+					"${optionsPMArr[0]}")
 					msgFunc green "Pacman updates ready:-.... "
 					#check gnu-netcat is installed
 					#check network connectivity if good get updates numbers from arch
-						msgFunc checkNet "archlinux.org"
+						checkNetFunc "archlinux.org"
 						msgFunc norm   "Number of Pacman updates ready...> $(checkupdates | wc -l)"
 						checkupdates
 					;;
-					"${options[1]}") #update pacman
+					"${optionsPMArr[1]}") #update pacman
 						msgFunc green "Update system with Pacman."
 						sudo pacman -Syu
 					;;
-					"${options[2]}") #pacman -Si Display extensive information about a given package
+					"${optionsPMArr[2]}") #pacman -Si Display extensive information about a given package
 						msgFunc green "Display information  for Package."
 						msgFunc norm "Please enter package name"
-						read -r pacString
-						pacman -Si "$pacString"
+						read -r pacStingVar
+						pacman -Si "$pacStingVar"
 					;;
-					"${options[3]}") #pacman -S Install Package
+					"${optionsPMArr[3]}") #pacman -S Install Package
 						msgFunc green "Install package."
 						msgFunc norm "Please enter package name"
-						read -r pacString
-						sudo pacman -S "$pacString"
+						read -r pacStingVar
+						sudo pacman -S "$pacStingVar"
 					;;
-					"${options[4]}")   #pacman -Ss Search Repos for Package
+					"${optionsPMArr[4]}")   #pacman -Ss Search Repos for Package
 						msgFunc green "Search for packages in the database."
 						msgFunc norm "Please enter package name"
-						read -r pacString
-						pacman -Ss "$pacString"
+						read -r pacStingVar
+						pacman -Ss "$pacStingVar"
 					;;
-					"${options[5]}") #pacman -Rs Delete Package
+					"${optionsPMArr[5]}") #pacman -Rs Delete Package
 						msgFunc green "Remove Package."
 						msgFunc norm "Please enter package name"
-						read -r pacString
-						sudo pacman -Rs "$pacString"
+						read -r pacStingVar
+						sudo pacman -Rs "$pacStingVar"
 					;;
-					"${options[6]}")   #pacman -Qs Search for already installed packages
+					"${optionsPMArr[6]}")   #pacman -Qs Search for already installed packages
 						msgFunc green "Search for already installed packages."
 						msgFunc norm "Please enter package name"
-						read -r pacString
-						pacman -Qs "$pacString"
+						read -r pacStingVar
+						pacman -Qs "$pacStingVar"
 					;;
-					"${options[7]}") #pacman -Qi Display extensive information about a given package(local install)
+					"${optionsPMArr[7]}") #pacman -Qi Display extensive information about a given package(local install)
 						msgFunc green "Display information  for Package."
 						msgFunc norm "Please enter package name"
-						read -r pacString
-						pacman -Qi "$pacString"
+						read -r pacStingVar
+						pacman -Qi "$pacStingVar"
 					;;
-					"${options[8]}") #pacman -Ql  List all files owned by a given package.
+					"${optionsPMArr[8]}") #pacman -Ql  List all files owned by a given package.
 						msgFunc green "List all files owned by a given package."
 						msgFunc norm "Please enter package name"
-						read -r pacString
-						pacman -Ql "$pacString"
+						read -r pacStingVar
+						pacman -Ql "$pacStingVar"
 					;;
-					"${options[9]}") #pacman -Qkk  Verify all packages
+					"${optionsPMArr[9]}") #pacman -Qkk  Verify all packages
 						msgFunc dir "-PKGINFO"
 						msgFunc green "Verify  packages pacman -Qkk"
 						msgFunc norm "1 package or All? [1/A]"
-						read -r choicePAC
-						if [ "$choicePAC" = "1" ] 
+						read -r choicePMVar
+						if [ "$choicePMVar" = "1" ] 
 						then
 							msgFunc norm "Please enter package name"
-							read -r pacQString
-							pacman -Qkk "$pacQString" > pkgver
+							read -r pacStingVar
+							pacman -Qkk "$pacStingVar" > pkgver
 						else
 							pacman -Qkk > pkgverall
 						fi
 					;;
-					"${options[10]}")  msgFunc green  "Prune older packages from cache, paccache -r Keeps last 3"
+					"${optionsPMArr[10]}")  msgFunc green  "Prune older packages from cache, paccache -r Keeps last 3"
 					#The paccache script, deletes all cached  package 
 						#regardless of whether they're installed or not, 
 						#except for the most recent 3, 
 							sudo paccache -r
 					;;
 					
-					"${options[11]}")   #delete orphans
+					"${optionsPMArr[11]}")   #delete orphans
 						msgFunc green "Delete orphans!"
 						#Remove all packages not required as dependencies (orphans)
 						sudo pacman -Rns "$(pacman -Qtdq)"
 					;;
 
-					"${options[12]}")
+					"${optionsPMArr[12]}")
 						msgFunc green "Make copy of package lists"
-						pkglistFunc 
+						pkglistFunc
 					;;
-					"${options[13]}") #backup the pacman database
+					"${optionsPMArr[13]}") #backup the pacman database
 						msgFunc green "Back-up the pacman database to :"
 						msgFunc dir "-BACKUPPACMAN"
 						tar -v -cjf pacman_database.tar.bz2 /var/lib/pacman/local
 					;;
 
 					
-					"${options[14]}") #Arch Linux News Rss feed
+					"${optionsPMArr[14]}") #Arch Linux News Rss feed
 						RssFunc
 						;;
 						
-					"${options[15]}") #run arch audit
+					"${optionsPMArr[15]}") #run arch audit
 						msgFunc green "Running arch-audit program :"
+						local archauditVar=""
 						#check archaudit is installed
-						if ! msgFunc checkpac arch-audit
+						if ! checkPacFunc arch-audit
 							then
 							msgFunc anykey 
 							return
 						fi
-						msgFunc norm "Press [A] for full output: or other options> -q=quiet, -u=upgradable, -uq."
-						read -r ARCHAUDIT
-						if [ "$ARCHAUDIT" = "A" ] 
+						msgFunc norm "Press [A] for full output: or other optionsPMArr> -q=quiet, -u=upgradable, -uq."
+						read -r archauditVar
+						if [ "$archauditVar" = "A" ] 
 							then
 							arch-audit
 							else
-							 arch-audit "$ARCHAUDIT"
+							 arch-audit "$archauditVar"
 						fi 
-						ARCHAUDIT=
+						archauditVar=
 						;;
 					
-						"${options[16]}") #pactree
-									msgFunc green "pactree options"
+						"${optionsPMArr[16]}") #pactree
+									msgFunc green "pactree optionsPMArr"
 									msgFunc norm "List a dependency tree of a package: pactree"
 									msgFunc norm "Show packages that depend on the named package: pactree -r"
 									msgFunc norm "press [A] for pactree or [r] for pactree -r. [A/r]"
@@ -151,15 +154,15 @@ function PacmanFunc
 									if [ "$PACTREE" != "r" ]
 									then
 										msgFunc norm "Please enter package name"
-										read -r pacString
-										pactree "$pacString"
+										read -r pacStingVar
+										pactree "$pacStingVar"
 									else
 										msgFunc norm "Please enter package name"
-										read -r pacString
-										pactree -r "$pacString"
+										read -r pacStingVar
+										pactree -r "$pacStingVar"
 									fi
 						;;
-						"${options[17]}") #edit pacman conf file
+						"${optionsPMArr[17]}") #edit pacman conf file
 							msgFunc green "Edit Pacman.conf file."
 							sudo nano  /etc/pacman.conf
 						;;
@@ -221,6 +224,7 @@ function RssFunc
 # DESCRIPTION :creates a copy of packages list see below.
 #OUTPUT seven files see below
 #NOTE called from pacman pacur cower and backup  functions 
+ # shellcheck disable=SC2120
 function pkglistFunc
 {
 				msgFunc green "Making a copy of package lists "
@@ -266,4 +270,86 @@ function pkglistFunc
 				
 				msgFunc green "All installed packages sorted by install date: pkglistDate.txt"
 				expac --timefmt='%Y-%m-%d %T' '%l\t%n' | sort -hr > pkglistDate.txt
+}
+
+##FUNCTION HEADER
+# NAME :  updatefunc
+# DESCRIPTION: called from checkinputfunc or main menu.
+function updateFunc
+{
+		clear
+		local choiceUfVar=""
+		#check if arch-audit package  installed
+		if ! checkPacFunc arch-audit
+		then
+			msgFunc anykey 
+			clear
+		return
+		fi
+		#check if pacaur package  installed
+		if ! checkPacFunc pacaur
+		then
+			msgFunc anykey 
+			clear
+		return
+		fi
+		msgFunc line
+		RssFunc
+		msgFunc anykey
+		msgFunc line
+		msgFunc green "Arch-audit upgradable vulnerable packages"
+		arch-audit -u
+		msgFunc norm " "
+		msgFunc green "Arch-audit vulnerable packages"
+		arch-audit -q
+		msgFunc anykey
+		msgFunc line
+		msgFunc green "Number of Pacman updates ready ..> $(checkupdates | wc -l)"	
+		checkupdates
+		msgFunc line
+		msgFunc green "Number of updates available for installed AUR packages ..> $(cower -u | wc -l)"
+		cower -uc
+		msgFunc line
+		msgFunc green "Install ALl updates? pacaur -Syu	 [Y/n]"
+		read -r choiceUfVar
+			if [ "$choiceUfVar" != "n" ]
+				then
+					pacaur -Syu	
+			fi
+		msgFunc green "Done!"
+		msgFunc anykey
+}
+
+#FUNCTION HEADER
+# NAME : checkPacFunc
+#DESCRIPTION : Checks if package installed 
+#PROCESS: check if package(passed $1) installed if NOMES passed 
+#as $2 goto menu display mode and appends passed $3
+#NOMES =no message
+# INPUTS : $1(package $2(NOMES flag) or (append text))
+#OUTPUTS: returns 0 for installed 1 for not installed    
+function checkPacFunc
+{
+	local pacVar=""
+	pacVar=$(pacman -Qqs "$1")
+	if [ -n "$pacVar" ]
+	then #installed
+		#if text input is NOMES skip install good message
+		if [ "$2" = "NOMES" ] 
+		then 
+			printf '%s' "$1"
+		else
+			printf '%s\n' "$1 is Installed $2"
+		fi
+		return 0
+	else #not installed
+		#if text input is NOMES skip install bad message
+		if [ "$2" = "NOMES" ] 
+		then
+			printf '%s' "$1 n/a"
+		else
+			printf '%s\n' "${RED}$1 is Not installed${NORMAL} $2"
+		fi
+		return 1
+	fi 
 }

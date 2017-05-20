@@ -1,5 +1,6 @@
 #!/bin/bash
-#module containing functions called from cylon package
+#Module containing functions called from cylon package
+#Functions: SystemMaintFunc and SystemMaintAutoFunc
 
 #FUNCTION HEADER
 # NAME :           SystemMaintFunc
@@ -12,23 +13,24 @@
 function SystemMaintFunc
 {
 			clear 
-			optionsM2=("Failed Systemd Services and status" "Check Journalctl log for Errors"\
+			local choiceSMVar=""
+			local optionsSMArr=("Failed Systemd Services and status" "Check Journalctl log for Errors"\
 				"Check Journalctl for fstrim SSD trim" "Analyze system boot-up performance"\
 				"Check for Broken Symlinks" "Find files where no group or User corresponds to file's numeric ID"\
-				"$(msgFunc checkpac lostfiles NOMES)" "Diskspace usage" "Old configuration files scan"\
+				"$(checkPacFunc lostfiles NOMES)" "Diskspace usage" "Old configuration files scan"\
 				 "Print sensors information" "Clean journal files"\
 				 "Delete core dumps /var/lib/systemd/coredump/" "Delete files"\
-				  "$(msgFunc checkpac inxi NOMES)"\
-				  "$(msgFunc checkpac bleachbit NOMES)"\
-				"$(msgFunc checkpac rmlint NOMES)" "$(msgFunc checkpac htop NOMES)" "Return")
+				  "$(checkPacFunc inxi NOMES)"\
+				  "$(checkPacFunc bleachbit NOMES)"\
+				"$(checkPacFunc rmlint NOMES)" "$(checkPacFunc htop NOMES)" "Return")
 
 			#change dir for log files
 			msgFunc dir "-SYSINFO"
 			msgFunc blue "System Maintenance options"
-			select  choiceM in "${optionsM2[@]}"
+			select  choiceSMVar in "${optionsSMArr[@]}"
 			do
-			case  "$choiceM" in
-			"${optionsM2[0]}")
+			case  "$choiceSMVar" in
+			"${optionsSMArr[0]}")
 				  # -systemd --failed:
 				msgFunc green "Systemd status"
 				msgFunc green "Done!"
@@ -41,18 +43,19 @@ function SystemMaintFunc
 				systemctl --failed
 				systemctl --failed >> Systemderrlog
 			;;
-			"${optionsM2[1]}")
+			"${optionsSMArr[1]}")
 					# -Logfiles:
 					msgFunc green "Check log Journalctl for Errors"
 					journalctl -p 3 -xb > Journalctlerrlog
 			;;
 
-			"${optionsM2[2]}")
+			"${optionsSMArr[2]}")
 				#check if ssd trim functioning  ok in log
 				#am I on a sdd drive? , 0 for SDD 1 for HDD from command
-				SDX="$(df /boot/ --output=source | tail -1 | cut -c 6-8)"
-						SDX=$(grep 0 /sys/block/"$SDX"/queue/rotational) 
-					if [ "$SDX" = "0" ] 
+				local sdxVar=""
+				sdxVar="$(df /boot/ --output=source | tail -1 | cut -c 6-8)"
+				sdxVar=$(grep 0 /sys/block/"$sdxVar"/queue/rotational) 
+					if [ "$sdxVar" = "0" ] 
 						then
 						msgFunc green "Check Journalctl for fstrim SSD trim"
 						echo "SSD trim" > JournalctlerrSDDlog
@@ -62,7 +65,7 @@ function SystemMaintFunc
 					fi
 			;;
 			
-			"${optionsM2[3]}")
+			"${optionsSMArr[3]}")
 					# systemd-analyze - Analyze system boot-up performance
 					msgFunc green "Analyze system boot-up performance"
 					{
@@ -74,13 +77,13 @@ function SystemMaintFunc
 					systemd-analyze blame 
 					} >>  systemdanalyzelog   
 			;;
-			"${optionsM2[4]}")
+			"${optionsSMArr[4]}")
 					#Checking for broken symlinks:
 					msgFunc green "Checking for Broken Symlinks"
 					#root or home?
 					msgFunc norm "Do you want to scan / or $HOME? [R/h]"
-					read -r choiceSYM
-					if [ "$choiceSYM" = "h" ]
+					local choiceSYMVar
+					if [ "$choiceSYMVar" = "h" ]
 					then
 						find "$HOME" -type l -! -exec test -e {} \; -print > symlinkerr
 					else
@@ -88,15 +91,15 @@ function SystemMaintFunc
 					fi
 					;;
 			
-			 "${optionsM2[5]}")
+			 "${optionsSMArr[5]}")
 				msgFunc green "Find files where no group or User corresponds to file's numeric user/group ID."
 				find / -nogroup > filenogrouplog 2> /dev/null
 				find / -nouser  > filenouserlog  2> /dev/null
 			;;
 			
-			 "${optionsM2[6]}")
+			 "${optionsSMArr[6]}")
 				#check if lostfiles package (AUR) installed
-			if ! msgFunc checkpac lostfiles
+			if ! checkPacFunc lostfiles
 			then
 				msgFunc anykey 
 			return
@@ -109,19 +112,20 @@ function SystemMaintFunc
 			sudo bash -c  "lostfiles relaxed > lostfilesRelaxedlist.txt" 
 			;;
 			
-			"${optionsM2[7]}")
+			"${optionsSMArr[7]}")
 				msgFunc green "diskspace usage"
 				# This is GOLD for finding out what is taking so much space on your drives!
 					msgFunc norm "Do you want to scan / or $HOME? [R/h]"
-					read -r choiceDU
-					if [ "$choiceDU" = "h" ]
+					local choiceDUVar=""
+					read -r choiceDUVar
+					if [ "$choiceDUVar" = "h" ]
 					then
 						du -H "$HOME" 2> /dev/null | sort -n -r >> diskspace
 					else
 						du -H / 2> /dev/null | sort -n -r >> diskspace
 					fi
 			;;
-			 "${optionsM2[8]}") #old config files
+			 "${optionsSMArr[8]}") #old config files
 			 msgFunc green "Old configuration files scan"
 cat <<-EOF
 Old configuration files may conflict with newer software versions,
@@ -134,79 +138,83 @@ names of installed packages and output result to files.
 The user can then inspect these files and remove anything unwanted.
 EOF
  msgFunc anykey
-					MYARRAY=$(find "$HOME/.config" -maxdepth 1 -type d  | awk -F"/" '{print $5}')
-					MYARRAY1=$(find "$HOME/.cache" -maxdepth 1 -type d  | awk -F"/" '{print $5}')
-					MYARRAY2=$(find "$HOME/.local/share" -maxdepth 1 -type d  | awk -F"/" '{print $6}')
-					IFS=$'\n' MYARRAY=($(sort <<<"${MYARRAY[*]}"))
+					local configArr=()
+					local cacheArr=()
+					local homeArr=()
+					configArr=($(find "$HOME/.config" -maxdepth 1 -type d  | awk -F"/" '{print $5}'))
+					cacheArr=($(find "$HOME/.cache" -maxdepth 1 -type d  | awk -F"/" '{print $5}'))
+					homeArr=($(find "$HOME/.local/share" -maxdepth 1 -type d  | awk -F"/" '{print $6}'))
+					IFS=$'\n' configArr=($(sort <<<"${configArr[*]}"))
 					unset IFS
-					IFS=$'\n' MYARRAY1=($(sort <<<"${MYARRAY1[*]}"))
+					IFS=$'\n' cacheArr=($(sort <<<"${cacheArr[*]}"))
 					unset IFS
-					IFS=$'\n' MYARRAY2=($(sort <<<"${MYARRAY2[*]}"))
+					IFS=$'\n' homeArr=($(sort <<<"${homeArr[*]}"))
 					unset IFS
 					# get length of an array
-					tLen="${#MYARRAY[@]}"
-					tLen1="${#MYARRAY1[@]}"
-					tLen2="${#MYARRAY2[@]}"
+					tLen="${#configArr[@]}"
+					tLen1="${#cacheArr[@]}"
+					tLen2="${#homeArr[@]}"
 					# use for loop read all installed packages 
 					msgFunc green "$HOME/.config/ -- where apps stores their configuration"
 					for (( i=0; i<"${tLen}"; i++ ));
 					do
-							if  msgFunc checkpac "${MYARRAY[i]}" 
+							if  checkPacFunc "${configArr[i]}" 
 							then
-									unset "MYARRAY[i]"
+									unset "configArr[i]"
 							fi
 					done
 					msgFunc anykey
-					printf "%s\n" "${MYARRAY[@]}" > HOMECONFIGfile
+					printf "%s\n" "${configArr[@]}" > HOMECONFIGfile
 						# use for loop read all installed packages
 					msgFunc green " $HOME/.cache/ -- cache of some programs may grow in size"
 					for (( i=0; i<"${tLen1}"; i++ ));
 					do
-							if  msgFunc checkpac "${MYARRAY1[i]}" 
+							if  checkPacFunc "${cacheArr[i]}" 
 							then
-									unset "MYARRAY1[i]"
+									unset "cacheArr[i]"
 							fi
 					done
 					msgFunc anykey
-					printf "%s\n" "${MYARRAY1[@]}" > HOMECACHEfile 
+					printf "%s\n" "${cacheArr[@]}" > HOMECACHEfile 
 					 msgFunc green "$HOME/.local/share/ -- old files may be lying there"
 					for (( i=0; i<"${tLen2}"; i++ ));
 					do
-							if  msgFunc checkpac "${MYARRAY2[i]}" 
+							if  checkPacFunc "${homeArr[i]}" 
 							then
-									unset "MYARRAY2[i]"
+									unset "homeArr[i]"
 							fi
 					done
-					printf "%s\n" "${MYARRAY2[@]}" > HOMELOCALSHAREfile
+					printf "%s\n" "${homeArr@]}" > HOMELOCALSHAREfile
 				;;
-				"${optionsM2[9]}")
+				"${optionsSMArr[9]}")
 						msgFunc green "Print sensor information"
 						sensors
 				;;
-				"${optionsM2[10]}")
+				"${optionsSMArr[10]}")
 						msgFunc green "Clean journalctl files(systemd logging system)"
 						msgFunc norm "Remove archived journal files until the disk space they use falls "
 						msgFunc norm "below 100M: press y or any other key to quit [y/N]"
-						read -r choiceDJ
-							if [ "$choiceDJ" = "y" ]
+						local choiceJCVar=""
+						read -r choiceJCVar
+							if [ "$choiceJCVar" = "y" ]
 							then
 								sudo journalctl --vacuum-size=100M
 							else
 								return
 							fi
 				;;
-				"${optionsM2[11]}")
+				"${optionsSMArr[11]}")
 						msgFunc green "Delete core dumps /var/lib/systemd/coredump/"
 						sudo rm -rvf /var/lib/systemd/coredump/*
 				;;
-				"${optionsM2[12]}")  # delete folders /files
+				"${optionsSMArr[12]}")  # delete folders /files
 						SystemCleanFunc "FOLDERS"
 				;;
 				
 				
-				"${optionsM2[13]}")
+				"${optionsSMArr[13]}")
 						#check if inxi package  installed
-						if ! msgFunc checkpac inxi
+						if ! checkPacFunc inxi
 						then
 							msgFunc anykey 
 							clear
@@ -216,15 +224,15 @@ EOF
 						msgFunc green "get output of inxi -Fixz"
 						inxi -Fixz | tee inxioutput
 				;;
-				"${optionsM2[14]}") #system clean with bleachbit
+				"${optionsSMArr[14]}") #system clean with bleachbit
 					SystemCleanFunc
 				;;
-				"${optionsM2[15]}") #rmlint 
+				"${optionsSMArr[15]}") #rmlint 
 					RmLintFunc
 				;;
-				"${optionsM2[16]}")  # htop - interactive process viewer
+				"${optionsSMArr[16]}")  # htop - interactive process viewer
 					#check if htop package  installed
-				if ! msgFunc checkpac htop
+				if ! checkPacFunc htop
 				then
 					msgFunc anykey 
 					clear
@@ -279,16 +287,17 @@ clear
 			journalctl -p 3 -xb > Journalctlerrlog
 			#check if ssd trim functioning  ok in log
 			#am I on a sdd drive? , 0 for SDD 1 for HDD from command
-			SDX="$(df /boot/ --output=source | tail -1 | cut -c 6-8)"
-			SDX=$(grep 0 /sys/block/"$SDX"/queue/rotational) 
-				if [ "$SDX" = "0" ] 
+				local sdxVar=""
+				sdxVar="$(df /boot/ --output=source | tail -1 | cut -c 6-8)"
+				sdxVar=$(grep 0 /sys/block/"$sdxVar"/queue/rotational) 
+					if [ "$sdxVar" = "0" ] 
 						then
-							msgFunc green "Check Journalctl for fstrim SSD trim"
-							echo "SSD trim" > JournalctlerrSDDlog
-							journalctl -u fstrim > JournalctlerrSDDlog
+						msgFunc green "Check Journalctl for fstrim SSD trim"
+						echo "SSD trim" > JournalctlerrSDDlog
+						journalctl -u fstrim > JournalctlerrSDDlog
 						else 
-							msgFunc red "HDD detected no SSD trim check done"
-				fi
+						msgFunc red "HDD detected no SSD trim check done"
+					fi
 			# systemd-analyze - Analyze system boot-up performance
 			msgFunc green "Analyze system boot-up performance"
 			{
@@ -303,8 +312,9 @@ clear
 			msgFunc green "Checking for Broken Symlinks"
 			#root or home?
 			msgFunc norm "Do you want to scan / or $HOME? [R/h]"
-			read -r choiceSYM
-			if [ "$choiceSYM" = "h" ]
+			local choiceSYMVar=""
+			read -r choiceSYMVar
+			if [ "$choiceSYMVar" = "h" ]
 			then
 				find "$HOME" -type l -! -exec test -e {} \; -print > symlinkerr
 			else
@@ -315,7 +325,7 @@ clear
 			find / -nogroup > filenogrouplog 2> /dev/null
 			find / -nouser  > filenouserlog  2> /dev/null
 			#check if lostfiles package (AUR) installed
-			if ! msgFunc checkpac lostfiles
+			if ! checkPacFunc lostfiles
 			then
 				msgFunc anykey 
 			return

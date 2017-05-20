@@ -1,9 +1,11 @@
 #!/bin/bash
 #=========================HEADER=================================
-# cylon : A bash shell script
+# cylon : Arch Linux distro maintenance bash shell script. 
 #================================================================
 #name:cylon
-#Date 100517
+#First commit to AUR  =080916
+#Last update to github repo =200517
+#Last Version release =050517
 #License: see license.md 
 #Written by Gavin lyons 
 #Version 3.7-9 See changelog.md at repo for version control
@@ -14,7 +16,10 @@
 #single menu driven optional script Command line program for Arch linx users. 
 #see readme.md(access thru cylon info page) or manpage "man cylon" for info.
 
-#=======================VARIABLES SETUP=============================
+#=======================GLOBAL VARIABLES SETUP=============================
+#Syntax: Global: uppercase , local: XXXVar. local Array: XXXArr
+#environmental variable CYLONDEST. variables also read from config file
+
 #colours for printf
 RED=$(printf "\033[31;1m")
 GREEN=$(printf "\033[32;1m")
@@ -26,42 +31,47 @@ NORMAL=$(printf "\033[0m")
 #prompt for select menus
 PS3="${BLUE}By your command:${NORMAL}"
 
-#Program Paths aka Dests
-#dest1 #dest2= backup path from config file
-#dest3 = program output #dest4 = general use
-#dest5 = config file  #dest6  = Documentation
+#Setup the Program Paths aka DESTs
+#1 and 2 are backups path from config file
+#3 = program output, 4 = general use
+#5 = config file,  6 = Documentation
+#7 = module library location
 
-#set the path for the program output path Dest3
-#if environmental variable CYLONDEST exists set it to Dest3
+#set the path for the program output path DEST3
+#if environmental variable CYLONDEST exists set it to DEST3
+#and make the path for dest3
 if [ -z "${CYLONDEST}" ]
 then 
 	#default path for program output
-	Dest3="$HOME/Documents/Cylon/"
+	DEST3="$HOME/Documents/Cylon/"
 else 
-	Dest3="$CYLONDEST"
+	DEST3="$CYLONDEST"
 fi
-#set the path for optional config file Dest5
-Dest5="$HOME/.config/cylon"
-#set path for readme.md changlog.md Dest6
-Dest6="/usr/share/doc/cylon"
-#make the path for the program output dest3
-mkdir -p "$Dest3"
+mkdir -p "$DEST3"
+
+#set the path for optional config file DEST5 and
 #make the path for the optional config file ,left to user to create it
-mkdir -p "$Dest5"
+DEST5="$HOME/.config/cylon"
+mkdir -p "$DEST5"
+
+#set path for readme.md changlog.md DEST6
+DEST6="/usr/share/doc/cylon"
+
+#set the path for the modules library functions. DEST7
+#DEST7="/usr/lib/cylon/modules/*"  #production code path
+DEST7="./modules/" #development code path 
+
 
 #====================FUNCTIONS===============================
-#
-#Source the modules files for the functions from the cylon library folder
-#at /usr/lib/cylon/modules/*
-#
-#The debug path comment OUT in production code
-#for MYFILE in ./modules/*;  
-#
-for MYFILE in /usr/lib/cylon/modules/*;
+
+#Source the module files for the functions from the cylon library folder
+#at /usr/lib/cylon/modules/*  ,  Function syntax: nameFunc.
+for MYFILE in "$DEST7"*;
  do
    # shellcheck disable=SC1090
    source "$MYFILE"
 done
+
 
 #==================MAIN CODE====================================
 
@@ -70,15 +80,17 @@ checkinputFunc "$1"
 
 #Display MAIN opening title 
 msgFunc line
-msgFunc highlight "$(pacman -Qs cylon | head -1 | cut -c 7-20) CYbernetic LifefOrm Node"
-msgFunc yellow "$(date +%T-%d-%A-Week%U-%B-%Y)"
-msgFunc yellow "Unix epoch time $(date +%s)"
+msgFunc highlight "$(pacman -Qs cylon | head -1 | cut -c 7-20)                    "
+msgFunc highlight "Arch Linux Maintenance Program "
+msgFunc highlight "$(date +%T-%d-%a-Week%U-%b-%Y)"
+msgFunc highlight "Unix epoch time $(date +%s)     "
 msgFunc line
+
 
 #Main menu program, loop until user exit 
 while true; do
 	#reset path to $HOME
-	cd ~ || exitHandlerFunc dest4
+	cd ~ || exitHandlerFunc DEST4
 	#call the display main menu function
 	DisplayFunc
 done

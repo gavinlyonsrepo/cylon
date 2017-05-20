@@ -1,5 +1,6 @@
 #!/bin/bash
 #module containing functions called from cylon package
+#Functions networkFunc and checknetFunc
 
 #FUNCTION HEADER
 # NAME :           networkFunc
@@ -8,19 +9,20 @@
 function networkFunc
 {
 	clear        
+	local choiceNVar=""
 	 #change dir for log files
 	 msgFunc dir "-NETINFO"
 	msgFunc norm "Files report will be written to path above -"
 	msgFunc blue "Network. options:-"
-				optionsN=("$(msgFunc checkpac wavemon NOMES) -wireless network monitor" "$(msgFunc checkpac speedtest-cli  NOMES) -testing internet bandwidth"\
+				local optionsNArr=("$(checkPacFunc wavemon NOMES) -wireless network monitor" "$(checkPacFunc speedtest-cli  NOMES) -testing internet bandwidth"\
 				"Check if website up with netcat and ping" "ip addr" "netstat -r & route" "Check the status of UFW  Uncomplicated Firewall" "Return")
-				select choiceN in "${optionsN[@]}"
+				select choiceNVar in "${optionsNArr[@]}"
 				do
-				case "$choiceN" in  
+				case "$choiceNVar" in  
 				
-					"${optionsN[0]}") #wavemon - wireless network monitor"
+					"${optionsNArr[0]}") #wavemon - wireless network monitor"
 					#check wavemon is installed
-					if ! msgFunc checkpac wavemon 
+					if ! checkPacFunc wavemon 
 					then
 						msgFunc anykey 
 					return
@@ -29,30 +31,32 @@ function networkFunc
 					xterm -e "wavemon" &  
 					;;
 					
-					"${optionsN[1]}")  #speedtest-cli testing internet bandwidth
+					"${optionsNArr[1]}")  #speedtest-cli testing internet bandwidth
 					#check speedtest-cli  is installed
-					if ! msgFunc checkpac speedtest-cli
+					if ! checkPacFunc speedtest-cli
 					then
 						msgFunc anykey 
 					return
 					fi
+					local choiceSTVar=""
+					local ServerIDVar=""
 					msgFunc green "Speedtest-cli"
 					msgFunc norm "Do you want to generate server list [y/N]"
-									read -r choiceST
-									if [ "$choiceST" = "y" ]
+									read -r choiceSTVar
+									if [ "$choiceSTVar" = "y" ]
 									then
 											msgFunc green "List speedtest.net servers sorteby distance sent to file, cat top 20"
 											speedtest-cli --list > stclilist
 											head -n20 stclilist 
 									fi		
 					msgFunc norm "Do you want to specify a server ID [y/N]"
-									read -r choiceST
-									if [ "$choiceST" = "y" ]
+									read -r choiceSTVar
+									if [ "$choiceSTVar" = "y" ]
 										then
 											msgFunc norm "Enter Server ID from list"
-											read -r SERVERID
+											read -r ServerIDVar
 											clear
-											speedtest-cli --server "$SERVERID" | tee stclilog
+											speedtest-cli --server "$ServerIDVar" | tee stclilog
 											return
 									fi		
 					clear
@@ -60,22 +64,25 @@ function networkFunc
 					speedtest-cli  | tee stclilog
 					;;
 					
-					"${optionsN[2]}")  #netcat 
+					"${optionsNArr[2]}")  #netcat 
+					local websiteVar=""
 					msgFunc green "Check if website up with netcat "
 					msgFunc norm "Enter website"
-					read -r WEBSITE
-					msgFunc checkNet "$WEBSITE"
-					ping -c 10 "$WEBSITE"
+					read -r websiteVar
+					msgFunc norm " "
+					checkNetFunc "$websiteVar"
+					msgFunc norm " "
+					ping -c 10 "$websiteVar"
 
 					;;
-					"${optionsN[3]}")  #ip a
+					"${optionsNArr[3]}")  #ip a
 						ip a | tee ifconfiglog
 					;;
-					"${optionsN[4]}")  #netstat  andview route table
+					"${optionsNArr[4]}")  #netstat  andview route table
 						netstat -r 
 						route
 					;;
-					"${optionsN[5]}") #check firewall status
+					"${optionsNArr[5]}") #check firewall status
 					sudo ufw status verbose
 					;;
 					*)  #exit  
@@ -86,4 +93,34 @@ function networkFunc
 				break
 				done
 				msgFunc green "Done!"	
+}
+
+#FUNCTION HEADER
+# NAME :  checkNetFunc 
+# DESCRIPTION: checks network with netcat 
+#INPUTS $1 a website URL
+function checkNetFunc
+{
+#checks network with netcat 
+#check netcat is installed
+	if ! checkPacFunc gnu-netcat  
+	then
+		if ! checkPacFunc openbsd-netcat 
+		then
+			msgFunc yellow "Install gnu-netcat or openbsd-netcat for Network check"
+			msgFunc anykey 
+			exitHandlerFunc exitout
+		fi
+	fi
+	#This uses netcat (nc) in its port scan mode, 
+	#a quick poke (-z is zero-I/O mode [used for 
+	#scanning]) with a quick timeout 
+	#(-w 1 waits at most one second
+	#It checks passed website $1 on port 80 (HTTP).
+	if nc -zw1 "$1" 80; then
+		msgFunc norm   "We have connectivity $1"
+	else
+		exitHandlerFunc netdown "$1"
+	fi
+
 }

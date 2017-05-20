@@ -1,7 +1,8 @@
-﻿Cylon
+﻿Cylon OverView
 --------------------------------------------
 * Package name: cylon 
-* Last Update: 1005417
+* First commit to AUR:	080916 1.3-1
+* Last Update: 			050517 3.7-9
 * Version : 3.7-9 See changelog.md/release notes for version control
 * Author: Gavin Lyons
 * Contact: Upstream repo at github "gavinlyonsrepo" or glyons66@hotmail.com
@@ -92,7 +93,7 @@ Just copy and paste this into file and change paths for your setup.
 * rsyncDest="/run/media/$USER/Linux_backup/foo"
 * myccfile="$HOME/TEST/test.cpt"
 
-Output folder
+Output folder and environment variables
 -------------------------------------
 Most system output (logfiles, backups, downloads and updates etc) 
 is placed at below path, unless otherwise specified on screen.
@@ -166,18 +167,13 @@ to allow it to install and update packages. It also provides
 a full system update report function and various other options. 
 The setting TargetDir in cower config file must not be used
 cylon will check this and display warning.
-
 The maintenance section provides a variety of scans and checks, it also 
 a provides command line wrapper for rmlint and bleach-bit. 
-
 The backup section provides a wrapper for gdrive program. as well as ability
 to backup system using various tools.
-
 The security section provides a wrapper for ccrypt and a extended launcher 
 for various security tools as well as a password generator.
-
 The network section provides various tools to check network and configuration.
-
 Other misc functions include an option to edit config file, information menus for
 system and cylon. Weather forecast and terminal launcher. NANO is used 
 as default text editor for editing config files.
@@ -322,7 +318,7 @@ as default text editor for editing config files.
 
 * 3 day weather forecast by wttr.in
 
-	* (REF1): packages list referenced above
+* (REF1): packages list referenced above
 	* All installed packages: pkglistQ.txt
 	* All native packages: pkglistQn.txt
 	* All explicitly installed packages: pkglistQe.txt
@@ -344,7 +340,7 @@ Bug reports and communication
 -----------
 
 If you should find a bug or you have any other query, 
-please send a report to upstream repo,
+please send a report.
 Suggestions for improvements and new features welcome
 Upstream repo: https://github.com/gavinlyonsrepo/cylon
 or contact glyons66@hotmail.com

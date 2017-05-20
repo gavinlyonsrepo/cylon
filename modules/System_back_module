@@ -1,12 +1,13 @@
 #!/bin/bash
-#module containing functions called from cylon package
+#Module containing functions called from cylon package
+#Functions: SystemBackFunc
 
 #FUNCTION HEADER
 # NAME :          SystemBackFunc
 # DESCRIPTION:carries out Full system backup + gdrive sync 
 #to google drive
 # INPUTS:  configfile from readconfigFunc   
-# OUTPUTS : backups see OptionsB2 array
+# OUTPUTS : backups see Options array
 # PROCESS : system backup(5 options) + option to call gdriveFunc  +rsync option
 #NOTES :    needs rsync installed if using rsync option
 
@@ -16,30 +17,32 @@ function SystemBackFunc
 			clear
 			readconfigFunc
 			#get user input for backup
-			optionsB1=("$Destination1" "$Destination2" "$Dest3" \
-			"Custom" "$(msgFunc checkpac "gdrive" NOMES)" "$(msgFunc checkpac "rsync" NOMES)" "Return")
+			local optionsBUArr=("$Destination1" "$Destination2" "$DEST3" \
+			"Custom" "$(checkPacFunc "gdrive" NOMES)" "$(checkPacFunc "rsync" NOMES)" "Return")
 			#variable to be passed to msgFunc dir : custom path
-			local D3=""
-			msgFunc blue "Pick destination directory for system backup or gdrive option"
-			select  choiceBack in "${optionsB1[@]}"
-			#check that paths exist and change path to dest path
+			local D3Var=""
+			local choiceBUVar=""
+			msgFunc blue "Pick Destination directory for system backup or gdrive option"
+			select  choiceBUVar in "${optionsBUArr[@]}"
+			#check that paths exist and change path to DEST path
 			do
-			case "$choiceBack" in
+			case "$choiceBUVar" in
 			
-			"${optionsB1[0]}")  cd "$Destination1" || exitHandlerFunc dest1 
-											D3="1";;				
-			"${optionsB1[1]}")  cd "$Destination2"   || exitHandlerFunc dest2 
-											D3="1";;
-			"${optionsB1[2]}")  cd "$Dest3" || exitHandlerFunc dest3;;
-			"${optionsB1[3]}")  #custom path read in 
-						#msgFunc norm "Type a custom destination path:-"
+			"${optionsBUArr[0]}")  cd "$Destination1" || exitHandlerFunc DEST1 
+											D3Var="1";;				
+			"${optionsBUArr[1]}")  cd "$Destination2"   || exitHandlerFunc DEST2 
+											D3Var="1";;
+			"${optionsBUArr[2]}")  cd "$DEST3" || exitHandlerFunc DEST3;;
+			"${optionsBUArr[3]}")  #custom path read in 
+						#msgFunc norm "Type a custom DESTination path:-"
 						#read -r Path1		
-						Path1=$(dialog --title "Custom backup" --output-fd 1 --begin 1 1 --cancel-label "Exit" --title  "Select Directory path for custom backup" --dselect / 10 40) 
+						local Path1Var=""
+						Path1Var=$(dialog --title "Custom backup" --output-fd 1 --begin 1 1 --cancel-label "Exit" --title  "Select Directory path for custom backup" --dselect / 10 40) 
 						case $? in
 							0)
 								clear
 								msgFunc norm " "
-								msgFunc 	norm "\"$Path1\" chosen directory."
+								msgFunc 	norm "\"$Path1Var\" chosen directory."
 							;;
 							1)
 								clear
@@ -54,13 +57,12 @@ function SystemBackFunc
 								return
 							;;
 						esac
-
-						cd "$Path1" || exitHandlerFunc dest4 
-						D3="1"
+						cd "$Path1Var" || exitHandlerFunc DEST4 
+						D3Var="1"
 						;;
-			"${optionsB1[4]}")   #gdrive function
+			"${optionsBUArr[4]}")   #gdrive function
 					#check gdrive is installed
-					if ! msgFunc checkpac gdrive 
+					if ! checkPacFunc gdrive 
 					then
 						msgFunc anykey 
 					return
@@ -68,10 +70,10 @@ function SystemBackFunc
 					gdriveFunc
 					return
 					;;
-			"${optionsB1[5]}") 
+			"${optionsBUArr[5]}") 
 					msgFunc green "rsync backup utility"
 					#check rsync is installed
-					if ! msgFunc checkpac rsync 
+					if ! checkPacFunc rsync 
 					then
 						msgFunc anykey 
 					return
@@ -88,39 +90,41 @@ function SystemBackFunc
 			break
 			done
 			
-			#make the backup directory
-			msgFunc dir "-BACKUP" "$D3"
+			#make the backup directory pass D3Var binary value to skip cd
+			msgFunc dir "-BACKUP" "$D3Var"
 			#begin the backup get user choice from user to what to back up
-			optionsB2=("Copy of 1st 512 bytes MBR" "Copy of etc dir" \
+			local choiceBu2Var=""
+			local optionsBu2Arr=("Copy of 1st 512 bytes MBR" "Copy of etc dir" \
 "Copy of home dir" "Copy of package lists" "Make tarball of all" "ALL" "Return")
 			msgFunc blue "Pick a Backup option:-"
-			select  choiceBack2 in "${optionsB2[@]}"
+			select  choiceBu2Var in "${optionsBu2Arr[@]}"
 			do
-			case  "$choiceBack2" in
-			"${optionsB2[0]}"|"${optionsB2[5]}") #MBR
+			case  "$choiceBu2Var" in
+			"${optionsBu2Arr[0]}"|"${optionsBu2Arr[5]}") #MBR
 				msgFunc green "Make copy of first 512 bytes MBR with dd"
 				#get /dev/sdxy where currenty filesystem is mounted 
-				myddpath="$(df /boot/ --output=source | tail -1)"
-				msgFunc norm "$myddpath"
-				sudo dd if="$myddpath" of=hda-mbr.bin bs=512 count=1
+				local myddpathVar=""
+				myddpathVar="$(df /boot/ --output=source | tail -1)"
+				msgFunc norm "$myddpathVar"
+				sudo dd if="$myddpathVar" of=hda-mbr.bin bs=512 count=1
 				msgFunc green "Done!"
 			;;&
-			"${optionsB2[1]}"|"${optionsB2[5]}")#etc
+			"${optionsBu2Arr[1]}"|"${optionsBu2Arr[5]}")#etc
 				msgFunc green "Make a copy of etc dir"
 				sudo cp -a -v -u /etc .
 				msgFunc green "Done!"
 			;;&
-			"${optionsB2[2]}"|"${optionsB2[5]}")#home
+			"${optionsBu2Arr[2]}"|"${optionsBu2Arr[5]}")#home
 				msgFunc green "Make a copy of home dir"
 				sudo cp -a -v -u /home .
 				msgFunc green "Done!"
 				sync
 			;;&
-			"${optionsB2[3]}"|"${optionsB2[5]}")#packages
+			"${optionsBu2Arr[3]}"|"${optionsBu2Arr[5]}")#packages
 				#pass Backup to pkglistFunc to not create directory
 				pkglistFunc "Backup"
 			;;&
-			"${optionsB2[4]}"|"${optionsB2[5]}")#tar
+			"${optionsBu2Arr[4]}"|"${optionsBu2Arr[5]}")#tar
 				msgFunc green "Make tarball of all except tmp dev proc sys run"
 				sudo tar --one-file-system --exclude=/tmp/* --exclude=/dev/* --exclude=/proc/* --exclude=/sys/* --exclude=/run/* -pzcvf RootFS_backup.tar.gz /
 				msgFunc green "Done!"

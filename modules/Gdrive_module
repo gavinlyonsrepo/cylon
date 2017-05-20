@@ -1,11 +1,12 @@
 #!/bin/bash
 #module containing gdrive function called from cylon package
+#Functions: gdriveFunc
 
 #FUNCTION HEADER
 # NAME :         gdriveFunc
 # DESCRIPTION:gdrive sync to google drive
 # INPUTS:  configfile from readconfigFunc   
-# PROCESS : 6 syncs to google drive + provides information and search 
+# PROCESS : syncs to google drive + provides information and search 
 #NOTES :    needs gdrive and gnu-netcat installed 
 function gdriveFunc
 {
@@ -14,85 +15,93 @@ msgFunc green "gdrive, connect to google drive via the terminal"
 gdrive version
 msgFunc yellow "NOTE Options 2 3 4 5, Include Delete extraneous remote files as of v3.4"
 msgFunc blue "gdrive options"
-optionsGD=("List all syncable directories on drive" "Sync local directory to google drive (path 1)" \
+local optionsGdArr=("List all syncable directories on drive" "Sync local directory to google drive (path 1)" \
 "Sync local directory to google drive (path 2)" "Sync local directory to google drive (path 3)" \
  "Sync local directory to google drive (path 4)" "List content of syncable directory" \
  "Google drive metadata, quota usage" "List files" "Get file info" \
   "Return")
-			select  choiceGD in "${optionsGD[@]}"
+			select  choiceGD in "${optionsGdArr[@]}"
 			do
 			case "$choiceGD" in
-				"${optionsGD[0]}")#List all syncable directories on drive
+				"${optionsGdArr[0]}")#List all syncable directories on drive
 					msgFunc green "gdrive List all syncable directories on drive"
 					gdrive sync list
 				;;
-				"${optionsGD[1]}")#Sync upload to remote directory  path 1
+				"${optionsGdArr[1]}")#Sync upload to remote directory  path 1
 					msgFunc green "gdrive sync with remote directory path 1:-"
 					msgFunc norm "Source: $gdriveSource1"
 					msgFunc norm "Destination: $gdriveDest1"
 					msgFunc anykey
 					gdrive sync upload --delete-extraneous "$gdriveSource1" "$gdriveDest1"
 				;;
-				"${optionsGD[2]}")#Sync upload to remote directory  path 2
+				"${optionsGdArr[2]}")#Sync upload to remote directory  path 2
 					msgFunc green "gdrive sync with remote directory path 2:-"
 					msgFunc norm "Source: $gdriveSource2"
 					msgFunc norm "Destination: $gdriveDest2"
 					msgFunc anykey
 					gdrive sync upload --delete-extraneous "$gdriveSource2" "$gdriveDest2"
 				;;
-				"${optionsGD[3]}")#Sync upload to remote directory  path 3
+				"${optionsGdArr[3]}")#Sync upload to remote directory  path 3
 					msgFunc green "gdrive sync with remote directory path 3:-"
 					msgFunc norm "Source: $gdriveSource3"
 					msgFunc norm "Destination: $gdriveDest3"
 					msgFunc anykey
 					gdrive sync upload --delete-extraneous "$gdriveSource3" "$gdriveDest3"
 				;;
-				"${optionsGD[4]}")#Sync upload to remote directory  path 4
+				"${optionsGdArr[4]}")#Sync upload to remote directory  path 4
 					msgFunc green "gdrive sync with remote directory path 4:-"
 					msgFunc norm "Source: $gdriveSource4"
 					msgFunc norm "Destination: $gdriveDest4"
 					msgFunc anykey
 					gdrive sync upload --delete-extraneous "$gdriveSource4" "$gdriveDest4"
 				;;
-				"${optionsGD[5]}")#List content of syncable directory
+				"${optionsGdArr[5]}")#List content of syncable directory
 					msgFunc dir "-SYNCINFO"
 					msgFunc green "List content of syncable directory (output to file)"
+					local fileIdVar=""
 					msgFunc norm "Enter fileId:-"
-					read -r  FID
-					gdrive sync content "$FID" > Syncinfo
+					read -r  fileIdVar
+					gdrive sync content "$fileIdVar" > Syncinfo
 				;;
-				"${optionsGD[6]}")#gdrive about
+				"${optionsGdArr[6]}")#gdrive about
 					msgFunc green "Google drive metadata, quota usage"
 					gdrive about
 				;;
-				"${optionsGD[7]}")#gdrive list files
+				"${optionsGdArr[7]}")#gdrive list files
+					
+					local numVar=""
+					local quyVar=""
+					local orderVar=""
+					local ChoiceGVar=""
+					
 					msgFunc green "List files "
 					msgFunc norm "Enter Max files to list, Just press enter for all:-"
-					read -r  num
+					read -r  numVar
 					msgFunc norm "Enter Query (see https://developers.google.com/drive/search-parameters)"
 					msgFunc norm "Common Example: name contains 'foo' "
 					msgFunc norm "Just press enter to to leave Query blank :-"
-					read -r  quy
+					read -r  quyVar
 					msgFunc norm "Enter Order (see https://godoc.org/google.golang.org/api/drive/v3#FilesListCall.OrderBy)"
 					msgFunc norm "Common Example: quotaBytesUsed desc "
 					msgFunc norm "Just press enter to to leave order blank :-"
-					read -r  order
+					read -r  orderVar
 					msgFunc norm "Output to file? [Y/n] :-"
-					read -r CHOICE
-						if [ "$CHOICE" != "n" ]
+					read -r ChoiceGVar
+						if [ "$ChoiceGVar" != "n" ]
 							then
 								# output to file
 								msgFunc dir "-LISTINFO"
-								gdrive list  -q "$quy" --order "$order" -m "$num" > Listinfo
+								gdrive list  -q "$quyVar" --order "$orderVar" -m "$numVar" > Listinfo
 							else #output to screen 
-								gdrive list  -q "$quy" --order "$order" -m "$num" 
+								gdrive list  -q "$quyVar" --order "$orderVar" -m "$numVar" 
 						fi
 					;;
-				"${optionsGD[8]}")# get file info
+				"${optionsGdArr[8]}")# get file info
 					msgFunc green "Get file info"
 					msgFunc norm "Enter fileId:-"
-					read -r  ID
-					gdrive info "$ID"
+					local fileIdVar2=""
+					read -r  fileIdVar2
+					gdrive info "$fileIdVar2"
 				;;
 				*)return  ;;
 			esac
