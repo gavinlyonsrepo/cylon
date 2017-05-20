@@ -58,7 +58,7 @@ mkdir -p "$DEST5"
 DEST6="/usr/share/doc/cylon"
 
 #set the path for the modules library functions. DEST7
-DEST7="/usr/lib/cylon/modules/*"  #production code path
+DEST7="/usr/lib/cylon/modules/"  #production code path
 #DEST7="./modules/" #development code path 
 
 
