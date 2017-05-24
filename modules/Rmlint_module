@@ -47,8 +47,8 @@ EOF
 			msgFunc norm " "
 			msgFunc norm "\"$rmlintPathVar\" chosen directory."
 			msgFunc line
-			#msgFunc norm "Type a directory path you wish to scan:-"
-			##new menu
+
+			#menu for rmlint opton selection
 			local choiceRMVar
 			local optionsRMArr=("All" "badids, bi: Find bad UID, GID or files with both." \
 			"badlinks, bl: Find bad symlinks pointing nowhere." \

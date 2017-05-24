@@ -1,22 +1,22 @@
 #!/bin/bash
-#=========================HEADER=================================
-# cylon : Arch Linux distro maintenance bash shell script. 
-#================================================================
+#=========================HEADER==========================================
+
 #name:cylon
-#First commit to AUR  =080916
-#Last update to github repo =200517
-#Last Version release =050517
-#License: see license.md 
-#Written by Gavin lyons 
-#Version 3.7-9 See changelog.md at repo for version control
-#Software repo: https://github.com/gavinlyonsrepo/cylon
-#AUR package name : cylon , at aur.archlinux.org by glyons
-#Title : Arch Linux distro maintenance Bash script. 
-#Updates, maintenance, backups and system checks in 
+#Title : Arch Linux distro maintenance bash script. 
+#Description: Updates, maintenance, backups and system checks in 
 #single menu driven optional script Command line program for Arch linx users. 
 #see readme.md(access thru cylon info page) or manpage "man cylon" for info.
+#First commit to AUR  =080916
+#Last update to github repo =200517
+#Last Version release =050517 
+#Version 3.7-9 See changelog.md at repo for version control
+#License: see license.md 
+#Written by Gavin lyons 
+#Software repo: https://github.com/gavinlyonsrepo/cylon
+#AUR package name : cylon , at aur.archlinux.org by glyons
 
 #=======================GLOBAL VARIABLES SETUP=============================
+
 #Syntax: Global: uppercase , local: XXXVar. local Array: XXXArr
 #environmental variable CYLONDEST. variables also read from config file
 
@@ -48,19 +48,15 @@ else
 	DEST3="$CYLONDEST"
 fi
 mkdir -p "$DEST3"
-
 #set the path for optional config file DEST5 and
 #make the path for the optional config file ,left to user to create it
 DEST5="$HOME/.config/cylon"
 mkdir -p "$DEST5"
-
 #set path for readme.md changlog.md DEST6
 DEST6="/usr/share/doc/cylon"
-
 #set the path for the modules library functions. DEST7
 DEST7="/usr/lib/cylon/modules/"  #production code path
 #DEST7="./modules/" #development code path 
-
 
 #====================FUNCTIONS===============================
 
@@ -72,22 +68,20 @@ for MYFILE in "$DEST7"*;
    source "$MYFILE"
 done
 
-
 #==================MAIN CODE====================================
 
 #call check for user input options
 checkinputFunc "$1"
 
-#Display MAIN opening title 
+#Display opening screen title 
 msgFunc line
 msgFunc highlight "$(pacman -Qs cylon | head -1 | cut -c 7-20)                    "
 msgFunc highlight "Arch Linux Maintenance Program "
-msgFunc highlight "$(date +%T-%d-%a-Week%U-%b-%Y)"
-msgFunc highlight "Unix epoch time $(date +%s)     "
+msgFunc norm "$(date +%T-%d-%a-Week%U-%b-%Y)"
+msgFunc norm "Unix epoch time $(date +%s)     "
 msgFunc line
 
-
-#Main menu program, loop until user exit 
+#loop until user exit 
 while true; do
 	#reset path to $HOME
 	cd ~ || exitHandlerFunc DEST4
@@ -95,4 +89,3 @@ while true; do
 	DisplayFunc
 done
 #====================== END ==============================
-

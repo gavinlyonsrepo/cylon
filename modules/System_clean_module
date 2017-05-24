@@ -156,32 +156,34 @@ function SystemCleanFunc
 					clear
 					 msgFunc blue "System clean with Bleachbit, Select Cleaner :-"
 					#get cleaner input from user
-					select cleaner in "${cleanArr[@]}"
+					local cleanerVar=""
+					select cleanerVar in "${cleanArr[@]}"
 					do
 							#get list of options for selected cleaner and put in array
 							local optionArr
-							optionArr=$(bleachbit --list | awk -F"."  ''/"${cleaner}"/' {print $2}')
+							optionArr=$(bleachbit --list | awk -F"."  ''/"${cleanerVar}"/' {print $2}')
 						break
 					done
 					#check for valid selection
-					if [ "$cleaner" =  ""  ]
+					if [ "$cleanerVar" =  ""  ]
 					then
 						return
 					fi
 					IFS=$'\n' optionArr=($(sort <<<"${optionArr[*]}"))
 					unset IFS
+					#Add a star to end of array
 					optionArr+=('*')
-					#get options from user
+					#show user options
 					msgFunc blue  "Select option(* is all):-"
-					#msgFunc blue  "Options"
-					select options in "${optionArr[@]}"
+					local optionVar=""
+					select optionVar in "${optionArr[@]}"
 					do
-						if [ "$options" =  ""  ]
+						if [ "$optionVar" =  ""  ]
 							then
 							return
 						fi
 						msgFunc norm " "
-						msgFunc green "You have selected ${cleaner}.${options}"
+						msgFunc green "You have selected ${cleanerVar}.${optionVar}"
 						msgFunc anykey 
 					break
 					done
@@ -192,22 +194,22 @@ function SystemCleanFunc
 						do
 						case "$choiceBBOVar" in
 						"Preview only" )
-						bleachbit -p "${cleaner}.${options}"
+						bleachbit -p "${cleanerVar}.${optionVar}"
 						;;
 						"Overwrite & delete")
-							if [ "$cleaner" = "system" ]
+							if [ "$cleanerVar" = "system" ]
 								then
-								sudo bleachbit -oc "${cleaner}.${options}"
+								sudo bleachbit -oc "${cleanerVar}.${optionVar}"
 								else
-								bleachbit  -oc "${cleaner}.${options}"
+								bleachbit  -oc "${cleanerVar}.${optionVar}"
 							fi
 						;;
 						"Delete")
-							if [ "$cleaner" = "system" ]
+							if [ "$cleanerVar" = "system" ]
 								then
-								sudo bleachbit  -c "${cleaner}.${options}"
+								sudo bleachbit  -c "${cleanerVar}.${optionVar}"
 								else
-								bleachbit  -c "${cleaner}.${options}"
+								bleachbit  -c "${cleanerVar}.${optionVar}"
 							fi
 						;;
 						*)
@@ -216,5 +218,4 @@ function SystemCleanFunc
 						esac
 						break
 						done
-						msgFunc anykey
 }

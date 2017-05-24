@@ -25,7 +25,7 @@ function SystemMaintFunc
 				"$(checkPacFunc rmlint NOMES)" "$(checkPacFunc htop NOMES)" "Return")
 
 			#change dir for log files
-			msgFunc dir "-SYSINFO"
+			makeDirFunc "-SYSINFO"
 			msgFunc blue "System Maintenance options"
 			select  choiceSMVar in "${optionsSMArr[@]}"
 			do
@@ -268,7 +268,7 @@ function SystemMaintAutoFunc
 {
 clear 
 			#change dir for log files
-			msgFunc dir "-SYSINFOAUTO"
+			makeDirFunc "-SYSINFOAUTO"
 			msgFunc norm "Files report will be written to path above -"
 			msgFunc green "System Maintenance Scan"
 			# -systemd --failed:

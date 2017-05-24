@@ -6,9 +6,8 @@
 #FUNCTION HEADER
 # NAME : msgFunc
 # DESCRIPTION :   prints to screen
-#prints line, text and anykey prompts, also makes dir for system output,
-#checks network and package install
-# INPUTS : $1 process name $2 text input, $3 bit flag  "D3var"
+#prints line, text and anykey prompts, 
+# INPUTS : $1 process name $2 text input
 # PROCESS :[1]  print line [2] anykey prompt
 # [3] print text  "green , red ,blue , norm yellow and highlight" ,                       
 function msgFunc
@@ -41,21 +40,8 @@ function msgFunc
 			fi
 			printf '%s\n' "${NORMAL}$2" ;;
 			
-		dir) #makes dirs for output appends passed text to name
-			#check if coming from system backup other path
-			if [ "$3" != 1 ]
-				then 
-				cd "$DEST3" || exitHandlerFunc DEST3
-			fi
-			local dirVar=""
-			dirVar=$(date +%H%M-%d%b%y)"$2"
-			mkdir "$dirVar"
-			cd "$dirVar" || exitHandlerFunc DEST4
-			msgFunc norm "Directory for output made at:-"
-			pwd	 ;;
-			
-		*) #for debug catch typos etc
-			printf '%s\n' "Error bad input to msgFunc"
+		*) #for development catah typos
+			printf '%s\n' "ERROR unknown input to msgFunc"
 			 ;;
 	esac
 }
@@ -428,6 +414,27 @@ if [ -n "$1" ]
 		exit 0 
 fi
 clear
+}
+
+#FUNCTION HEADER
+# NAME : makeDirFunc
+# DESCRIPTION :  makes a directory with time/date stamp and enters it
+#Directory used for program output and backups. 
+# INPUTS : $1 text is appended to name  $2 bit flag  to change dir or not
+function makeDirFunc
+{
+			local dirVar=""
+			#makes dirs for output appends passed text to name
+			#check if coming from system backup other path 1 yes 0 no.
+			if [ "$2" != 1 ]
+				then 
+				cd "$DEST3" || exitHandlerFunc DEST3
+			fi
+			dirVar=$(date +%H%M-%d%b%y)"$1"
+			mkdir "$dirVar"
+			cd "$dirVar" || exitHandlerFunc DEST4
+			msgFunc norm "Directory for output made at:-"
+			pwd	 
 }
 
 #FUNCTION HEADER

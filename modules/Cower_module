@@ -55,9 +55,8 @@ function CowerFunc
 							msgFunc red "config file not found, see man cower"
 						fi
 					fi
-			
-			###
-			#msgFunc norm "Note: The setting TargetDir in cower config file must not be set."
+
+			#Display cower menu options
 			msgFunc blue "AUR package install and updates by cower, options:-"
 			local optionsCArr=("Check network and check for AUR updates (no download), cower -uc" "Information for package, cower -ic" "Search for package, cower -sc" \
 			"Download package, cower -dc + optional Install" "Get updates for installed packages, cower -dvuc + Update" \
@@ -96,7 +95,7 @@ function CowerFunc
 						
 						"${optionsCArr[3]}")#cower -d Download AUR package with an optional install
 							msgFunc green "${GREEN}Download AUR package cower -d with an optional install"
-							msgFunc dir "-AURDOWNLOAD"
+							makeDirFunc "-AURDOWNLOAD"
 							#build and install packages
 							msgFunc norm "Type a AUR package name:-"
 							read -r cowerPacVar		
@@ -116,7 +115,7 @@ function CowerFunc
 						#check for updates cower and optional install 
 						"${optionsCArr[4]}")msgFunc green "Update AUR packages  cower -du  "		
 						#make cower update directory
-						msgFunc dir "-AURUPDATES" 
+						makeDirFunc "-AURUPDATES" 
 						cower -d -vuc || return
 						# look for empty dir (i.e. if no updates) 
 						if [ "$(ls -A .)" ] 
@@ -149,7 +148,7 @@ function CowerFunc
 						
 						"${optionsCArr[5]}") #cower -d Download AUR package with NO Install.
 							msgFunc green "${GREEN}Download AUR package cower -d"
-							msgFunc dir "-AURDOWNLOAD"
+							makeDirFunc "-AURDOWNLOAD"
 							#build and install packages
 							msgFunc norm "Type a AUR package name:-"
 							read -r cowerPacVar		
@@ -165,7 +164,7 @@ function CowerFunc
 						
 						"${optionsCArr[7]}") #read comments
 								msgFunc green "Read AUR Package comments"
-								msgFunc dir "-AURDOWNLOAD"
+								makeDirFunc "-AURDOWNLOAD"
 								msgFunc norm "Type a AUR package name:-"
 								read -r cowerPacVar		
 								aururl="aur.archlinux.org"

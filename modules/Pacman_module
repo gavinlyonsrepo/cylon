@@ -84,7 +84,7 @@ function PacmanFunc
 						pacman -Ql "$pacStingVar"
 					;;
 					"${optionsPMArr[9]}") #pacman -Qkk  Verify all packages
-						msgFunc dir "-PKGINFO"
+						makeDirFunc "-PKGINFO"
 						msgFunc green "Verify  packages pacman -Qkk"
 						msgFunc norm "1 package or All? [1/A]"
 						read -r choicePMVar
@@ -116,7 +116,7 @@ function PacmanFunc
 					;;
 					"${optionsPMArr[13]}") #backup the pacman database
 						msgFunc green "Back-up the pacman database to :"
-						msgFunc dir "-BACKUPPACMAN"
+						makeDirFunc "-BACKUPPACMAN"
 						tar -v -cjf pacman_database.tar.bz2 /var/lib/pacman/local
 					;;
 
@@ -231,7 +231,7 @@ function pkglistFunc
 				#check for input if Backup called from backup do not create dir
 				if [ "$1" != "Backup" ]
 				then
-					msgFunc dir "-PKGINFO"
+					makeDirFunc "-PKGINFO"
 				fi
 				
 				msgFunc green "All installed packages: pkglistQ.txt" 

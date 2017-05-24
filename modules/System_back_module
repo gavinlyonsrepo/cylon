@@ -19,7 +19,7 @@ function SystemBackFunc
 			#get user input for backup
 			local optionsBUArr=("$Destination1" "$Destination2" "$DEST3" \
 			"Custom" "$(checkPacFunc "gdrive" NOMES)" "$(checkPacFunc "rsync" NOMES)" "Return")
-			#variable to be passed to msgFunc dir : custom path
+			#variable to be passed to makeDirFunc : custom path
 			local D3Var=""
 			local choiceBUVar=""
 			msgFunc blue "Pick Destination directory for system backup or gdrive option"
@@ -91,7 +91,7 @@ function SystemBackFunc
 			done
 			
 			#make the backup directory pass D3Var binary value to skip cd
-			msgFunc dir "-BACKUP" "$D3Var"
+			makeDirFunc "-BACKUP" "$D3Var"
 			#begin the backup get user choice from user to what to back up
 			local choiceBu2Var=""
 			local optionsBu2Arr=("Copy of 1st 512 bytes MBR" "Copy of etc dir" \

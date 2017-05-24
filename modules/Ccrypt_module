@@ -35,7 +35,6 @@ function ccryptFunc
 	clear
 	else
 			#prompt for manual file path
-			#msgFunc norm "Type a path to the folder you want to work with:-"
 			#read -r myccfile
 			myccfile=$(dialog --title "Ccrypt" --output-fd 1 --begin 1 1 --cancel-label "Exit" --title  "Select Directory path:" --dselect / 10 40)
 				case $? in

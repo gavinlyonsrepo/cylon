@@ -56,7 +56,7 @@ local optionsGdArr=("List all syncable directories on drive" "Sync local directo
 					gdrive sync upload --delete-extraneous "$gdriveSource4" "$gdriveDest4"
 				;;
 				"${optionsGdArr[5]}")#List content of syncable directory
-					msgFunc dir "-SYNCINFO"
+					makeDirFunc "-SYNCINFO"
 					msgFunc green "List content of syncable directory (output to file)"
 					local fileIdVar=""
 					msgFunc norm "Enter fileId:-"
@@ -90,7 +90,7 @@ local optionsGdArr=("List all syncable directories on drive" "Sync local directo
 						if [ "$ChoiceGVar" != "n" ]
 							then
 								# output to file
-								msgFunc dir "-LISTINFO"
+								makeDirFunc "-LISTINFO"
 								gdrive list  -q "$quyVar" --order "$orderVar" -m "$numVar" > Listinfo
 							else #output to screen 
 								gdrive list  -q "$quyVar" --order "$orderVar" -m "$numVar" 

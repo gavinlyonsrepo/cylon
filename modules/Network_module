@@ -11,7 +11,7 @@ function networkFunc
 	clear        
 	local choiceNVar=""
 	 #change dir for log files
-	 msgFunc dir "-NETINFO"
+	 makeDirFunc "-NETINFO"
 	msgFunc norm "Files report will be written to path above -"
 	msgFunc blue "Network. options:-"
 				local optionsNArr=("$(checkPacFunc wavemon NOMES) -wireless network monitor" "$(checkPacFunc speedtest-cli  NOMES) -testing internet bandwidth"\
