@@ -86,10 +86,9 @@ function PacmanFunc
 					"${optionsPMArr[9]}") #pacman -Qkk  Verify all packages
 						makeDirFunc "-PKGINFO"
 						msgFunc green "Verify  packages pacman -Qkk"
-						msgFunc norm "1 package or All? [1/A]"
-						read -r choicePMVar
-						if [ "$choicePMVar" = "1" ] 
-						then
+						msgFunc norm "Yes for just one package, no for all [y/n] ?"
+						if msgFunc yesno
+						then # yes
 							msgFunc norm "Please enter package name"
 							read -r pacStingVar
 							pacman -Qkk "$pacStingVar" > pkgver
@@ -134,7 +133,7 @@ function PacmanFunc
 							msgFunc anykey 
 							return
 						fi
-						msgFunc norm "Press [A] for full output: or other optionsPMArr> -q=quiet, -u=upgradable, -uq."
+						msgFunc norm "Press [A] for full output: or other options> -q=quiet, -u=upgradable, -uq."
 						read -r archauditVar
 						if [ "$archauditVar" = "A" ] 
 							then
@@ -146,12 +145,13 @@ function PacmanFunc
 						;;
 					
 						"${optionsPMArr[16]}") #pactree
-									msgFunc green "pactree optionsPMArr"
+									local pactreeVar=""
+									msgFunc green "pactree options"
 									msgFunc norm "List a dependency tree of a package: pactree"
 									msgFunc norm "Show packages that depend on the named package: pactree -r"
 									msgFunc norm "press [A] for pactree or [r] for pactree -r. [A/r]"
-									read -r PACTREE
-									if [ "$PACTREE" != "r" ]
+									read -r pactreeVar
+									if [ "$pactreeVar" != "r" ]
 									then
 										msgFunc norm "Please enter package name"
 										read -r pacStingVar
@@ -184,19 +184,19 @@ function PacmanFunc
 # DESCRIPTION :     Display 4 Arch Linux News Rss feed
 function RssFunc 
 {
-	#Display 4 Arch Linux News Rss feed
-				msgFunc green "Arch Linux News Rss feed last 4 items"
-				# Set N to be the number of latest news to fetch
-				NEWS=$(echo -e $(curl --silent https://www.archlinux.org/feeds/news/  | awk ' NR == 1 {N = 4 ; while (N) {print;getline; if($0 ~ /<\/item>/) N=N-1} ; sub(/<\/item>.*/,"</item>") ;print}'))
+				#Display 4 Arch Linux News Rss feed
+				msgFunc green "Arch Linux News Rss feed"
+				# Set countVar to be the number of latest news to fetch
+				newsVar=$(echo -e $(curl --silent https://www.archlinux.org/feeds/news/  | awk ' NR == 1 {countVar = 4; while (countVar) {print;getline; if($0 ~ /<\/item>/) countVar=countVar-1} ; sub(/<\/item>.*/,"</item>") ;print}'))
 				#  THE RSS PARSER Remove some tags 
-				NEWS=$(echo -e "$NEWS" | \
+				newsVar=$(echo -e "$newsVar" | \
 				awk '{
 				sub(/<lastBuildDate[^>]*>([^>]*>)/,"");sub(/<language[^>]*>([^>]*>)/,"");sub(/<title[^>]*>([^>]*>)/,"");sub(/<link[^>]*>([^>]*>)/,""); 
 				while (sub(/<guid[^>]*>([^>]*>)/,"")); 
 				while (sub(/<dc:creator[^>]*>([^>]*>)/,""));
 				while (sub(/<description[^>]*>([^>]*>)/,"")); print }' | \
 				sed -e ':a;N;$!ba;s/\n/ /g')
-			    echo -e "$(echo -e "$NEWS" | \
+			    echo -e "$(echo -e "$newsVar" | \
 				sed -e 's/&amp;/\&/g
 				s/&lt;\|&#60;/</g
 				s/&gt;\|&#62;/>/g
@@ -246,7 +246,7 @@ function pkglistFunc
 				pacman -Qe | wc -l
 				pacman -Qe  > pkglistQe.txt
 				
-				msgFunc green "ALL explicitly installed native packages that are"
+				msgFunc green "All explicitly installed native packages that are"
 				msgFunc green "not direct or optional dependencies: pkglistQgent.txt"
 				pacman -Qqent | wc -l
 				pacman -Qqent > pkglistQqent.txt
@@ -267,9 +267,15 @@ function pkglistFunc
 				
 				msgFunc green "All installed packages sorted by size: pkglistSize.txt"
 				expac -H M '%m\t%n' | sort -hr > pkglistSize.txt
+				msgFunc norm "Largest package :$(head -1 pkglistSize.txt)"
 				
 				msgFunc green "All installed packages sorted by install date: pkglistDate.txt"
 				expac --timefmt='%Y-%m-%d %T' '%l\t%n' | sort -hr > pkglistDate.txt
+				msgFunc norm "Newest package :$(head -1 pkglistDate.txt)"
+				
+				msgFunc green "All .pacnew and .pacsave files :  pacNewSaveFiles.txt"
+				find / -regextype posix-extended -regex ".+\.pac(new|save)" 2> /dev/null > pacNewSaveFiles.txt
+				wc -l < pacNewSaveFiles.txt 
 }
 
 ##FUNCTION HEADER
@@ -278,7 +284,6 @@ function pkglistFunc
 function updateFunc
 {
 		clear
-		local choiceUfVar=""
 		#check if arch-audit package  installed
 		if ! checkPacFunc arch-audit
 		then
@@ -293,6 +298,8 @@ function updateFunc
 			clear
 		return
 		fi
+		clear
+		msgFunc green "Accessing archlinux.org Network Database...."
 		msgFunc line
 		RssFunc
 		msgFunc anykey
@@ -310,12 +317,31 @@ function updateFunc
 		msgFunc green "Number of updates available for installed AUR packages ..> $(cower -u | wc -l)"
 		cower -uc
 		msgFunc line
-		msgFunc green "Install ALl updates? pacaur -Syu	 [Y/n]"
-		read -r choiceUfVar
-			if [ "$choiceUfVar" != "n" ]
-				then
-					pacaur -Syu	
-			fi
+		#display update options
+		local choiceUfVar=""
+		msgFunc blue "Update options:-"
+		local optionsPArr=("pacman -Syu Update Main only" \
+"pacaur -Syu Update  All" "pacaur -u Update AUR only " "No Update exit")
+				select choiceUfVar in "${optionsPArr[@]}"
+				do
+				case "$choiceUfVar" in  
+				"${optionsPArr[0]}")
+					sudo pacman -Syu
+				;;
+				
+				"${optionsPArr[1]}")
+					pacaur -Syu
+				;;
+				
+				"${optionsPArr[2]}")
+					pacaur -u
+				;;
+				
+				*)msgFunc norm " "
+				;;
+				esac
+				break
+				done
 		msgFunc green "Done!"
 		msgFunc anykey
 }

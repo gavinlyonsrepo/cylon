@@ -19,7 +19,6 @@ function networkFunc
 				select choiceNVar in "${optionsNArr[@]}"
 				do
 				case "$choiceNVar" in  
-				
 					"${optionsNArr[0]}") #wavemon - wireless network monitor"
 					#check wavemon is installed
 					if ! checkPacFunc wavemon 
@@ -38,21 +37,18 @@ function networkFunc
 						msgFunc anykey 
 					return
 					fi
-					local choiceSTVar=""
 					local ServerIDVar=""
 					msgFunc green "Speedtest-cli"
-					msgFunc norm "Do you want to generate server list [y/N]"
-									read -r choiceSTVar
-									if [ "$choiceSTVar" = "y" ]
-									then
-											msgFunc green "List speedtest.net servers sorteby distance sent to file, cat top 20"
+					msgFunc norm "Do you want to generate server list [y/n] ?"
+									if msgFunc yesno
+									then # yes
+											msgFunc green "List speedtest.net servers sorted by distance sent to file, cat top 20"
 											speedtest-cli --list > stclilist
 											head -n20 stclilist 
 									fi		
-					msgFunc norm "Do you want to specify a server ID [y/N]"
-									read -r choiceSTVar
-									if [ "$choiceSTVar" = "y" ]
-										then
+									msgFunc norm "Do you want to specify a server ID [y/n] ?"
+									if msgFunc yesno
+										then #yes
 											msgFunc norm "Enter Server ID from list"
 											read -r ServerIDVar
 											clear

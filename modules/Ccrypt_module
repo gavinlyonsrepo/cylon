@@ -15,7 +15,6 @@ function ccryptFunc
 	clear
 	
 	local myccfile=""
-	local choiceCyVar=""
 	local choiceCcVar=""
 	
 	msgFunc blue "ccrypt - encrypt and decrypt files:-"
@@ -25,14 +24,14 @@ function ccryptFunc
 		msgFunc anykey 
 	return
 	fi
-	msgFunc green "Do you want to use the path(myccfile) defined in Config file  [y/N]"
-	read -r choiceCyVar
-	if [ "$choiceCyVar" = "y" ]
+	msgFunc green "Do you want to use the path(myccfile) defined in Config file  [y/n]"
+	#if msgFunc yesno returns 0 yes pressed
+	if msgFunc yesno 
 	then
 	#path from file
-	readconfigFunc
-	msgFunc anykey
-	clear
+		readconfigFunc
+		msgFunc anykey
+		clear
 	else
 			#prompt for manual file path
 			#read -r myccfile
@@ -58,6 +57,7 @@ function ccryptFunc
 			msgFunc blue "Type the file name  you want to work with:-"
 			read -r myccfile
 	fi
+	#is the file there?
 	if [ -f "$myccfile"  ] 
 	 then 
 		msgFunc norm "$myccfile Found file!" 
@@ -65,6 +65,7 @@ function ccryptFunc
 		msgFunc red "$myccfile File out found!"
 		exitHandlerFunc fileerror 
 	 fi
+	 #display the menn
 	 msgFunc blue "ccrypt - encrypt and decrypt files Menu options:-"
 	local optionsccArr=("Encrypt a file " "Decrypt a file" "View encrypted file" \
 "Edit decrypted file with NANO" "Change the key of encrypted file" "Return")

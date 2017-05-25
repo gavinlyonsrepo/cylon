@@ -21,7 +21,7 @@ optionally execute the rmlint.sh.
 EOF
 	     #check rmlint is installed
             if ! checkPacFunc rmlint
-				then
+				then #not installed
 				msgFunc anykey 
 				return
 			fi
@@ -49,7 +49,7 @@ EOF
 			msgFunc line
 
 			#menu for rmlint opton selection
-			local choiceRMVar
+			local choiceRMVar=""
 			local optionsRMArr=("All" "badids, bi: Find bad UID, GID or files with both." \
 			"badlinks, bl: Find bad symlinks pointing nowhere." \
 			"emptydirs, ed: Find empty directories." \
@@ -101,28 +101,23 @@ EOF
 			msgFunc line
 			msgFunc anykey
 			#display the results file option? 
-			local choiceRM2Var=""
-			msgFunc green "Display results file  [Y/n]?"
-			read -r choiceRM2Var
-			if [ "$choiceRM2Var" != "n" ]
-			then
+			msgFunc green "Display results file  [y/n] ?"
+			if msgFunc yesno
+			then #yes
 				msgFunc green  "rmlint output file"
 				more rmlint.json		
 				msgFunc line
 				msgFunc anykey
 			fi
 				#run the shell option?
-				msgFunc green "Execute rmlint.sh file? press e or any key to quit [e/N]"
+				msgFunc green "Execute rmlint.sh file? [y/n] ?"
 				msgFunc red "Warning rmlint.sh will change your system based on results of the previous scan"
-			    local choiceRM3Var=""
-			    read -r choiceRM3Var
-					if [ "$choiceRM3Var" = "e" ]
-					then
+					if msgFunc yesno
+					then #yes
 						msgFunc green  "running rmlint.sh output file"
 						./rmlint.sh -d
 					else
 						msgFunc green "Done!"
 						return
 					fi
-			msgFunc green "Done!"
 }

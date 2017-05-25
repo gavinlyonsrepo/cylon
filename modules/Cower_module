@@ -23,12 +23,9 @@ function CowerFunc
 			msgFunc norm
 			#local variables
 			local cowerTDVar=""
-			local choiceCmVar=""
 			local cowerPacVar=""
-			local choiceCpVar=""
-			local choiceCvVar=""
-			local choiceCiVar=""
-			
+			local choiceCmVar=""
+
 			#check for Targetdir setting in cower file
 			if [ -f  "$XDG_CONFIG_HOME/cower/config" ] 
 					then
@@ -50,7 +47,7 @@ function CowerFunc
 								msgFunc red "WARNING: The setting TargetDir in cower config file detected as set"
 								msgFunc red "Must be commented out as #TargetDir for cylon to work"
 								grep  'TargetDir' < "$HOME/.config/cower/config"
-																		fi
+							fi
 						else
 							msgFunc red "config file not found, see man cower"
 						fi
@@ -103,10 +100,9 @@ function CowerFunc
 							cd "$cowerPacVar" || return
 							msgFunc green "$cowerPacVar PKGBUILD: Please read"
 							cat PKGBUILD
-							msgFunc green "PKGBUILDS displayed above. Install  [Y/n]"
-							read -r choiceCpVar
-							if [ "$choiceCpVar" != "n" ]
-								then
+							msgFunc green "PKGBUILDS displayed above. Install  [y/n] ?"
+							if msgFunc yesno
+								then #yes
 									msgFunc norm  "Installing package $cowerPacVar"
 									makepkg -si		
 							fi
@@ -116,31 +112,30 @@ function CowerFunc
 						"${optionsCArr[4]}")msgFunc green "Update AUR packages  cower -du  "		
 						#make cower update directory
 						makeDirFunc "-AURUPDATES" 
-						cower -d -vuc || return
+						cower -d -vuc #|| return
 						# look for empty dir (i.e. if no updates) 
 						if [ "$(ls -A .)" ] 
 						then
 							msgFunc norm  "Package builds available"
 							ls 
 							msgFunc norm " "
-							msgFunc green "Press any key to View package builds or n to quit"
-							read -r choiceCvVar
-								if [ "$choiceCvVar" != "n" ]
-									then
-									msgFunc green " Viewing  PKGBUILDS of updates :-" 
-									#cat PKGBUILDs to screen
-									find . -name PKGBUILD -exec cat {} \; | more
-									msgFunc anykey
-									msgFunc line
-									msgFunc green "PKGBUILDS displayed above. Install all [Y/n]"  
-									read -r choiceCiVar
-									if [ "$choiceCiVar" != "n" ]
-										then
-											#build and install all donwloaded PKGBUILD files 
-											msgFunc norm  "Installing packages"
-											find . -name PKGBUILD -execdir makepkg -si \;
-									fi			
-								fi	
+							msgFunc green "View package builds [y/n] ?"
+							if msgFunc yesno
+								then #yes
+								msgFunc green " Viewing  PKGBUILDS of updates :-" 
+								#cat PKGBUILDs to screen
+								find . -name PKGBUILD -exec cat {} \; | more
+								msgFunc green "PKGBUILDS displayed above."
+								msgFunc anykey
+								msgFunc line
+							fi
+							msgFunc green "Install all updates [y/n] ?"
+							if msgFunc yesno
+								then #yes
+									#build and install all donwloaded PKGBUILD files 
+									msgFunc norm  "Installing packages"
+									find . -name PKGBUILD -execdir makepkg -si \;
+							fi
 						else
 							msgFunc norm "No updates found for installed AUR packages by Cower."
 						fi	

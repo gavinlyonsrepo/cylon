@@ -1,15 +1,16 @@
 #!/bin/bash
 #module containing functions called from cylon package
 #Functions: checkinputFunc, DisplayFunc.
-# exitHandlerFunc, HelpFunc, msgFunc, readconfigFunc, weatherFunc
+# exitHandlerFunc, HelpFunc, msgFunc, readconfigFunc, weatherFunc, makeDir
 
 #FUNCTION HEADER
 # NAME : msgFunc
 # DESCRIPTION :   prints to screen
-#prints line, text and anykey prompts, 
+#prints line, text and anykey prompts, yesno prompt
 # INPUTS : $1 process name $2 text input
 # PROCESS :[1]  print line [2] anykey prompt
-# [3] print text  "green , red ,blue , norm yellow and highlight" ,                       
+# [3] print text  "green , red ,blue , norm yellow and highlight" [4] yn prompt, 
+# OUTPUT yesno prompt return 1 or 0                       
 function msgFunc
 {
 	case "$1" in 
@@ -40,7 +41,19 @@ function msgFunc
 			fi
 			printf '%s\n' "${NORMAL}$2" ;;
 			
-		*) #for development catah typos
+		yesno) #print yes no quit prompt
+			local yesnoVar=""
+			while true; do
+				read -r yesnoVar
+				case $yesnoVar in
+					[Yy]*) return 0;;
+					[Nn]*) return 1;;
+					[Qq]*) exitHandlerFunc exitout;;
+					*) printf '%s\n' "${YELLOW}Please answer: (y/Y for yes) OR (n/N for no) OR (q/Q to quit)!${NORMAL}";;
+				esac
+			done
+		;;
+		*) 
 			printf '%s\n' "ERROR unknown input to msgFunc"
 			 ;;
 	esac
@@ -172,115 +185,129 @@ fi
 clear
 msgFunc line
 	if [ "$1" = "HELP" ]
-				then
-				msgFunc green "Cylon information and readme.md file  display." 
-				msgFunc line 
-				#Program details print
-				cat <<-EOF
-				Cylon is an Arch Linux maintenance CLI program written in Bash script.
-				This program provides numerous tools to Arch Linux users to carry 
-				out updates, maintenance, system checks, backups and more. 
-				EOF
-				msgFunc norm "Written by G.Lyons, Reports to  <glyons66@hotmail.com>"
-				msgFunc norm "AUR package name = cylon, at aur.archlinux.org by glyons."
-				msgFunc norm "Version=$(pacman -Qs cylon | head -1 | cut -c 7-20)"
-				msgFunc norm "Cylon program location = $(which cylon)"
-				msgFunc norm "Cylon modules for functions = /usr/lib/cylon/modules/*"
-				msgFunc norm "Folder for Cylon output data = $DEST3"
-				msgFunc norm "Location of cylonCfg.conf = $DEST5"
-				msgFunc norm "Location of readme.md changlog.md = $DEST6"
-				msgFunc norm "Location of License.md = /usr/share/licenses/cylon"
-				msgFunc norm "Man page, Desktop entry and icon also installed"
-				msgFunc anykey "and check which dependencies are installed"
-				clear
-				msgFunc norm " "
-				msgFunc green "Dependencies"
-				#dialog   needed to generate GUI menus
-				checkPacFunc dialog  "NOTE: non-optional"
-				#cower   needed to generate GUI menus
-				checkPacFunc expac  "NOTE: non-optional"
-				#cower  (optional) – AUR package for AUR work
-				checkPacFunc cower "NOTE: AUR package"
-				#gdrive  (optional) – AUR package for google drive backup
-				checkPacFunc gdrive "NOTE: AUR package"
-				#lostfiles (optional) – AUR package for finding lost files
-				checkPacFunc lostfiles "NOTE: AUR package"
-				#pacaur (optional – AUR package for AUR work
-				checkPacFunc pacaur  "NOTE: AUR package"
-				#arch-audit(optional) - Arch CVE Monitoring Team data
-				checkPacFunc arch-audit 
-				#rmlint (optional) – Finds lint and other unwanted
-				checkPacFunc rmlint
-				#rkhunter (optional) – finds root kits malware
-				checkPacFunc rkhunter
-				#gnu-netcat (optional) – used for checking network
-				checkPacFunc gnu-netcat "NOTE: No need if using openbsd-netcat"
-				#openbsd-netcat(optional) – used for checking network
-				checkPacFunc openbsd-netcat "NOTE: No need if using gnu-netcat"
-				#clamav  (optional) – used for finding malware
-				checkPacFunc clamav
-				#bleachbit  (optional) – used for system clean
-				checkPacFunc bleachbit 
-				#ccrypt (optional) – Encrypt and decrypt files
-				checkPacFunc ccrypt
-				#rsync (optional) – backup utility
-				checkPacFunc rsync
-				#lynis (optional) – system auditor
-				checkPacFunc lynis
-				#inxi (optional) – CLI system information script 
-				checkPacFunc inxi
-				#htop (optional) – Command line system information script 
-				checkPacFunc htop
-				#wavemon (optional) – wireless network monitor 
-				checkPacFunc wavemon
-				#speedtest-cli (optional) – testing internet bandwidth
-				checkPacFunc speedtest-cli
-					local choiceRmVar=""
-					msgFunc green "Do you want to view readme? [Y/n]"
-					read -r choiceRmVar
-							if [ "$choiceRmVar" != "n" ]
-								then
-									msgFunc line
-									msgFunc green "Displaying cylonReadme.md file at $DEST6"
-									cd "$DEST6"  || exitHandlerFunc DEST6
-									more Readme.md 
-									msgFunc green "Done!" 
-									msgFunc line
-									msgFunc anykey
-							fi
-				clear
-				return
-			fi
+		then
+		msgFunc green "Cylon information and readme.md file  display." 
+		msgFunc line 
+		#Program details print
+		cat <<-EOF
+		Cylon is an Arch Linux maintenance CLI program written in Bash script.
+		This program provides numerous tools to Arch Linux users to carry 
+		out updates, maintenance, system checks, backups and more. 
+		EOF
+		msgFunc norm "Written by G.Lyons, Reports to  <glyons66@hotmail.com>"
+		msgFunc norm "AUR package name = cylon, at aur.archlinux.org by glyons."
+		msgFunc norm "Version=$(pacman -Qs cylon | head -1 | cut -c 7-20)"
+		msgFunc norm "Cylon program location = $(which cylon)"
+		msgFunc norm "Cylon modules for functions = /usr/lib/cylon/modules/*"
+		msgFunc norm "Folder for Cylon output data = $DEST3"
+		msgFunc norm "Location of cylonCfg.conf = $DEST5"
+		msgFunc norm "Location of readme.md changlog.md = $DEST6"
+		msgFunc norm "Location of License.md = /usr/share/licenses/cylon"
+		msgFunc norm "Man page, Desktop entry and icon also installed"
+		if [ -z "${CYLONDEST}" ]
+		then 
+			msgFunc norm "Environment variable CYLONDEST is not Set"
+		else 
+			msgFunc norm "Environment variable CYLONDEST is set to $CYLONDEST"
+		fi
+		msgFunc anykey "and check which dependencies are installed"
+		clear
+		msgFunc norm " "
+		msgFunc green "Dependencies"
+		#dialog   needed to generate GUI menus
+		checkPacFunc dialog  "NOTE: non-optional"
+		#cower   needed to generate GUI menus
+		checkPacFunc expac  "NOTE: non-optional"
+		#cower  (optional) – AUR package for AUR work
+		checkPacFunc cower "NOTE: AUR package"
+		#gdrive  (optional) – AUR package for google drive backup
+		checkPacFunc gdrive "NOTE: AUR package"
+		#lostfiles (optional) – AUR package for finding lost files
+		checkPacFunc lostfiles "NOTE: AUR package"
+		#pacaur (optional – AUR package for AUR work
+		checkPacFunc pacaur  "NOTE: AUR package"
+		#arch-audit(optional) - Arch CVE Monitoring Team data
+		checkPacFunc arch-audit 
+		#rmlint (optional) – Finds lint and other unwanted
+		checkPacFunc rmlint
+		#rkhunter (optional) – finds root kits malware
+		checkPacFunc rkhunter
+		#gnu-netcat (optional) – used for checking network
+		checkPacFunc gnu-netcat "NOTE: No need if using openbsd-netcat"
+		#openbsd-netcat(optional) – used for checking network
+		checkPacFunc openbsd-netcat "NOTE: No need if using gnu-netcat"
+		#clamav  (optional) – used for finding malware
+		checkPacFunc clamav
+		#bleachbit  (optional) – used for system clean
+		checkPacFunc bleachbit 
+		#ccrypt (optional) – Encrypt and decrypt files
+		checkPacFunc ccrypt
+		#rsync (optional) – backup utility
+		checkPacFunc rsync
+		#lynis (optional) – system auditor
+		checkPacFunc lynis
+		#inxi (optional) – CLI system information script 
+		checkPacFunc inxi
+		#htop (optional) – Command line system information script 
+		checkPacFunc htop
+		#wavemon (optional) – wireless network monitor 
+		checkPacFunc wavemon
+		#speedtest-cli (optional) – testing internet bandwidth
+		checkPacFunc speedtest-cli
+		msgFunc green "Do you want to view readme [y/n] ?"
+		if msgFunc yesno
+			then #yes
+				msgFunc line
+				msgFunc green "Displaying cylonReadme.md file at $DEST6"
+				cd "$DEST6"  || exitHandlerFunc DEST6
+				more Readme.md 
+				msgFunc green "Done!" 
+				msgFunc line
+				msgFunc anykey
+		fi
+		clear
+		return
+	fi
+
 msgFunc green "System Information display"
 msgFunc line
-msgFunc norm  #set colour back
+
+msgFunc green "Computer Information"
 msgFunc norm "Uptime = $(uptime -p)"
-msgFunc norm "Operating System + Kernal = $(uname -mosr)"
+msgFunc norm "Kernal = $(uname -svr)"
+msgFunc norm "Operating System = = $(uname -mo)"
 msgFunc norm "Network node name = $(uname -n)"
+msgFunc norm "User name = $USER"
 msgFunc norm "Screen Resolution = $(xrandr |grep "\*" | cut -c 1-15)"
-msgFunc norm "CPU $(grep name /proc/cpuinfo  | tail -1)"
+msgFunc norm "CPU = $(grep name /proc/cpuinfo  | tail -1)"
 mem=($(awk -F ':| kB' '/MemTotal|MemAvail/ {printf $2}' /proc/meminfo))
 memused="$((mem[0] - mem[1]))"
 memused="$((memused / 1024))"
 memtotal="$((mem[0] / 1024))"
 memory="${memused}MB / ${memtotal}MB"
 msgFunc norm "RAM used/total = ($memory)"
-msgFunc green "Package Information"
+msgFunc anykey
+clear
+
+msgFunc green "Installed Packages Information"
 msgFunc norm "All installed packages: $(pacman -Q | wc -l)" 
 msgFunc norm "All native packages: $(pacman -Qn | wc -l)" 
 msgFunc norm "All explicitly installed packages: $(pacman -Qe | wc -l)" 
-msgFunc norm "ALL explicitly installed native packages that are"
+msgFunc norm "All explicitly installed native packages that are"
 msgFunc norm "not direct or optional dependencies: $(pacman -Qqent | wc -l)"
 msgFunc norm "All explicitely installed pkgs not base/base-devel grps: \
 $(comm -23 <(pacman -Qeq | sort) <(pacman -Qgq base base-devel | sort) | wc -l ) "
 msgFunc norm "All foreign installed packages: $(pacman -Qm | wc -l)"
 msgFunc norm "All foreign explicitly installed packages: $(pacman -Qme | wc -l)"
-msgFunc green "Accessing archlinux.org Network Database...."
-msgFunc norm   "Number of Pacman updates ready: $(checkupdates | wc -l)" 
-msgFunc norm "Number of updates for installed AUR packages ready: $(cower -u | wc -l)"
-msgFunc norm "Number of upgradable Arch-audit vulnerable packages: $(arch-audit -qu | wc -l)"
-msgFunc anykey 
+msgFunc norm "All .pacnew and .pacsave files: \
+$(find / -regextype posix-extended -regex ".+\.pac(new|save)" 2> /dev/null |wc -l)"
+msgFunc norm "5 Largest package :"
+expac -H M '%m\t%n' | sort -hr |head -5
+msgFunc norm "5 Newest package  :"
+expac --timefmt='%Y-%m-%d %T' '%l\t%n' | sort -hr |head -5 
+msgFunc anykey
 clear
+
 }
 
 #FUNCTION HEADER
@@ -404,8 +431,21 @@ case "$1" in
 	-m|--maint)
 		SystemMaintAutoFunc
 	;;
-	*) msgFunc yellow "Invalid option, Usage: -b -c -d -h -m -s -u -v"
-	  msgFunc yellow "See readme.md for details at cylon -h "
+	-p|--print)
+		pkglistFunc
+	;;
+	-r|--rss)
+		RssFunc "$1"
+	;;
+	-z|--delete)
+		DelQmFunc
+	;;
+	-l|--lint)
+		RmLintFunc
+	;;
+	*)	msgFunc red    "Invalid option!"
+		msgFunc yellow "Usage: -b -c -d -h -l -m -p -r -s -u -v -z"
+		msgFunc yellow "See readme.md for details at cylon -h or man cylon"
 	;;
 esac
 #was there a input if yes quit?

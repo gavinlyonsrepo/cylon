@@ -1,10 +1,10 @@
 #!/bin/bash
 #Module containing functions called from cylon package
-#Functions: SystemMaintFunc and SystemMaintAutoFunc
+#Functions: SystemMaintFunc  SystemMaintAutoFunc configFileScanFunc
 
 #FUNCTION HEADER
-# NAME :           SystemMaintFunc
-# DESCRIPTION:carries out 6 maintenance checks  
+# NAME :   SystemMaintFunc
+# DESCRIPTION:carries out  maintenance checks  
 # OUTPUTS : various output files 
 # PROCESS : systemd , SSD trim , broken syslinks ,journalcontrol errors
 #lostfiles check with lostfiles package, systemdanalysis boot, 
@@ -126,65 +126,7 @@ function SystemMaintFunc
 					fi
 			;;
 			 "${optionsSMArr[8]}") #old config files
-			 msgFunc green "Old configuration files scan"
-cat <<-EOF
-Old configuration files may conflict with newer software versions,
-or corrupt over time. Remove unneeded configurations periodically, 
-This option will scan three folders and compare names of dirs with
-names of installed packages and output result to files.
-~/.config/ -- where apps stores their configuration
-~/.cache/ -- cache of some programs may grow in size
-~/.local/share/ -- old files may be lying there
-The user can then inspect these files and remove anything unwanted.
-EOF
- msgFunc anykey
-					local configArr=()
-					local cacheArr=()
-					local homeArr=()
-					configArr=($(find "$HOME/.config" -maxdepth 1 -type d  | awk -F"/" '{print $5}'))
-					cacheArr=($(find "$HOME/.cache" -maxdepth 1 -type d  | awk -F"/" '{print $5}'))
-					homeArr=($(find "$HOME/.local/share" -maxdepth 1 -type d  | awk -F"/" '{print $6}'))
-					IFS=$'\n' configArr=($(sort <<<"${configArr[*]}"))
-					unset IFS
-					IFS=$'\n' cacheArr=($(sort <<<"${cacheArr[*]}"))
-					unset IFS
-					IFS=$'\n' homeArr=($(sort <<<"${homeArr[*]}"))
-					unset IFS
-					# get length of an array
-					tLen="${#configArr[@]}"
-					tLen1="${#cacheArr[@]}"
-					tLen2="${#homeArr[@]}"
-					# use for loop read all installed packages 
-					msgFunc green "$HOME/.config/ -- where apps stores their configuration"
-					for (( i=0; i<"${tLen}"; i++ ));
-					do
-							if  checkPacFunc "${configArr[i]}" 
-							then
-									unset "configArr[i]"
-							fi
-					done
-					msgFunc anykey
-					printf "%s\n" "${configArr[@]}" > HOMECONFIGfile
-						# use for loop read all installed packages
-					msgFunc green " $HOME/.cache/ -- cache of some programs may grow in size"
-					for (( i=0; i<"${tLen1}"; i++ ));
-					do
-							if  checkPacFunc "${cacheArr[i]}" 
-							then
-									unset "cacheArr[i]"
-							fi
-					done
-					msgFunc anykey
-					printf "%s\n" "${cacheArr[@]}" > HOMECACHEfile 
-					 msgFunc green "$HOME/.local/share/ -- old files may be lying there"
-					for (( i=0; i<"${tLen2}"; i++ ));
-					do
-							if  checkPacFunc "${homeArr[i]}" 
-							then
-									unset "homeArr[i]"
-							fi
-					done
-					printf "%s\n" "${homeArr@]}" > HOMELOCALSHAREfile
+					configFileScanFunc
 				;;
 				"${optionsSMArr[9]}")
 						msgFunc green "Print sensor information"
@@ -193,11 +135,9 @@ EOF
 				"${optionsSMArr[10]}")
 						msgFunc green "Clean journalctl files(systemd logging system)"
 						msgFunc norm "Remove archived journal files until the disk space they use falls "
-						msgFunc norm "below 100M: press y or any other key to quit [y/N]"
-						local choiceJCVar=""
-						read -r choiceJCVar
-							if [ "$choiceJCVar" = "y" ]
-							then
+						msgFunc norm "below 100M: press y or any other key to quit [y/n] ?"
+							if msgFunc yesno
+							then #yes
 								sudo journalctl --vacuum-size=100M
 							else
 								return
@@ -271,6 +211,7 @@ clear
 			makeDirFunc "-SYSINFOAUTO"
 			msgFunc norm "Files report will be written to path above -"
 			msgFunc green "System Maintenance Scan"
+			
 			# -systemd --failed:
 			msgFunc green "Systemd status"
 			msgFunc green "Done!"
@@ -282,9 +223,11 @@ clear
 			msgFunc green "All Failed Active Systemd Services"
 			systemctl --failed
 			systemctl --failed >> Systemderrlog
+			
 			# -Logfiles:
 			msgFunc green "Check log Journalctl for Errors"
 			journalctl -p 3 -xb > Journalctlerrlog
+			
 			#check if ssd trim functioning  ok in log
 			#am I on a sdd drive? , 0 for SDD 1 for HDD from command
 				local sdxVar=""
@@ -298,6 +241,7 @@ clear
 						else 
 						msgFunc red "HDD detected no SSD trim check done"
 					fi
+					
 			# systemd-analyze - Analyze system boot-up performance
 			msgFunc green "Analyze system boot-up performance"
 			{
@@ -308,6 +252,7 @@ clear
 			echo "BLAME" 
 			systemd-analyze blame 
 			} >>  systemdanalyzelog
+			
 			#Checking for broken symlinks:
 			msgFunc green "Checking for Broken Symlinks"
 			#root or home?
@@ -320,10 +265,12 @@ clear
 			else
 				find / -path /proc -prune -o -type l -! -exec test -e {} \; -print 2>/dev/null > symlinkerr
 			fi
+			
 			#Find files where no group or User corresponds to file's numeric user/group ID.
 			msgFunc green "Find files where no group or User corresponds to file's numeric user/group ID."
 			find / -nogroup > filenogrouplog 2> /dev/null
 			find / -nouser  > filenouserlog  2> /dev/null
+			
 			#check if lostfiles package (AUR) installed
 			if ! checkPacFunc lostfiles
 			then
@@ -336,7 +283,93 @@ clear
 			msgFunc green "Done!"
 			msgFunc norm  "Lostfiles relaxed scan running, outputing to file"
 			sudo bash -c  "lostfiles relaxed > lostfilesRelaxedlist.txt" 
-			msgFunc green "Done!"	
+			
+			msgFunc green "diskspace usage"
+			msgFunc norm "Do you want to scan / or $HOME? [R/h]"
+			local choiceDUVar=""
+			read -r choiceDUVar
+			if [ "$choiceDUVar" = "h" ]
+			then
+				du -H "$HOME" 2> /dev/null | sort -n -r >> diskspace
+			else
+				du -H / 2> /dev/null | sort -n -r >> diskspace
+			fi
+			msgFunc anykey 
+			configFileScanFunc
+			
+			msgFunc green "All Done!"	
 			msgFunc anykey 
 			clear
+}
+
+#FUNCTION HEADER
+# NAME :  configFileScanFunc
+# DESCRIPTION: Old configuration files scan see below text
+function configFileScanFunc
+{
+	msgFunc green "Old configuration files scan"
+cat <<-EOF
+Old configuration files may conflict with newer software versions,
+or corrupt over time. Remove unneeded configurations periodically, 
+This option will scan three folders and compare names of dirs with
+names of installed packages and output result to files.
+~/.config/ -- where apps stores their configuration
+~/.cache/ -- cache of some programs may grow in size
+~/.local/share/ -- old files may be lying there
+The user can then inspect these files and remove anything unwanted.
+EOF
+	msgFunc anykey
+	local configArr=()
+	local cacheArr=()
+	local homeArr=()
+	#populate arrays
+	configArr=($(find "$HOME/.config" -maxdepth 1 -type d  | awk -F"/" '{print $5}'))
+	cacheArr=($(find "$HOME/.cache" -maxdepth 1 -type d  | awk -F"/" '{print $5}'))
+	homeArr=($(find "$HOME/.local/share" -maxdepth 1 -type d  | awk -F"/" '{print $6}'))
+	#sort arrays
+	IFS=$'\n' configArr=($(sort <<<"${configArr[*]}"))
+	unset IFS
+	IFS=$'\n' cacheArr=($(sort <<<"${cacheArr[*]}"))
+	unset IFS
+	IFS=$'\n' homeArr=($(sort <<<"${homeArr[*]}"))
+	unset IFS
+	# get length of an array
+	tLen="${#configArr[@]}"
+	tLen1="${#cacheArr[@]}"
+	tLen2="${#homeArr[@]}"
+	
+	# use for loop read all installed packages 
+	msgFunc green "$HOME/.config/ -- where apps stores their configuration"
+	for (( i=0; i<"${tLen}"; i++ ));
+	do
+			if  checkPacFunc "${configArr[i]}" 
+			then
+					unset "configArr[i]"
+			fi
+	done
+	msgFunc anykey
+	printf "%s\n" "${configArr[@]}" > HOMECONFIGfile
+	
+	# use for loop read all installed packages
+	msgFunc green " $HOME/.cache/ -- cache of some programs may grow in size"
+	for (( i=0; i<"${tLen1}"; i++ ));
+	do
+			if  checkPacFunc "${cacheArr[i]}" 
+			then
+					unset "cacheArr[i]"
+			fi
+	done
+	msgFunc anykey
+	printf "%s\n" "${cacheArr[@]}" > HOMECACHEfile 
+	
+	# use for loop read all installed packages
+	msgFunc green "$HOME/.local/share/ -- old files may be lying there"
+	for (( i=0; i<"${tLen2}"; i++ ));
+	do
+			if  checkPacFunc "${homeArr[i]}" 
+			then
+					unset "homeArr[i]"
+			fi
+	done
+	printf "%s\n" "${homeArr[@]}" > HOMELOCALSHAREfile
 }

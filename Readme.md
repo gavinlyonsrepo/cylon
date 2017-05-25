@@ -2,8 +2,8 @@
 --------------------------------------------
 * Package name: cylon 
 * First commit to AUR:	080916 1.3-1
-* Last Update: 			050517 3.7-9
-* Version : 3.7-9 See changelog.md/release notes for version control
+* Last Update: 			260517 4.0-1
+* Version : 4.0-1 See changelog.md/release notes for version control
 * Author: Gavin Lyons
 * Contact: Upstream repo at github "gavinlyonsrepo" or glyons66@hotmail.com
 * Upstream repository: https://github.com/gavinlyonsrepo/cylon
@@ -21,7 +21,9 @@ A detailed list of features is provided below in features section.
 Options/Usage
 -------------------------------------------
 The program installs an icon in system application menus under system.
-It can be also run in a terminal by typing cylon: cylon -[options]
+It can be also run in a terminal by typing cylon: 
+
+cylon -[options]
 
 Options(standalone cannot be combined):
 * -h --help , Print cylon information and exit.
@@ -34,10 +36,14 @@ This will execute options selected in bleachbit GUI or bleachbit config file.
 * -m --maint , Runs Automatic system maintenance scan
 This carries many of the menu functions in system maintenance menu in 
 a single sweep, It will not change system just create report files.
-* -u --update , Runs a full update report with option to execute and exit.
+* -u --update , Runs a full update report with various execution options.
 Report provides Arch news rss reader & arch-audit vulnerable 
 packages output CVE data(Common Vulnerabilities and Exposures) 
 & number and type of updates available for all repos.
+* -p --print print the package lists (REF1)
+* -r --rss print arch news reader last four items
+* -z --delete display the AUR package removal dialog menu function.
+* -l --lint shortcut to open rmlint wrapper.
 
 Files
 -----------------------------------------
@@ -209,7 +215,7 @@ as default text editor for editing config files.
 	* Write installed package lists to files (REF1)
 	* Read AUR Package comments
 	* Edit cower config file
-	* Remove foreign packages explicitly installed menu
+	* Remove foreign packages  menu
 	
 * AUR pacaur options
 	* Check for updates ( NO downloads)
@@ -223,10 +229,10 @@ as default text editor for editing config files.
 	* Edit pacaur config file
 	* Update all packages in all repositories, pacaur -Syu
 	* Write installed package lists to files (REF1)
-	* Remove foreign packages explicitly installed menu
+	* Remove foreign packages  menu
 	
 * Full System update 
-	* Runs the same report that is called by cylon option -u
+	* Runs the same report that is called by cylon -u , see options section
 	
 * System maintenance menu
 	* All Failed Systemd Services and system status
@@ -309,7 +315,8 @@ as default text editor for editing config files.
 
 * Config file view/edit option.
 
-* System and package information display
+* System and package information displays
+	* Displays detailed information on system and package setup
 	* Function also run by -s standalone option.
 
 * Cylon information: 
@@ -322,7 +329,7 @@ as default text editor for editing config files.
 	* All installed packages: pkglistQ.txt
 	* All native packages: pkglistQn.txt
 	* All explicitly installed packages: pkglistQe.txt
-	* ALL explicitly installed native packages that are
+	* All explicitly installed native packages that are
 	not direct or optional dependencies: pkglistQgent.txt
 	* All foreign installed packages: pkglistQm.txt
 	* All foreign explicitly installed packages: pkglistQme.txt
@@ -330,6 +337,7 @@ as default text editor for editing config files.
 		and description: pkglistNonBase.txt
 	* All installed packages sorted by size: pkglistSize.txt
 	* All installed packages sorted by install date: pkglistDate.txt
+	* All .pacnew and .pacsave files on system. pacNewSaveFiles.txt
 
 
 Media

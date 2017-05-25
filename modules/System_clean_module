@@ -10,212 +10,208 @@
 #NOTES :    needs bleachit installed
 function SystemCleanFunc
 {
-			clear
-			#check $1, Called with  FOLDERS input option?
-			#delete folders and shred with bleachbit options
-			local choiceFsVar=""
-			if [ "$1" = "FOLDERS" ]
-			then
-				msgFunc blue "Delete files/folders. options:-"
-				local optionsFsArr=("$(checkPacFunc bleachbit NOMES) shred file function" "$(checkPacFunc bleachbit NOMES) shred folder function" \
-				"Delete Trash folder" \
-				"Delete Download folder" "Delete Cylon output folder $DEST3" "Return")
-				select choiceFsVar in "${optionsFsArr[@]}"
-				do
-				case "$choiceFsVar" in  
-					"${optionsFsArr[0]}")
-						local mydelfileVar=""
-						mydelfileVar=$(dialog --title "Bleachbit Delete file" --output-fd 1 --title "Please choose a file" --fselect "$HOME/" 14 48)
-						#echo "${FILE} file chosen."
-						case $? in
-							0)
-								clear
-							;;
-							1)
-								clear
-								msgFunc yellow "Exit pressed."
-								return
-							;;
-							255)
-								clear
-								msgFunc yellow "Esc pressed."
-								return
-							;;
-						esac
-					msgFunc norm "\"$mydelfileVar\" chosen file."
-					msgFunc green "Execute bleachbit to delete file $mydelfileVar ? "
-					msgFunc red   "Press y or any key to quit [y/N]"
-					local choiceFssVar=""
-					read -r choiceFssVar
-					if [ "$choiceFssVar" = "y" ]
-					then
-						bleachbit -s "$mydelfileVar" || exitHandlerFunc exitout
-					else
-						msgFunc green "Done!"
+	clear
+	#check $1, Called with  FOLDERS input option?
+	#delete folders and shred with bleachbit options
+	local choiceFsVar=""
+	if [ "$1" = "FOLDERS" ]
+	then
+		msgFunc blue "Delete files/folders. options:-"
+		local optionsFsArr=("$(checkPacFunc bleachbit NOMES) shred file function" "$(checkPacFunc bleachbit NOMES) shred folder function" \
+		"Delete Trash folder" \
+		"Delete Download folder" "Delete Cylon output folder $DEST3" "Return")
+		select choiceFsVar in "${optionsFsArr[@]}"
+		do
+		case "$choiceFsVar" in  
+			"${optionsFsArr[0]}")
+				local mydelfileVar=""
+				mydelfileVar=$(dialog --title "Bleachbit Delete file" --output-fd 1 --title "Please choose a file" --fselect "$HOME/" 14 48)
+				#echo "${FILE} file chosen."
+				case $? in
+					0)
+						clear
+					;;
+					1)
+						clear
+						msgFunc yellow "Exit pressed."
 						return
-					fi
 					;;
-					
-					"${optionsFsArr[1]}")
-					msgFunc green "Shred specific folder"
-					local mydelpathVar=""
-					mydelpathVar=$(dialog --title "Bleachbit Delete folder" --output-fd 1 --begin 1 1 --cancel-label "Exit" --title  "Select folder to delete:" --dselect / 10 40) 
-						case $? in
-							0)
-								clear
-							;;
-							1)
-								msgFunc norm " "
-								msgFunc yellow "Exit pressed."
-								return
-							;;
-							255)
-								msgFunc norm " "
-								msgFunc yellow "Esc pressed."
-								return
-							;;
-						esac
-					msgFunc norm "\"$mydelpathVar\" chosen directory."
-					msgFunc green "Execute bleachbit to delete folder $mydelpathVar ? "
-					msgFunc red   "Press y or any key to quit [y/N]"
-					local choiceFssVar=""
-					read -r choiceFssVar
-					if [ "$choiceFssVar" = "y" ]
-					then
-						bleachbit -s "$mydelpathVar" || exitHandlerFunc exitout
-					else
-						msgFunc green "Done!"
+					255)
+						clear
+						msgFunc yellow "Esc pressed."
 						return
-					fi
-					;;
-					
-					"${optionsFsArr[2]}")  msgFunc green "Deleting Trash folder "
-						 rm -rvf "$HOME"/.local/share/Trash/*
-					;;
-					"${optionsFsArr[3]}")  msgFunc green "Deleting Download folder "
-						 rm -rvf "$HOME"/Downloads/*
-					;;
-					"${optionsFsArr[4]}")  msgFunc green "Deleting Cylon output folder $DEST3"
-						rm -rvf "$DEST3"
-						#remake the path for the program output DEST3
-						mkdir -p "$DEST3"
-					;;
-					*)  #exit  
-						msgFunc green "Done!"	
-					return
 					;;
 				esac
-				break
-				done
-			return
+			msgFunc norm "\"$mydelfileVar\" chosen file."
+			msgFunc green "Execute bleachbit to delete file $mydelfileVar ? "
+			msgFunc red   "Press y or n [y/n] ?"
+			if msgFunc yesno
+			then #yes
+				bleachbit -s "$mydelfileVar" || exitHandlerFunc exitout
+			else
+				msgFunc green "No selected"
+				return
 			fi
-			#check bleachbit is installed
-			if ! checkPacFunc bleachbit 
-			then
-				msgFunc anykey 
-			return
-			fi
-			#system clean with bleachbit (if this function called without "FOLDERS" input)
-			#query for preset option or custom?
-			msgFunc norm "Note: For Preset options see $HOME/.config/bleachbit/ or GUI "
-			msgFunc green "Bleachbit system clean. Use the Preset options set in the GUI? [y/N]"  
+			;;
 			
-									local choiceBBVar=""
-									read -r choiceBBVar
-									if [ "$choiceBBVar" = "y" ]
-										then
-											#use options set in the graphical interface 
-											msgFunc norm  "Running bleachbit -c --preset"
-											bleachbit -c --preset
-											return
-									fi		
-		  
-					#custom bleachbit -c cleaner.option
-					#get cleaner list and put it in array
-					msgFunc green "Scanning bleachbit cleaners:"
-					local cleanArr
-					cleanArr=$(bleachbit --list | awk -F"." '{ print $1 }' | sort -u)
-					#Sort array
-					IFS=$'\n' cleanArr=($(sort <<<"${cleanArr[*]}"))
-					unset IFS
-					# get length of an array
-					tLen="${#cleanArr[@]}"
-					# use for loop read all installed packages exception for deepscan
-					for (( i=0; i<"${tLen}"; i++ ));
-					do
-						if [ "${cleanArr[i]}" != "deepscan" ]
-							then 
-							if ! checkPacFunc "${cleanArr[i]}"
-								then
-									unset "cleanArr[i]"
-								fi
-						fi
-					done
-					msgFunc anykey
-					msgFunc green "Done!"	
-					clear
-					 msgFunc blue "System clean with Bleachbit, Select Cleaner :-"
-					#get cleaner input from user
-					local cleanerVar=""
-					select cleanerVar in "${cleanArr[@]}"
-					do
-							#get list of options for selected cleaner and put in array
-							local optionArr
-							optionArr=$(bleachbit --list | awk -F"."  ''/"${cleanerVar}"/' {print $2}')
-						break
-					done
-					#check for valid selection
-					if [ "$cleanerVar" =  ""  ]
-					then
-						return
-					fi
-					IFS=$'\n' optionArr=($(sort <<<"${optionArr[*]}"))
-					unset IFS
-					#Add a star to end of array
-					optionArr+=('*')
-					#show user options
-					msgFunc blue  "Select option(* is all):-"
-					local optionVar=""
-					select optionVar in "${optionArr[@]}"
-					do
-						if [ "$optionVar" =  ""  ]
-							then
-							return
-						fi
+			"${optionsFsArr[1]}")
+			msgFunc green "Shred specific folder"
+			local mydelpathVar=""
+			mydelpathVar=$(dialog --title "Bleachbit Delete folder" --output-fd 1 --begin 1 1 --cancel-label "Exit" --title  "Select folder to delete:" --dselect / 10 40) 
+				case $? in
+					0)
+						clear
+					;;
+					1)
 						msgFunc norm " "
-						msgFunc green "You have selected ${cleanerVar}.${optionVar}"
-						msgFunc anykey 
-					break
-					done
-					local choiceBBOVar=""
-					#give user 4 options - preview ,clean ,clean and overwrite ,quit
-					msgFunc blue "Pick a Bleachbit option (see readme for more details)"
-					select choiceBBOVar in "Preview only" "Overwrite & delete" "Delete" "Return"
-						do
-						case "$choiceBBOVar" in
-						"Preview only" )
-						bleachbit -p "${cleanerVar}.${optionVar}"
-						;;
-						"Overwrite & delete")
-							if [ "$cleanerVar" = "system" ]
-								then
-								sudo bleachbit -oc "${cleanerVar}.${optionVar}"
-								else
-								bleachbit  -oc "${cleanerVar}.${optionVar}"
-							fi
-						;;
-						"Delete")
-							if [ "$cleanerVar" = "system" ]
-								then
-								sudo bleachbit  -c "${cleanerVar}.${optionVar}"
-								else
-								bleachbit  -c "${cleanerVar}.${optionVar}"
-							fi
-						;;
-						*)
-							return
-						;;
-						esac
-						break
-						done
+						msgFunc yellow "Exit pressed."
+						return
+					;;
+					255)
+						msgFunc norm " "
+						msgFunc yellow "Esc pressed."
+						return
+					;;
+				esac
+			msgFunc norm "\"$mydelpathVar\" chosen directory."
+			msgFunc green "Execute bleachbit to delete folder $mydelpathVar ? "
+			msgFunc red   "Press y or n [y/n] ?"
+			if msgFunc yesno
+			then #yes
+				bleachbit -s "$mydelpathVar" || exitHandlerFunc exitout
+			else
+				msgFunc norm "No selected"
+				return
+			fi
+			;;
+			
+			"${optionsFsArr[2]}")  msgFunc green "Deleting Trash folder "
+				 rm -rvf "$HOME"/.local/share/Trash/*
+			;;
+			"${optionsFsArr[3]}")  msgFunc green "Deleting Download folder "
+				 rm -rvf "$HOME"/Downloads/*
+			;;
+			"${optionsFsArr[4]}")  msgFunc green "Deleting Cylon output folder $DEST3"
+				rm -rvf "$DEST3"
+				#remake the path for the program output DEST3
+				mkdir -p "$DEST3"
+			;;
+			*)  #exit  
+				msgFunc green "Done!"	
+			return
+			;;
+		esac
+		break
+		done
+	return
+	fi
+	
+	#check bleachbit is installed
+	if ! checkPacFunc bleachbit 
+	then
+		msgFunc anykey 
+	return
+	fi
+	#system clean with bleachbit (if this function called without "FOLDERS" input)
+	#query for preset option or custom?
+	msgFunc norm "Note: For Preset options see $HOME/.config/bleachbit/ or GUI "
+	msgFunc green "Bleachbit system clean. Use the Preset options set in the GUI? [y/n] ?"  
+	if msgFunc yesno
+		then #yes
+			#use options set in the graphical interface 
+			msgFunc norm  "Running bleachbit -c --preset"
+			bleachbit -c --preset
+			return
+	fi		
+	
+	#custom bleachbit -c cleaner.option
+	#get cleaner list and put it in array
+	msgFunc green "Scanning bleachbit cleaners:"
+	local cleanArr
+	cleanArr=$(bleachbit --list | awk -F"." '{ print $1 }' | sort -u)
+	#Sort array
+	IFS=$'\n' cleanArr=($(sort <<<"${cleanArr[*]}"))
+	unset IFS
+	# get length of an array
+	tLen="${#cleanArr[@]}"
+	# use for loop read all installed packages exception for deepscan
+	for (( i=0; i<"${tLen}"; i++ ));
+	do
+		if [ "${cleanArr[i]}" != "deepscan" ]
+			then 
+			if ! checkPacFunc "${cleanArr[i]}"
+				then
+					unset "cleanArr[i]"
+				fi
+		fi
+	done
+	msgFunc anykey
+	msgFunc green "Done!"	
+	clear
+	
+		#get cleaner input from user
+	 msgFunc blue "System clean with Bleachbit, Select Cleaner :-"
+	local cleanerVar=""
+	select cleanerVar in "${cleanArr[@]}"
+	do
+			#get list of options for selected cleaner and put in array
+			local optionArr
+			optionArr=$(bleachbit --list | awk -F"."  ''/"${cleanerVar}"/' {print $2}')
+		break
+	done
+	#check for valid selection
+	if [ "$cleanerVar" =  ""  ]
+	then
+		return
+	fi
+	IFS=$'\n' optionArr=($(sort <<<"${optionArr[*]}"))
+	unset IFS
+	#Add a star to end of array
+	optionArr+=('*')
+	#show user options
+	msgFunc blue  "Select option(* is all):-"
+	local optionVar=""
+	select optionVar in "${optionArr[@]}"
+	do
+		if [ "$optionVar" =  ""  ]
+			then
+			return
+		fi
+		msgFunc norm " "
+		msgFunc green "You have selected ${cleanerVar}.${optionVar}"
+		msgFunc anykey 
+	break
+	done
+	
+	local choiceBBOVar=""
+	#give user 4 options - preview ,clean ,clean and overwrite ,quit
+	msgFunc blue "Pick a Bleachbit option (see readme for more details)"
+	select choiceBBOVar in "Preview only" "Overwrite & delete" "Delete" "Return"
+		do
+		case "$choiceBBOVar" in
+		"Preview only" )
+		bleachbit -p "${cleanerVar}.${optionVar}"
+		;;
+		"Overwrite & delete")
+			if [ "$cleanerVar" = "system" ]
+				then
+				sudo bleachbit -oc "${cleanerVar}.${optionVar}"
+				else
+				bleachbit  -oc "${cleanerVar}.${optionVar}"
+			fi
+		;;
+		"Delete")
+			if [ "$cleanerVar" = "system" ]
+				then
+				sudo bleachbit  -c "${cleanerVar}.${optionVar}"
+				else
+				bleachbit  -c "${cleanerVar}.${optionVar}"
+			fi
+		;;
+		*)
+			return
+		;;
+		esac
+		break
+		done
 }

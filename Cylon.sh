@@ -9,7 +9,7 @@
 #First commit to AUR  =080916
 #Last update to github repo =200517
 #Last Version release =050517 
-#Version 3.7-9 See changelog.md at repo for version control
+#Version 4.0-1 See changelog.md at repo for version control
 #License: see license.md 
 #Written by Gavin lyons 
 #Software repo: https://github.com/gavinlyonsrepo/cylon
@@ -17,8 +17,9 @@
 
 #=======================GLOBAL VARIABLES SETUP=============================
 
-#Syntax: Global: uppercase , local: XXXVar. local Array: XXXArr
-#environmental variable CYLONDEST. variables also read from config file
+#Syntax: Global: UPPERCASE  , local: XXXVar. local Array: XXXArr
+#Environmental variables : CYLONDEST 
+#Variables also read from config file
 
 #colours for printf
 RED=$(printf "\033[31;1m")

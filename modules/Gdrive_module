@@ -72,7 +72,6 @@ local optionsGdArr=("List all syncable directories on drive" "Sync local directo
 					local numVar=""
 					local quyVar=""
 					local orderVar=""
-					local ChoiceGVar=""
 					
 					msgFunc green "List files "
 					msgFunc norm "Enter Max files to list, Just press enter for all:-"
@@ -85,14 +84,14 @@ local optionsGdArr=("List all syncable directories on drive" "Sync local directo
 					msgFunc norm "Common Example: quotaBytesUsed desc "
 					msgFunc norm "Just press enter to to leave order blank :-"
 					read -r  orderVar
-					msgFunc norm "Output to file? [Y/n] :-"
-					read -r ChoiceGVar
-						if [ "$ChoiceGVar" != "n" ]
+					msgFunc norm "Output to file? [y/n] :-"
+
+						if msgFunc yesno
 							then
-								# output to file
+								#yes > output to file
 								makeDirFunc "-LISTINFO"
 								gdrive list  -q "$quyVar" --order "$orderVar" -m "$numVar" > Listinfo
-							else #output to screen 
+							else #no > output to screen 
 								gdrive list  -q "$quyVar" --order "$orderVar" -m "$numVar" 
 						fi
 					;;
