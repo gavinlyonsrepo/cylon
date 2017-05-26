@@ -9,174 +9,174 @@
 #NOTE gnu-netcat is neeeded for the first option.      
 function PacmanFunc 
 {
-			clear
-			#Pacman package manager options:
-			msgFunc line
-			msgFunc green "Pacman package manager. Number of packages installed = $(pacman -Q | wc -l) "
-			msgFunc line
-			msgFunc blue "Pacman package manager options:-"
-			local choicePMVar=""
-			local pacStingVar=""
-			local optionsPMArr=("Check Network and check for pacman updates (no download)" "pacman -Syu Upgrade packages" \
-			"pacman -Si Display extensive information about a given package" "pacman -S Install Package" \
-			"pacman -Ss Search for packages in the database" \
-			"pacman -Rs Remove Package" "pacman -Qs Search for already installed packages" \
-			"pacman -Qi  Display extensive information for locally installed packages" "pacman -Ql  List all files owned by a given package." \
-			"pacman -Qkk Verify packages" "paccache -r Prune older packages from cache, Keep last 3"\
-			"Remove all packages not required as dependencies (orphans)" "Make a copy of package lists"  \
-			"Back-up the local pacman database" "Arch Linux News Rss feed" "$(checkPacFunc arch-audit  NOMES)" \
-			"pactree options" "Edit pacman config file" "Return to main menu")
-			select choicePMVar in "${optionsPMArr[@]}"
-			do
-			case "$choicePMVar" in
-					"${optionsPMArr[0]}")
-					msgFunc green "Pacman updates ready:-.... "
-					#check gnu-netcat is installed
-					#check network connectivity if good get updates numbers from arch
-						checkNetFunc "archlinux.org"
-						msgFunc norm   "Number of Pacman updates ready...> $(checkupdates | wc -l)"
-						checkupdates
-					;;
-					"${optionsPMArr[1]}") #update pacman
-						msgFunc green "Update system with Pacman."
-						sudo pacman -Syu
-					;;
-					"${optionsPMArr[2]}") #pacman -Si Display extensive information about a given package
-						msgFunc green "Display information  for Package."
+		clear
+		#Pacman package manager options:
+		msgFunc line
+		msgFunc green "Pacman package manager. Number of packages installed = $(pacman -Q | wc -l) "
+		msgFunc line
+		msgFunc blue "Pacman package manager options:-"
+		local choicePMVar=""
+		local pacStingVar=""
+		local optionsPMArr=("Check Network and check for pacman updates (no download)" "pacman -Syu Upgrade packages" \
+		"pacman -Si Display extensive information about a given package" "pacman -S Install Package" \
+		"pacman -Ss Search for packages in the database" \
+		"pacman -Rs Remove Package" "pacman -Qs Search for already installed packages" \
+		"pacman -Qi  Display extensive information for locally installed packages" "pacman -Ql  List all files owned by a given package." \
+		"pacman -Qkk Verify packages" "paccache -r Prune older packages from cache, Keep last 3"\
+		"Remove all packages not required as dependencies (orphans)" "Make a copy of package lists"  \
+		"Back-up the local pacman database" "Arch Linux News Rss feed" "$(checkPacFunc arch-audit  NOMES)" \
+		"pactree options" "Edit pacman config file" "Return to main menu")
+		select choicePMVar in "${optionsPMArr[@]}"
+		do
+		case "$choicePMVar" in
+				"${optionsPMArr[0]}")
+				msgFunc green "Pacman updates ready:-.... "
+				#check gnu-netcat is installed
+				#check network connectivity if good get updates numbers from arch
+					checkNetFunc "archlinux.org"
+					msgFunc norm   "Number of Pacman updates ready...> $(checkupdates | wc -l)"
+					checkupdates
+				;;
+				"${optionsPMArr[1]}") #update pacman
+					msgFunc green "Update system with Pacman."
+					sudo pacman -Syu
+				;;
+				"${optionsPMArr[2]}") #pacman -Si Display extensive information about a given package
+					msgFunc green "Display information  for Package."
+					msgFunc norm "Please enter package name"
+					read -r pacStingVar
+					pacman -Si "$pacStingVar"
+				;;
+				"${optionsPMArr[3]}") #pacman -S Install Package
+					msgFunc green "Install package."
+					msgFunc norm "Please enter package name"
+					read -r pacStingVar
+					sudo pacman -S "$pacStingVar"
+				;;
+				"${optionsPMArr[4]}")   #pacman -Ss Search Repos for Package
+					msgFunc green "Search for packages in the database."
+					msgFunc norm "Please enter package name"
+					read -r pacStingVar
+					pacman -Ss "$pacStingVar"
+				;;
+				"${optionsPMArr[5]}") #pacman -Rs Delete Package
+					msgFunc green "Remove Package."
+					msgFunc norm "Please enter package name"
+					read -r pacStingVar
+					sudo pacman -Rs "$pacStingVar"
+				;;
+				"${optionsPMArr[6]}")   #pacman -Qs Search for already installed packages
+					msgFunc green "Search for already installed packages."
+					msgFunc norm "Please enter package name"
+					read -r pacStingVar
+					pacman -Qs "$pacStingVar"
+				;;
+				"${optionsPMArr[7]}") #pacman -Qi Display extensive information about a given package(local install)
+					msgFunc green "Display information  for Package."
+					msgFunc norm "Please enter package name"
+					read -r pacStingVar
+					pacman -Qi "$pacStingVar"
+				;;
+				"${optionsPMArr[8]}") #pacman -Ql  List all files owned by a given package.
+					msgFunc green "List all files owned by a given package."
+					msgFunc norm "Please enter package name"
+					read -r pacStingVar
+					pacman -Ql "$pacStingVar"
+				;;
+				"${optionsPMArr[9]}") #pacman -Qkk  Verify all packages
+					makeDirFunc "-PKGINFO"
+					msgFunc green "Verify  packages pacman -Qkk"
+					msgFunc norm "Yes for just one package, no for all [y/n] ?"
+					if msgFunc yesno
+					then # yes
 						msgFunc norm "Please enter package name"
 						read -r pacStingVar
-						pacman -Si "$pacStingVar"
+						pacman -Qkk "$pacStingVar" > pkgver
+					else
+						pacman -Qkk > pkgverall
+					fi
+				;;
+				"${optionsPMArr[10]}")  msgFunc green  "Prune older packages from cache, paccache -r Keeps last 3"
+				#The paccache script, deletes all cached  package 
+					#regardless of whether they're installed or not, 
+					#except for the most recent 3, 
+						sudo paccache -r
+				;;
+				
+				"${optionsPMArr[11]}")   #delete orphans
+					msgFunc green "Delete orphans!"
+					#Remove all packages not required as dependencies (orphans)
+					sudo pacman -Rns "$(pacman -Qtdq)"
+				;;
+
+				"${optionsPMArr[12]}")
+					msgFunc green "Make copy of package lists"
+					pkglistFunc
+				;;
+				"${optionsPMArr[13]}") #backup the pacman database
+					msgFunc green "Back-up the pacman database to :"
+					makeDirFunc "-BACKUPPACMAN"
+					tar -v -cjf pacman_database.tar.bz2 /var/lib/pacman/local
+				;;
+
+				
+				"${optionsPMArr[14]}") #Arch Linux News Rss feed
+					RssFunc
 					;;
-					"${optionsPMArr[3]}") #pacman -S Install Package
-						msgFunc green "Install package."
-						msgFunc norm "Please enter package name"
-						read -r pacStingVar
-						sudo pacman -S "$pacStingVar"
-					;;
-					"${optionsPMArr[4]}")   #pacman -Ss Search Repos for Package
-						msgFunc green "Search for packages in the database."
-						msgFunc norm "Please enter package name"
-						read -r pacStingVar
-						pacman -Ss "$pacStingVar"
-					;;
-					"${optionsPMArr[5]}") #pacman -Rs Delete Package
-						msgFunc green "Remove Package."
-						msgFunc norm "Please enter package name"
-						read -r pacStingVar
-						sudo pacman -Rs "$pacStingVar"
-					;;
-					"${optionsPMArr[6]}")   #pacman -Qs Search for already installed packages
-						msgFunc green "Search for already installed packages."
-						msgFunc norm "Please enter package name"
-						read -r pacStingVar
-						pacman -Qs "$pacStingVar"
-					;;
-					"${optionsPMArr[7]}") #pacman -Qi Display extensive information about a given package(local install)
-						msgFunc green "Display information  for Package."
-						msgFunc norm "Please enter package name"
-						read -r pacStingVar
-						pacman -Qi "$pacStingVar"
-					;;
-					"${optionsPMArr[8]}") #pacman -Ql  List all files owned by a given package.
-						msgFunc green "List all files owned by a given package."
-						msgFunc norm "Please enter package name"
-						read -r pacStingVar
-						pacman -Ql "$pacStingVar"
-					;;
-					"${optionsPMArr[9]}") #pacman -Qkk  Verify all packages
-						makeDirFunc "-PKGINFO"
-						msgFunc green "Verify  packages pacman -Qkk"
-						msgFunc norm "Yes for just one package, no for all [y/n] ?"
-						if msgFunc yesno
-						then # yes
-							msgFunc norm "Please enter package name"
-							read -r pacStingVar
-							pacman -Qkk "$pacStingVar" > pkgver
+					
+				"${optionsPMArr[15]}") #run arch audit
+					msgFunc green "Running arch-audit program :"
+					local archauditVar=""
+					#check archaudit is installed
+					if ! checkPacFunc arch-audit
+						then
+						msgFunc anykey 
+						return
+					fi
+					msgFunc norm "Press [A] for full output: or other options> -q=quiet, -u=upgradable, -uq."
+					read -r archauditVar
+					if [ "$archauditVar" = "A" ] 
+						then
+						arch-audit
 						else
-							pacman -Qkk > pkgverall
-						fi
+						 arch-audit "$archauditVar"
+					fi 
+					archauditVar=
 					;;
-					"${optionsPMArr[10]}")  msgFunc green  "Prune older packages from cache, paccache -r Keeps last 3"
-					#The paccache script, deletes all cached  package 
-						#regardless of whether they're installed or not, 
-						#except for the most recent 3, 
-							sudo paccache -r
-					;;
+				
+				"${optionsPMArr[16]}") #pactree
+					local pactreeVar=""
+					msgFunc green "pactree options"
+					msgFunc norm "List a dependency tree of a package: pactree"
+					msgFunc norm "Show packages that depend on the named package: pactree -r"
+					msgFunc norm "press [A] for pactree or [r] for pactree -r. [A/r]"
+					read -r pactreeVar
+					if [ "$pactreeVar" != "r" ]
+					then
+						msgFunc norm "Please enter package name"
+						read -r pacStingVar
+						pactree "$pacStingVar"
+					else
+						msgFunc norm "Please enter package name"
+						read -r pacStingVar
+						pactree -r "$pacStingVar"
+					fi
+				;;
+				"${optionsPMArr[17]}") #edit pacman conf file
+					msgFunc green "Edit Pacman.conf file."
+					sudo nano  /etc/pacman.conf
+				;;
 					
-					"${optionsPMArr[11]}")   #delete orphans
-						msgFunc green "Delete orphans!"
-						#Remove all packages not required as dependencies (orphans)
-						sudo pacman -Rns "$(pacman -Qtdq)"
-					;;
-
-					"${optionsPMArr[12]}")
-						msgFunc green "Make copy of package lists"
-						pkglistFunc
-					;;
-					"${optionsPMArr[13]}") #backup the pacman database
-						msgFunc green "Back-up the pacman database to :"
-						makeDirFunc "-BACKUPPACMAN"
-						tar -v -cjf pacman_database.tar.bz2 /var/lib/pacman/local
-					;;
-
-					
-					"${optionsPMArr[14]}") #Arch Linux News Rss feed
-						RssFunc
-						;;
-						
-					"${optionsPMArr[15]}") #run arch audit
-						msgFunc green "Running arch-audit program :"
-						local archauditVar=""
-						#check archaudit is installed
-						if ! checkPacFunc arch-audit
-							then
-							msgFunc anykey 
-							return
-						fi
-						msgFunc norm "Press [A] for full output: or other options> -q=quiet, -u=upgradable, -uq."
-						read -r archauditVar
-						if [ "$archauditVar" = "A" ] 
-							then
-							arch-audit
-							else
-							 arch-audit "$archauditVar"
-						fi 
-						archauditVar=
-						;;
-					
-						"${optionsPMArr[16]}") #pactree
-									local pactreeVar=""
-									msgFunc green "pactree options"
-									msgFunc norm "List a dependency tree of a package: pactree"
-									msgFunc norm "Show packages that depend on the named package: pactree -r"
-									msgFunc norm "press [A] for pactree or [r] for pactree -r. [A/r]"
-									read -r pactreeVar
-									if [ "$pactreeVar" != "r" ]
-									then
-										msgFunc norm "Please enter package name"
-										read -r pacStingVar
-										pactree "$pacStingVar"
-									else
-										msgFunc norm "Please enter package name"
-										read -r pacStingVar
-										pactree -r "$pacStingVar"
-									fi
-						;;
-						"${optionsPMArr[17]}") #edit pacman conf file
-							msgFunc green "Edit Pacman.conf file."
-							sudo nano  /etc/pacman.conf
-						;;
-							
-						*)  #exit  
-							msgFunc green "Done!"	
-							clear
-							return
-						;;
-			esac
-			break
-			done
-			msgFunc green "Done!"	
-			msgFunc anykey 
+				*)  #exit  
+					msgFunc green "Done!"	
+					clear
+					return
+				;;
+		esac
+		break
+		done
+		msgFunc green "Done!"	
+		msgFunc anykey 
 }
 
 #FUNCTION HEADER
@@ -184,38 +184,45 @@ function PacmanFunc
 # DESCRIPTION :     Display 4 Arch Linux News Rss feed
 function RssFunc 
 {
-				#Display 4 Arch Linux News Rss feed
-				msgFunc green "Arch Linux News Rss feed"
-				# Set countVar to be the number of latest news to fetch
-				newsVar=$(echo -e $(curl --silent https://www.archlinux.org/feeds/news/  | awk ' NR == 1 {countVar = 4; while (countVar) {print;getline; if($0 ~ /<\/item>/) countVar=countVar-1} ; sub(/<\/item>.*/,"</item>") ;print}'))
-				#  THE RSS PARSER Remove some tags 
-				newsVar=$(echo -e "$newsVar" | \
-				awk '{
-				sub(/<lastBuildDate[^>]*>([^>]*>)/,"");sub(/<language[^>]*>([^>]*>)/,"");sub(/<title[^>]*>([^>]*>)/,"");sub(/<link[^>]*>([^>]*>)/,""); 
-				while (sub(/<guid[^>]*>([^>]*>)/,"")); 
-				while (sub(/<dc:creator[^>]*>([^>]*>)/,""));
-				while (sub(/<description[^>]*>([^>]*>)/,"")); print }' | \
-				sed -e ':a;N;$!ba;s/\n/ /g')
-			    echo -e "$(echo -e "$newsVar" | \
-				sed -e 's/&amp;/\&/g
-				s/&lt;\|&#60;/</g
-				s/&gt;\|&#62;/>/g
-				s/<\/a>/£/g
-				s/href\=\"/§/g
-				s/<title>/\\n\\n :: \\e[01;31m/g; s/<\/title>/\\e[00m ::/g
-				s/<link>/\\n [ \\e[01;36m/g; s/<\/link>/\\e[00m ]\\n/g
-				s/<p\( [^>]*\)\?>\|<br\s*\/\?>/\n/g
-				s/<b\( [^>]*\)\?>\|<strong\( [^>]*\)\?>/\\e[01;30m/g; s/<\/b>\|<\/strong>/\\e[00;37m/g
-				s/<i\( [^>]*\)\?>\|<em\( [^>]*\)\?>/\\e[41;37m/g; s/<\/i>\|<\/em>/\\e[00;37m/g
-				s/<u\( [^>]*\)\?>/\\e[4;37m/g; s/<\/u>/\\e[00;37m/g
-				s/<code\( [^>]*\)\?>/\\e[00m/g; s/<\/code>/\\e[00;37m/g
-				s/<a[^§|t]*§\([^\"]*\)\"[^>]*>\([^£]*\)[^£]*£/\\e[01;31m\2\\e[00;37m \\e[01;34m[\\e[00;37m \\e[04m\1\\e[00;37m\\e[01;34m ]\\e[00;37m/g
-				s/<li\( [^>]*\)\?>/\n \\e[01;34m*\\e[00;37m /g
-				s/<!\[CDATA\[\|\]\]>//g
-				s/\|>\s*<//g
-				s/ *<[^>]\+> */ /g
-				s/[<>£§]//g')"    
-				#end
+		#Display 4 Arch Linux News Rss feed
+		msgFunc green "Arch Linux News Rss feed"
+		msgFunc norm "Enter number of items of news to fetch or press [ENTER] for default of 3"
+		
+		read -r numitemsVar
+		if [ -z "${numitemsVar}" ]
+			then 
+				numitemsVar=3 #default
+		fi
+		# Set numitemsVar to N in awk  to be the number of latest news to fetch
+		newsVar=$(echo -e $(curl --silent https://www.archlinux.org/feeds/news/  | awk -v N="$numitemsVar" ' NR == 1 {countVar = N; while (countVar) {print;getline; if($0 ~ /<\/item>/) countVar=countVar-1} ; sub(/<\/item>.*/,"</item>") ;print}'))
+		#  THE RSS PARSER Remove some tags 
+		newsVar=$(echo -e "$newsVar" | \
+		awk '{
+		sub(/<lastBuildDate[^>]*>([^>]*>)/,"");sub(/<language[^>]*>([^>]*>)/,"");sub(/<title[^>]*>([^>]*>)/,"");sub(/<link[^>]*>([^>]*>)/,""); 
+		while (sub(/<guid[^>]*>([^>]*>)/,"")); 
+		while (sub(/<dc:creator[^>]*>([^>]*>)/,""));
+		while (sub(/<description[^>]*>([^>]*>)/,"")); print }' | \
+		sed -e ':a;N;$!ba;s/\n/ /g')
+		echo -e "$(echo -e "$newsVar" | \
+		sed -e 's/&amp;/\&/g
+		s/&lt;\|&#60;/</g
+		s/&gt;\|&#62;/>/g
+		s/<\/a>/£/g
+		s/href\=\"/§/g
+		s/<title>/\\n\\n :: \\e[01;31m/g; s/<\/title>/\\e[00m ::/g
+		s/<link>/\\n [ \\e[01;36m/g; s/<\/link>/\\e[00m ]\\n/g
+		s/<p\( [^>]*\)\?>\|<br\s*\/\?>/\n/g
+		s/<b\( [^>]*\)\?>\|<strong\( [^>]*\)\?>/\\e[01;30m/g; s/<\/b>\|<\/strong>/\\e[00;37m/g
+		s/<i\( [^>]*\)\?>\|<em\( [^>]*\)\?>/\\e[41;37m/g; s/<\/i>\|<\/em>/\\e[00;37m/g
+		s/<u\( [^>]*\)\?>/\\e[4;37m/g; s/<\/u>/\\e[00;37m/g
+		s/<code\( [^>]*\)\?>/\\e[00m/g; s/<\/code>/\\e[00;37m/g
+		s/<a[^§|t]*§\([^\"]*\)\"[^>]*>\([^£]*\)[^£]*£/\\e[01;31m\2\\e[00;37m \\e[01;34m[\\e[00;37m \\e[04m\1\\e[00;37m\\e[01;34m ]\\e[00;37m/g
+		s/<li\( [^>]*\)\?>/\n \\e[01;34m*\\e[00;37m /g
+		s/<!\[CDATA\[\|\]\]>//g
+		s/\|>\s*<//g
+		s/ *<[^>]\+> */ /g
+		s/[<>£§]//g')"    
+		#end
 }
 
 #FUNCTION HEADER

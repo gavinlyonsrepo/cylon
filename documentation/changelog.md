@@ -86,7 +86,8 @@
 	* Various code optimizations 
 	* added menu to update function
 	* added -p flag print the package lists 
-	* added -r flag print arch news reader last four items
+	* added -r flag print arch news rss reader 
+	* added a user input count to Arch news Rss reader for # of items to fetch
 	* added -z flag display the AUR package removal dialog menu function.
 	* added -l flag shortcut to open rmlint wrapper.
 	* change AUR package delete menu  to include all foreign packages
