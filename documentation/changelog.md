@@ -74,7 +74,7 @@
 	* new options added and others moved to System maintenance menu
 	* Added environmental variable user can now set output directory path.
 	
-* version 3.7-9 100517
+* version 3.7-9 050517
 	* corrected minor issue of no pause at end after system update run 
 	* Changed menu layout added system security option etc
 	* added extra drive option to config file now 4 syncs options.
@@ -82,5 +82,14 @@
 	* added -m flag to run a auto scan of most maintenance menu functions.
 	* xterm terminal now opens on cylon program output folder path.
 	
-	
-	
+* version 4.0-1 270517
+	* Various code optimizations 
+	* added menu to update function
+	* added -p flag print the package lists 
+	* added -r flag print arch news reader last four items
+	* added -z flag display the AUR package removal dialog menu function.
+	* added -l flag shortcut to open rmlint wrapper.
+	* change AUR package delete menu  to include all foreign packages
+	* added pacnew list to package list function
+	* added CYLONDEST check on cylon information page
+	* added more data to system information page
