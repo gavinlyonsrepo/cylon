@@ -1,22 +1,27 @@
-﻿Cylon OverView
+﻿Cylon Overview
 --------------------------------------------
-* Package name: cylon 
-* First commit to AUR:	080916 1.3-1
-* Last Update: 			260517 4.0-1
-* Version : 4.0-1 See changelog.md/release notes for version control
-* Author: Gavin Lyons
-* Contact: Upstream repo at github "gavinlyonsrepo" or glyons66@hotmail.com
-* Upstream repository: https://github.com/gavinlyonsrepo/cylon
+* Name: cylon 
 * Title : Arch Linux distribution maintenance program.
-* AUR(Arch user repository ) package name : cylon
-* AUR location: https://aur.archlinux.org/packages/cylon/
-* Description: A menu driven script which provides updates, maintenance, 
+* Description: A menu driven bash script which provides updates, maintenance, 
 backups and system checks for an Arch based linux distribution.
 This script provides numerous tools 
 to Arch Linux users. The program is menu-based and written in bash.
 The program is mainly console text based but also uses dialog GUI's 
 at a few points for directory and file selection.
-A detailed list of features is provided below in features section.
+A detailed list of the over 100 options and features is 
+provided below in features section.
+* Author: Gavin Lyons
+
+Installation
+-----------------------------------------------
+cylon is installed by PKGBUILD on a Arch based Linux system
+The PKGBUILD file is available in the AUR Arch user repository.
+Install it using an AUR helper program  or installations instructions 
+on Arch user repository page of Arch linux wiki
+* AUR package name : cylon
+* AUR maintainer : glyons
+* AUR location: https://aur.archlinux.org/packages/cylon/
+
 
 Options/Usage
 -------------------------------------------
@@ -41,17 +46,17 @@ Report provides Arch news rss reader & arch-audit vulnerable
 packages output CVE data(Common Vulnerabilities and Exposures) 
 & number and type of updates available for all repos.
 * -p --print print the package lists (REF1)
-* -r --rss print arch news reader last four items
+* -r --rss print arch news reader with option to fetch number of items.
 * -z --delete display the AUR package removal dialog menu function.
 * -l --lint shortcut to open rmlint wrapper.
 
-Files
+Files and setup
 -----------------------------------------
 Cylon is a bash script installed to /usr/bin by package 
 build.
 
 * /usr/bin/cylon (the main shell script)
-* /usr/lib/cylon/modules/*_module (modular functions called by script)
+* /usr/lib/cylon/modules/*_module (12 module files containing functions)
 * /usr/share/doc/cylon/Readme.md
 * /usr/share/doc/cylon/changelog.md
 * /usr/share/licenses/cylon/License.md
@@ -64,7 +69,7 @@ Readme.md is displayed to screen by a menu option on cylon info page.
 Type "man cylon" to display manpage. 
 The manpage is a truncated version of the readme file.
 
-Config file: You can create an optional config file, used mainly 
+Config file: The user can create an optional config file, used mainly 
 for custom system backup. If the user is not using the system backup 
 or ccrypt menu functions the user does not need config file.
 * NAME: cylonCfg.conf 
@@ -94,7 +99,7 @@ Just copy and paste this into file and change paths for your setup.
 * gdriveDest1="foo123456789"
 * gdriveDest2="foo125656789"
 * gdriveDest3="foo123666689"
-* gdriveDest4="foo123666ttt689"
+* gdriveDest4="foo123662222"
 * rsyncsource="$HOME/"
 * rsyncDest="/run/media/$USER/Linux_backup/foo"
 * myccfile="$HOME/TEST/test.cpt"
@@ -108,7 +113,8 @@ where X is output type i.e backup, update etc. The default path is:
 $HOME/Documents/Cylon.
 
 Optional Environment variable: $CYLONDEST
-How to set example: export CYLONDEST="$HOME/.cache/cylon"
+How to set example: 
+export CYLONDEST="$HOME/.cache/cylon"
 This optional Environment variable is provided for users
 who wish to use different destination path for program output folder
 if variable is not set or does not exist, cylon uses the default path.
@@ -133,7 +139,7 @@ The setting TargetDir in cower config file must not be used
 cylon will check this and display warning.
 
 gdrive readme for config https://github.com/prasmussen/gdrive
-gdrive option Syncs will Delete extraneous remote files as of V3.4-5
+gdrive option syncs will Delete extraneous remote files as of V3.4-5
 
 dialog should already be installed in an arch linux system installed by
 the arch linux installation guide on wiki. If you install Arch some other way
@@ -325,6 +331,8 @@ as default text editor for editing config files.
 
 * 3 day weather forecast by wttr.in
 
+Other
+-----------------------
 * (REF1): packages list referenced above
 	* All installed packages: pkglistQ.txt
 	* All native packages: pkglistQn.txt
@@ -339,25 +347,36 @@ as default text editor for editing config files.
 	* All installed packages sorted by install date: pkglistDate.txt
 	* All .pacnew and .pacsave files on system. pacNewSaveFiles.txt
 
+Future upgrades 
+-------------------
+*  A set of Debian and RPM compatible modules, so the program can 
+run on other types of distributions.
+* Expand the network, security and system PC information sections.
+* Add ability to maintain mirrorlist from cylon.
 
-Media
+See Also
 -----------
-There are screenshots of cylon in the upstream repo.
+There are screenshots in the screenshot folder and 
+various support documents in the documentation folder.
 
 Bug reports and communication
 -----------
-
 If you should find a bug or you have any other query, 
 please send a report.
-Suggestions for improvements and new features welcome
-Upstream repo: https://github.com/gavinlyonsrepo/cylon
-or contact glyons66@hotmail.com
+Pull requests, suggestions for improvements
+and new features welcome.
+* Contact: Upstream repo at github site below or glyons66@hotmail.com
+* Upstream repository: https://github.com/gavinlyonsrepo/cylon
+
+History
+------------------
+* First Commit to AUR: 1.3-1 08-09-16
+* Latest Version release : 4.0-1 26-05-17 
+* See changelog.md for version control history
 
 Copyright
 ---------
-
 Copyright (C) 2016 G Lyons 
-
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, see license.md for more details
