@@ -14,10 +14,10 @@ provided below in features section.
 
 Installation
 -----------------------------------------------
-cylon is installed by PKGBUILD on a Arch based Linux system
+cylon is installed by PKGBUILD on a Arch based Linux system.
 The PKGBUILD file is available in the AUR Arch user repository.
 Install it using an AUR helper program  or installations instructions 
-on Arch user repository page of Arch linux wiki
+on Arch user repository page of Arch linux wiki.
 * AUR package name : cylon
 * AUR maintainer : glyons
 * AUR location: https://aur.archlinux.org/packages/cylon/
@@ -52,7 +52,7 @@ packages output CVE data(Common Vulnerabilities and Exposures)
 
 Files and setup
 -----------------------------------------
-Cylon files  installed  by package 
+Cylon files installed by package 
 build are listed below.
 
 * /usr/bin/cylon (the main shell script)
@@ -60,14 +60,15 @@ build are listed below.
 * /usr/share/doc/cylon/README.md
 * /usr/share/doc/cylon/changelog.md
 * /usr/share/licenses/cylon/LICENSE.md
-* $HOME/.config/cylon/cylonCfg.conf (optional, user made, not installed)
-* /usr/share/pixmaps/cylonicon.png (icon)
+* /usr/share/pixmaps/cylonicon.png (cylon icon)
 * /usr/share/applications/cylon.desktop (desktop entry file)
 * /usr/share/man/man7/cylon.7 (manpage)
+* $HOME/.config/cylon/cylonCfg.conf (optional, user made, not installed)
 
 README.md is displayed to screen by a menu option on cylon info page.
 Type "man cylon" to display manpage. 
 The manpage is a truncated version of the readme file.
+More information on the modules files can be found in module_info.md.
 
 Config file: The user can create an optional config file, used mainly 
 for custom system backup. If the user is not using the system backup 
@@ -75,7 +76,7 @@ or ccrypt menu functions the user does not need config file.
 * NAME: cylonCfg.conf 
 * PATH: 
 ```sh
-$HOME/.config/cylon/cylonCfg.conf.
+$HOME/.config/cylon/cylonCfg.conf
 ```
 * SETTINGS:
 "DestinationX" is the path for backups.
@@ -93,17 +94,29 @@ cylonCfg.conf file setup example:
 Just copy and paste this into file and change paths for your setup.
 
 > Destination1="/run/media/$USER/Linux_backup"
+>
 > Destination2="/run/media/$USER/iomega_320"
+>
 > gdriveSource1="$HOME/Documents"
+>
 > gdriveSource2="$HOME/Pictures"
+>
 > gdriveSource3="$HOME/Videos"
+>
 > gdriveSource4="$HOME/.config"
+>
 > gdriveDest1="foo123456789"
+>
 > gdriveDest2="foo125656789"
+>
 > gdriveDest3="foo123666689"
+>
 > gdriveDest4="foo123662222"
+>
 > rsyncsource="$HOME/"
+>
 > rsyncDest="/run/media/$USER/Linux_backup/foo"
+>
 > myccfile="$HOME/TEST/test.cpt"
 
 Output folder and environment variables
@@ -114,7 +127,7 @@ Output folders are created with following time/date stamp syntax HHMM-DDMONYY-X
 where X is output type i.e backup, update etc. The default path is:
 
 ```sh
-$HOME/Documents/Cylon.
+$HOME/Documents/Cylon
 ```
 
 Optional Environment variable: $CYLONDEST
@@ -344,16 +357,25 @@ as default text editor for editing config files.
 
 (REF1): packages list referenced above
 >All installed packages: pkglistQ.txt
+>
 >All native packages: pkglistQn.txt
+>
 >All explicitly installed packages: pkglistQe.txt
+>
 >All explicitly installed native packages that are
 not direct or optional dependencies: pkglistQgent.txt
+>
 >All foreign installed packages: pkglistQm.txt
+>
 >All foreign explicitly installed packages: pkglistQme.txt
+>
 >All explicitly installed packages not in base nor base-devel with size"
 and description: pkglistNonBase.txt
+>
 >All installed packages sorted by size: pkglistSize.txt
+>
 >All installed packages sorted by install date: pkglistDate.txt
+>
 >All .pacnew and .pacsave files on system. pacNewSaveFiles.txt
 
 See Also
