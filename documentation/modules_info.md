@@ -14,10 +14,10 @@ These files contain the functions used by main script.
 | Pacaur_module | pacaurFunc |
 | System_back_module | SystemBackFunc |
 | Ccrypt_module | ccryptFunc |
-| Misc_module | exitHandlerFunc HelpFunc msgFunc readconfigFunc weatherFunc makeDir |
+| Misc_module | checkinputFunc DisplayFunc exitHandlerFunc HelpFunc msgFunc readconfigFunc weatherFunc makeDirFunc |
 | Pacman_module | pacmanFunc pkglistFunc updateFunc checkPacFunc rssFunc |
 | System_clean_module | SystemCleanFunc |
-| Cower_module | DelQmeFunc and cowerFunc |
-| Network_module | networkFunc and checknetFunc |
+| Cower_module | DelQmeFunc cowerFunc |
+| Network_module | networkFunc checknetFunc |
 | Rmlint_module | RmLintFunc |
 | System_maint_module | SystemMaintFunc SystemMaintAutoFunc configFileScanFunc |
