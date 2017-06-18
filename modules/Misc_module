@@ -172,17 +172,6 @@ msgFunc blue "Main Menu:"
 function HelpFunc 
 {
 clear
-if ! checkPacFunc cower
-	then
-	msgFunc anykey 
-	return
-fi
-if ! checkPacFunc arch-audit 
-	then
-	msgFunc anykey 
-	return
-fi
-clear
 msgFunc line
 	if [ "$1" = "HELP" ]
 		then
