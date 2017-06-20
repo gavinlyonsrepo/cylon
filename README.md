@@ -30,54 +30,50 @@ It can be also run in a terminal by typing cylon:
 
 cylon -[options]
 
-Options(standalone cannot be combined):
-* -h --help , Print cylon information and exit.
-* -s --system , Print system information and exit
-* -v --version  , Print version information and exit.
-* -c --config  , Opens the cylon config file for editing and exit
-* -d --default , Bleachbit system clean. 
-This will execute options selected in bleachbit GUI or bleachbit config file.
-* -b --bleachbit , Opens the bleachbit select menus 
-* -m --maint , Runs Automatic system maintenance scan
-This carries many of the menu functions in system maintenance menu in 
-a single sweep, It will not change system just create report files.
-* -u --update , Runs a full update report with various execution options.
-Report provides Arch news rss reader & arch-audit vulnerable 
-packages output CVE data(Common Vulnerabilities and Exposures) 
-& number and type of updates available for all repos.
-* -p --print print the package lists (REF1)
-* -r --rss print arch news reader with option to fetch number of items.
-* -z --delete display the AUR package removal dialog menu function.
-* -l --lint shortcut to open rmlint wrapper.
+Options list (standalone cannot be combined):
+
+| Option | Description |
+| ------ | ------ |
+| -h --help | Print cylon information and exit |
+| -s --system | Print system information and exit |
+| -v --version  | Print version information and exit |
+| -c --config  | Opens the cylon config file for editing and exit |
+| -d --default | Bleachbit system clean , this will execute options selected in bleachbit GUI or bleachbit config file |
+| -b --bleachbit | Opens the bleachbit select menus |
+| -m --maint | Runs Automatic system maintenance scan This carries many of the menu functions in system maintenance menu in a single sweep, It will not change system just create report files|
+| -u --update | Runs a full update report with various execution options. Report provides Arch news rss reader & arch-audit vulnerable packages output CVE data(Common Vulnerabilities and Exposures) & number and type of updates available for all repos |
+| -p --print | print the package lists (REF1) |
+| -r --rss | print arch news reader with option to fetch number of items |
+| -z --delete | display the AUR package removal dialog menu function |
+| -l --lint | shortcut to open rmlint wrapper menu |
 
 Files and setup
 -----------------------------------------
 Cylon files installed by package 
-build are listed below.
+build are listed below:
 
-* /usr/bin/cylon (the main shell script)
-* /usr/lib/cylon/modules/*_module (12 module files containing functions)
-* /usr/share/doc/cylon/README.md
-* /usr/share/doc/cylon/changelog.md
-* /usr/share/licenses/cylon/LICENSE.md
-* /usr/share/pixmaps/cylonicon.png (cylon icon)
-* /usr/share/applications/cylon.desktop (desktop entry file)
-* /usr/share/man/man7/cylon.7 (manpage)
-* $HOME/.config/cylon/cylonCfg.conf (optional, user made, not installed)
+| File Path | Description |
+| ------ | ------ |
+| /usr/bin/cylon | The main shell script |
+| /usr/lib/cylon/modules/*_module |12 library files containing functions |
+| /usr/share/doc/cylon/README.md |Help file |
+| /usr/share/doc/cylon/changelog.md | History file |
+| /usr/share/licenses/cylon/LICENSE.md | copyright file |
+| /usr/share/pixmaps/cylonicon.png | cylon icon |
+| /usr/share/applications/cylon.desktop | desktop entry file |
+| /usr/share/man/man7/cylon.7 | manpage |
+| $HOME/.config/cylon/cylonCfg.conf | config file, optional, user made, not installed |
 
 README.md is displayed to screen by a menu option on cylon info page.
 Type "man cylon" to display manpage. 
 The manpage is a truncated version of the readme file.
-More information on the modules files can be found in module_info.md.
+More information on the modules files can be found in modules_info.md.
 
 Config file: The user can create an optional config file, used mainly 
 for custom system backup. If the user is not using the system backup 
 or ccrypt menu functions the user does not need config file.
 * NAME: cylonCfg.conf 
-* PATH: 
-```sh
-$HOME/.config/cylon/cylonCfg.conf
-```
+* PATH: ``` $HOME/.config/cylon/cylonCfg.conf ```
 * SETTINGS:
 "DestinationX" is the path for backups.
 "gdrivedestX" is remote google drive directory file ID
@@ -125,17 +121,14 @@ Most system output (logfiles, backups, downloads and updates etc)
 is placed at below path, unless otherwise specified on screen.
 Output folders are created with following time/date stamp syntax HHMM-DDMONYY-X 
 where X is output type i.e backup, update etc. The default path is:
-
 ```sh
 $HOME/Documents/Cylon
 ```
-
 Optional Environment variable: $CYLONDEST
 How to set example: 
 ```sh
 export CYLONDEST="$HOME/.cache/cylon"
 ```
-
 This optional Environment variable is provided for users
 who wish to use different destination path for program output folder
 if variable is not set or does not exist, cylon uses the default path.
