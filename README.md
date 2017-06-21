@@ -1,4 +1,5 @@
-﻿Overview
+﻿
+Overview
 --------------------------------------------
 * Name: cylon 
 * Title : Arch Linux distribution maintenance program.
@@ -12,6 +13,22 @@ A detailed list of the over 100 options and features is
 provided below in features section.
 * Author: Gavin Lyons
 
+Table of contents
+---------------------------
+
+  * [Overview](#overview)
+  * [Table of contents](#table-of-contents)
+  * [Installation](#installation)
+  * [Usage](#usage)
+  * [Files and setup](#files-and-setup)
+  * [Output and environment variable](#output-and-environment-variable)
+  * [Dependencies](#dependencies)
+  * [Features](#features)
+  * [See Also](#See-also)
+  * [Communication](#communication)
+  * [History](#history)
+  * [Copyright](#copyright)
+
 Installation
 -----------------------------------------------
 cylon is installed by PKGBUILD on a Arch based Linux system.
@@ -23,7 +40,7 @@ on Arch user repository page of Arch linux wiki.
 * AUR location: https://aur.archlinux.org/packages/cylon/
 
 
-Options/Usage
+Usage
 -------------------------------------------
 The program installs an icon in system application menus under system.
 It can be also run in a terminal by typing cylon: 
@@ -31,7 +48,6 @@ It can be also run in a terminal by typing cylon:
 cylon -[options]
 
 Options list (standalone cannot be combined):
-
 | Option | Description |
 | ------ | ------ |
 | -h --help | Print cylon information and exit |
@@ -51,7 +67,6 @@ Files and setup
 -----------------------------------------
 Cylon files installed by package 
 build are listed below:
-
 | File Path | Description |
 | ------ | ------ |
 | /usr/bin/cylon | The main shell script |
@@ -67,7 +82,7 @@ build are listed below:
 README.md is displayed to screen by a menu option on cylon info page.
 Type "man cylon" to display manpage. 
 The manpage is a truncated version of the readme file.
-More information on the modules files can be found in modules_info.md.
+More information on the modules files can be found in modules_info.md in docs.
 
 Config file: The user can create an optional config file, used mainly 
 for custom system backup. If the user is not using the system backup 
@@ -90,32 +105,20 @@ cylonCfg.conf file setup example:
 Just copy and paste this into file and change paths for your setup.
 
 > Destination1="/run/media/$USER/Linux_backup"
->
 > Destination2="/run/media/$USER/iomega_320"
->
 > gdriveSource1="$HOME/Documents"
->
 > gdriveSource2="$HOME/Pictures"
->
 > gdriveSource3="$HOME/Videos"
->
 > gdriveSource4="$HOME/.config"
->
 > gdriveDest1="foo123456789"
->
 > gdriveDest2="foo125656789"
->
 > gdriveDest3="foo123666689"
->
 > gdriveDest4="foo123662222"
->
 > rsyncsource="$HOME/"
->
 > rsyncDest="/run/media/$USER/Linux_backup/foo"
->
 > myccfile="$HOME/TEST/test.cpt"
 
-Output folder and environment variables
+Output and environment variable
 -------------------------------------
 Most system output (logfiles, backups, downloads and updates etc) 
 is placed at below path, unless otherwise specified on screen.
@@ -159,7 +162,6 @@ dialog should already be installed in an arch linux system installed by
 the arch linux installation guide on wiki. If you install Arch some other way
 It may not be there, so included as depends. expac is used a lot and will 
 be already installed on many systems.
-
 | Dependencies| Usage |
 | ------ | ------ |
 | dialog |  used to make GUIs menus (Non-optional) |
@@ -183,11 +185,11 @@ be already installed on many systems.
 | gdrive(AUR) | to sync to google drive |
 | lostfiles(AUR) | to scan for lostfiles |
 
-Features and Functions 
+Features
 ----------------------
 
 The program functions are divided into 6 main sections:
-update, maintenance, backup, security, network and misc.
+update, maintenance, backup, security, network and miscellaneous.
 
 The update section is the core of the program and provides a wrapper for 
 pacman, pacaur and cower. It provides an extension to cower 
@@ -206,6 +208,7 @@ Other misc functions include an option to edit config file, information menus fo
 system and cylon. Weather forecast and terminal launcher. NANO is used 
 as default text editor for editing config files.
 
+**1: System update section**
 * pacman options
 	* Check for updates (no download)
 	* pacman -Syu Upgrade packages
@@ -256,6 +259,7 @@ as default text editor for editing config files.
 * Full System update 
 	* Runs the same report that is called by cylon -u , see options section
 	
+**2: System maintenance section**
 * System maintenance menu
 	* All Failed Systemd Services and system status
 	* All Failed Active Systemd Services
@@ -294,6 +298,7 @@ as default text editor for editing config files.
 		* option to execute shell script with results
 	* Option to launch htop - interactive process viewer
 	 
+**3: System backup section**
 * System backup
 	* Optional destination path as defined in script or custom path
 	* Make copy of first 512 bytes MBR with dd
@@ -313,6 +318,7 @@ as default text editor for editing config files.
 		* List files
 		* Get file info
 		
+**4: System security section**
 * System security menu
 	* Lynis system audit (summary of logfiles feature)
 	* ClamAv anti-malware scan (Check for updates and logging feature)
@@ -326,6 +332,7 @@ as default text editor for editing config files.
 		* View encrypted file	
 	* password generator
 	
+**5: Network section**
 * Network options
 	* launch wavemon network monitor
 	* Run speedtest-cli to measure bandwidth 
@@ -333,7 +340,8 @@ as default text editor for editing config files.
 	* various misc network commands
 	* firewall status and details check
 	
-* Option to open xterm terminal in new window
+**6: Miscellaneous section**
+* Option to open xterm terminal at output folder path in new window
 
 * Config file view/edit option.
 
@@ -348,35 +356,27 @@ as default text editor for editing config files.
 * 3 day weather forecast by wttr.in
 
 
-(REF1): packages list referenced above
->All installed packages: pkglistQ.txt
->
->All native packages: pkglistQn.txt
->
->All explicitly installed packages: pkglistQe.txt
->
->All explicitly installed native packages that are
-not direct or optional dependencies: pkglistQgent.txt
->
->All foreign installed packages: pkglistQm.txt
->
->All foreign explicitly installed packages: pkglistQme.txt
->
->All explicitly installed packages not in base nor base-devel with size"
-and description: pkglistNonBase.txt
->
->All installed packages sorted by size: pkglistSize.txt
->
->All installed packages sorted by install date: pkglistDate.txt
->
->All .pacnew and .pacsave files on system. pacNewSaveFiles.txt
+(REF1): packages files list referenced above at marker.
+
+| Contents | Filename |
+| -------- | -------- |
+| All installed packages | pkglistQ.txt |
+| All native packages | pkglistQn.txt |
+| All explicitly installed packages | pkglistQe.txt |
+| All explicitly installed native packages that are not direct or optional dependencies | pkglistQgent.txt |
+| All foreign installed packages | pkglistQm.txt |
+| All foreign explicitly installed packages | pkglistQme.txt |
+| All explicitly installed packages not in base nor base-devel with size and description | pkglistNonBase.txt |
+| All installed packages sorted by size | pkglistSize.txt |
+| All installed packages sorted by install date | pkglistDate.txt |
+| All .pacnew and .pacsave files on system | pacNewSaveFiles.txt |
 
 See Also
 -----------
-There are screenshots in the screenshot folder and 
-various support documents in the documentation folder.
+There are screenshots in the repository screenshot folder and 
+various support documents in the repository documentation folder.
 
-Bug reports and communication
+Communication
 -----------
 If you should find a bug or you have any other query, 
 please send a report.
