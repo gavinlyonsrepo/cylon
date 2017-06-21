@@ -48,6 +48,7 @@ It can be also run in a terminal by typing cylon:
 cylon -[options]
 
 Options list (standalone cannot be combined):
+
 | Option | Description |
 | ------ | ------ |
 | -h --help | Print cylon information and exit |
@@ -67,6 +68,7 @@ Files and setup
 -----------------------------------------
 Cylon files installed by package 
 build are listed below:
+
 | File Path | Description |
 | ------ | ------ |
 | /usr/bin/cylon | The main shell script |
@@ -162,6 +164,7 @@ dialog should already be installed in an arch linux system installed by
 the arch linux installation guide on wiki. If you install Arch some other way
 It may not be there, so included as depends. expac is used a lot and will 
 be already installed on many systems.
+
 | Dependencies| Usage |
 | ------ | ------ |
 | dialog |  used to make GUIs menus (Non-optional) |
