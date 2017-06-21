@@ -24,7 +24,7 @@ Table of contents
   * [Output and environment variable](#output-and-environment-variable)
   * [Dependencies](#dependencies)
   * [Features](#features)
-  * [See Also](#See-also)
+  * [See Also](#see-also)
   * [Communication](#communication)
   * [History](#history)
   * [Copyright](#copyright)
@@ -107,17 +107,29 @@ cylonCfg.conf file setup example:
 Just copy and paste this into file and change paths for your setup.
 
 > Destination1="/run/media/$USER/Linux_backup"
+>
 > Destination2="/run/media/$USER/iomega_320"
+>
 > gdriveSource1="$HOME/Documents"
+>
 > gdriveSource2="$HOME/Pictures"
+>
 > gdriveSource3="$HOME/Videos"
+>
 > gdriveSource4="$HOME/.config"
+>
 > gdriveDest1="foo123456789"
+>
 > gdriveDest2="foo125656789"
+>
 > gdriveDest3="foo123666689"
+>
 > gdriveDest4="foo123662222"
+>
 > rsyncsource="$HOME/"
+>
 > rsyncDest="/run/media/$USER/Linux_backup/foo"
+>
 > myccfile="$HOME/TEST/test.cpt"
 
 Output and environment variable
@@ -150,16 +162,13 @@ also "n/a" is displayed besides uninstalled options in menus.
 
 gnu-netcat and openbsd-netcat peform same function, 
 only 1 can be or needs to be installed, both included because of conflicts.
-
 cower and pacaur are both AUR helpers you can install 
 just cower or both depending on preference. pacaur wraps cower 
 and needs it installed. 
 The setting TargetDir in cower config file must not be used
 cylon will check this and display warning.
-
 gdrive readme for config https://github.com/prasmussen/gdrive
 gdrive option syncs will Delete extraneous remote files as of V3.4-5
-
 dialog should already be installed in an arch linux system installed by
 the arch linux installation guide on wiki. If you install Arch some other way
 It may not be there, so included as depends. expac is used a lot and will 
@@ -193,13 +202,13 @@ Features
 
 The program functions are divided into 6 main sections:
 update, maintenance, backup, security, network and miscellaneous.
-
 The update section is the core of the program and provides a wrapper for 
 pacman, pacaur and cower. It provides an extension to cower 
 to allow it to install and update packages. It also provides 
 a full system update report function and various other options. 
 The setting TargetDir in cower config file must not be used
 cylon will check this and display warning.
+
 The maintenance section provides a variety of scans and checks, it also 
 a provides command line wrapper for rmlint and bleach-bit. 
 The backup section provides a wrapper for gdrive program. as well as ability
