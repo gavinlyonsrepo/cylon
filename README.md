@@ -253,7 +253,6 @@ system and cylon. Weather forecast and terminal launcher.
 	* Edit pacman config file
 	* View pacman log
 	* optimise pacman 
-	* 
 	
 * AUR cower options 
 	* Check for updates ( NO downloads)
