@@ -94,7 +94,7 @@ function SystemBackFunc
 			makeDirFunc "-BACKUP" "$D3Var"
 			#begin the backup get user choice from user to what to back up
 			local choiceBu2Var=""
-			local optionsBu2Arr=("Copy of 1st 512 bytes MBR" "Copy of etc dir" \
+			local optionsBu2Arr=("Copy of 1st 512 bytes for MBR system " "Copy of etc dir" \
 "Copy of home dir" "Copy of package lists" "Make tarball of all" "ALL" "Return")
 			msgFunc blue "Pick a Backup option:-"
 			select  choiceBu2Var in "${optionsBu2Arr[@]}"

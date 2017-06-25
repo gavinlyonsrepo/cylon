@@ -85,8 +85,8 @@ function ccryptFunc
 				ccrypt -c "$myccfile"
 			;;
 			"${optionsccArr[3]}") #Edit a Decrypted file
-				msgFunc green "Edit a Decrypted file with nano text editor, nano"
-				nano "$myccfile"
+				msgFunc green "Edit a Decrypted file with text editor."
+				$EDITOR "$myccfile"
 			;;
 			"${optionsccArr[4]}") #Change the key of encrypted data
 				msgFunc green "Change the key of encrypted file, ccrypt -x"

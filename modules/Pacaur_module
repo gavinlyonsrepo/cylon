@@ -107,11 +107,11 @@ function pacaurFunc
 							then #user file
 								if [ -f  "$XDG_CONFIG_HOME/pacaur/config" ] 
 								then
-									nano "$XDG_CONFIG_HOME/pacaur/config" 
+									$EDITOR "$XDG_CONFIG_HOME/pacaur/config" 
 								else 
 									if  [ -f "$HOME/.config/pacaur/config" ] 
 									then
-									 nano "$HOME/.config/pacaur/config"   
+									 $EDITOR "$HOME/.config/pacaur/config"   
 									 else
 									 msgFunc red "User config File does not exist"
 									fi
@@ -119,11 +119,11 @@ function pacaurFunc
 							else #system file
 								if [ -f "$XDG_CONFIG_DIRS/pacaur/config" ]
 								then
-									sudo nano "$XDG_CONFIG_DIRS/pacaur/config"
+									sudo $EDITOR "$XDG_CONFIG_DIRS/pacaur/config"
 								else 
 									if [ -f "/etc/xdg/pacaur/config" ] 
 									then
-									sudo nano "/etc/xdg/pacaur/config" 
+									sudo $EDITOR "/etc/xdg/pacaur/config" 
 									else
 									msgFunc red "System config File does not exist"
 									fi

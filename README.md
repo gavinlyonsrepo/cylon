@@ -21,7 +21,7 @@ Table of contents
   * [Installation](#installation)
   * [Usage](#usage)
   * [Files and setup](#files-and-setup)
-  * [Output and environment variable](#output-and-environment-variable)
+  * [Output and environment variables](#output-and-environment-variables)
   * [Dependencies](#dependencies)
   * [Features](#features)
   * [See Also](#see-also)
@@ -49,8 +49,8 @@ cylon -[options]
 
 Options list (standalone cannot be combined):
 
-| Option | Description |
-| ------ | ------ |
+| Option          | Description |
+| --------------- | --------------- |
 | -h --help | Print cylon information and exit |
 | -s --system | Print system information and exit |
 | -v --version  | Print version information and exit |
@@ -73,9 +73,9 @@ build are listed below:
 | ------ | ------ |
 | /usr/bin/cylon | The main shell script |
 | /usr/lib/cylon/modules/*_module |12 library files containing functions |
-| /usr/share/doc/cylon/README.md |Help file |
+| /usr/share/doc/cylon/readme.md |Help file |
 | /usr/share/doc/cylon/changelog.md | History file |
-| /usr/share/licenses/cylon/LICENSE.md | copyright file |
+| /usr/share/licenses/cylon/license.md | copyright file |
 | /usr/share/pixmaps/cylonicon.png | cylon icon |
 | /usr/share/applications/cylon.desktop | desktop entry file |
 | /usr/share/man/man7/cylon.7 | manpage |
@@ -84,11 +84,13 @@ build are listed below:
 README.md is displayed to screen by a menu option on cylon info page.
 Type "man cylon" to display manpage. 
 The manpage is a truncated version of the readme file.
-More information on the modules files can be found in modules_info.md in docs.
+More information on the modules files can be found in modules_info.md
+in documentation folder.
 
 Config file: The user can create an optional config file, used mainly 
-for custom system backup. If the user is not using the system backup 
-or ccrypt menu functions the user does not need config file.
+for custom system backup. If the user is not using the system backup option 
+or ccrypt menu function or custom clamav scan option,
+the user does not need config file.
 * NAME: cylonCfg.conf 
 * PATH: ``` $HOME/.config/cylon/cylonCfg.conf ```
 * SETTINGS:
@@ -131,8 +133,10 @@ Just copy and paste this into file and change paths for your setup.
 > rsyncDest="/run/media/$USER/Linux_backup/foo"
 >
 > myccfile="$HOME/TEST/test.cpt"
+>
+> clamav_customdir="$HOME/Downloads/foo"
 
-Output and environment variable
+Output and environment variables
 -------------------------------------
 Most system output (logfiles, backups, downloads and updates etc) 
 is placed at below path, unless otherwise specified on screen.
@@ -149,6 +153,12 @@ export CYLONDEST="$HOME/.cache/cylon"
 This optional Environment variable is provided for users
 who wish to use different destination path for program output folder
 if variable is not set or does not exist, cylon uses the default path.
+
+```sh
+$EDITOR
+```
+"nano" is used as default text editor for editing config files 
+IF $EDITOR user environment variable is not set. 
 
 Dependencies
 -------------------------------------
@@ -167,8 +177,8 @@ just cower or both depending on preference. pacaur wraps cower
 and needs it installed. 
 The setting TargetDir in cower config file must not be used
 cylon will check this and display warning.
-gdrive readme for config https://github.com/prasmussen/gdrive
-gdrive option syncs will Delete extraneous remote files as of V3.4-5
+gdrive readme for config https://github.com/prasmussen/gdrive ,
+gdrive option syncs will Delete extraneous remote files as of V3.4-5.
 dialog should already be installed in an arch linux system installed by
 the arch linux installation guide on wiki. If you install Arch some other way
 It may not be there, so included as depends. expac is used a lot and will 
@@ -187,8 +197,8 @@ be already installed on many systems.
 | rmlint | to check for lint and duplicates | 
 | rsync | for rsync backup function |
 | lynis | system audit |
+| htop  | interactive process viewer |
 | inxi  | CLI system information script |
-| htop | command line system information script |
 | wavemon  | wireless network monitor |
 | speedtest-cli  | testing internet bandwidth |
 | Arch-audit | Uses data collected by the Arch CVE team |
@@ -217,30 +227,33 @@ The security section provides a wrapper for ccrypt and a extended launcher
 for various security tools as well as a password generator.
 The network section provides various tools to check network and configuration.
 Other misc functions include an option to edit config file, information menus for
-system and cylon. Weather forecast and terminal launcher. NANO is used 
-as default text editor for editing config files.
+system and cylon. Weather forecast and terminal launcher. 
 
 **1: System update section**
 * pacman options
 	* Check for updates (no download)
-	* pacman -Syu Upgrade packages
-	* pacman -Si Display extensive information 
-	* pacman -S Install Package
-	* pacman -Ss Search for packages in the database
-	* pacman -Rs Remove Package
-	* pacman -Qs Search for already installed packages
-	* pacman -Qi  Display extensive information for 
-	* pacman -Ql  List all files owned by a given package
-	* pacman -Qkk Verify packages(option for one or all)
-	* paccache -r Prune older packages from cache
+	* Upgrade packages
+	* Display extensive information for package in database
+	* Install Package
+	* Search for packages in the database
+	* Remove Package
+	* Search for already installed packages
+	* Display extensive information for installed package 
+	* List all files owned by a given package
+	* Verify packages(option for one or all)
+	* Prune older packages from cache with paccache 
+	* Prune all uninstalled packages from cache with paccache
 	* Write installed package lists to files (REF1)
 	* Remove all packages not required as dependencies 
 	* Back-up the local pacman database  
 	* Arch news rss reader 
 	* arch-audit gather CVE data
-	* pactree List a dependency tree of a package
-	* pactree -r Show packages that depend on a package
+	* List a dependency tree of a package with pactree
+	* Show packages that depend on a package with pactree 
 	* Edit pacman config file
+	* View pacman log
+	* optimise pacman 
+	* 
 	
 * AUR cower options 
 	* Check for updates ( NO downloads)
@@ -269,7 +282,7 @@ as default text editor for editing config files.
 	* Remove foreign packages  menu
 	
 * Full System update 
-	* Runs the same report that is called by cylon -u , see options section
+	* Runs the same report that is called by cylon -u , see usage section
 	
 **2: System maintenance section**
 * System maintenance menu
@@ -283,6 +296,8 @@ as default text editor for editing config files.
 	* Lostfiles scan, relaxed and strict
 	* Diskspace usage 
 	* Old configuration files scan, output to files
+	* Find system inode usage
+	* Find largest files
 	* Print sensors information
 	* Vacuum journal files
 	* Delete core dumps 
@@ -333,7 +348,10 @@ as default text editor for editing config files.
 **4: System security section**
 * System security menu
 	* Lynis system audit (summary of logfiles feature)
-	* ClamAv anti-malware scan (Check for updates and logging feature)
+	* ClamAv anti-malware scan 
+		*malware testfile fetch and scan function
+		*Check for updates and logging feature
+		*Various options for scan location and type.
 	* RootKit hunter scan (check for updates feature)
 	* ccrypt - encrypt and decrypt files:
 		* config file path option for ease of use.
@@ -343,13 +361,16 @@ as default text editor for editing config files.
 		* Change the key of encrypted file
 		* View encrypted file	
 	* password generator
+	* Audit SUID/SGID Files in system 
+	* check user password expiry information
+
 	
 **5: Network section**
 * Network options
 	* launch wavemon network monitor
 	* Run speedtest-cli to measure bandwidth 
 	with options for server list and file save
-	* various misc network commands
+	* various miscellaneous networking commands
 	* firewall status and details check
 	
 **6: Miscellaneous section**
@@ -357,7 +378,7 @@ as default text editor for editing config files.
 
 * Config file view/edit option.
 
-* System and package information displays
+* Computer information display
 	* Displays detailed information on system and package setup
 	* Function also run by -s standalone option.
 
@@ -401,11 +422,12 @@ History
 ------------------
 * First Commit to AUR: v1.3-1 08-09-16
 * Latest Version release : v4.0-1 26-05-17 
-* See changelog.md for version control history
+* See changelog.md in documentation section for version control history
 
 Copyright
 ---------
-Copyright (C) 2016 G Lyons 
+Copyright (C) 2016 Gavin Lyons 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public license published by
-the Free Software Foundation, see LICENSE.md for more details
+the Free Software Foundation, see LICENSE.md in documentation section 
+for more details

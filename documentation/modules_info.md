@@ -5,11 +5,12 @@ installed to
 ```sh
 /usr/lib/cylon/modules/
 ```
-These files contain the functions used by main script.
+These files contain the functions used by script.
+Function headers in the files contain more information.
 
 | filename| functions |
 | ------ | ------ |
-| AntiMalware_module | SystemSecFunc AntiMalwareFunc |
+| AntiMalware_module | SystemSecFunc AntiMalwareFunc intchkFunc |
 | Gdrive_module | gdriveFunc |
 | Pacaur_module | pacaurFunc |
 | System_back_module | SystemBackFunc |

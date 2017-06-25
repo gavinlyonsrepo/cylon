@@ -65,7 +65,7 @@ function msgFunc
 # DESCRIPTION: error handler deal with user 
 #exists and path not found errors and internet failure 
 # INPUTS:  $2 text of internet site down or filename
-# PROCESS : exitout DEST 1-6 netdown or file error
+# PROCESS : exitout DEST 1-6 netdown or file error or non-integer user input.
 function exitHandlerFunc
 {
 	#double square brackets without use of quotes on matching pattern 
@@ -79,12 +79,13 @@ function exitHandlerFunc
 			DEST1) msgFunc norm "$Destination1" ;;
 			DEST2) msgFunc norm "$Destination2" ;;
 			DEST3) msgFunc norm "$DEST3" ;;
-			DEST4) msgFunc red "Path not found to directory"  ;;
+			DEST4) msgFunc red "Path not found to directory" ;;
 			DEST5) msgFunc norm "$DEST5" ;;
 			DEST6) msgFunc norm "$DEST6" ;;
 			netdown) msgFunc red "Internet connectivity test to $2 failed" ;;
 			fileerror) msgFunc red "File error $2"  ;;
-			*) msgFunc yellow "unknown input to error handler";;
+			nonint) msgFunc red "Integer expected, user entered non-integer, program exiting";;
+			*) msgFunc yellow "Unknown input to error handler";;
 	 esac
 	msgFunc yellow "Goodbye $USER!"
 	msgFunc anykey "and exit."
@@ -172,9 +173,10 @@ msgFunc blue "Main Menu:"
 function HelpFunc 
 {
 clear
-msgFunc line
+
 	if [ "$1" = "HELP" ]
 		then
+		msgFunc line
 		msgFunc green "Cylon information and readme.md file  display." 
 		msgFunc line 
 		#Program details print
@@ -257,28 +259,50 @@ msgFunc line
 		clear
 		return
 	fi
-
-msgFunc green "System Information display"
+msgFunc line
+msgFunc green "System Information display Page 1"
 msgFunc line
 
-msgFunc green "Computer Information"
 msgFunc norm "Uptime = $(uptime -p)"
 msgFunc norm "Kernal = $(uname -svr)"
 msgFunc norm "Operating System = = $(uname -mo)"
 msgFunc norm "Network node name = $(uname -n)"
 msgFunc norm "User name = $USER"
-msgFunc norm "Screen Resolution = $(xrandr |grep "\*" | cut -c 1-15)"
-msgFunc norm "CPU = $(grep name /proc/cpuinfo  | tail -1)"
+#msgFunc norm "Screen Resolution = $(xrandr |grep "\*" | cut -c 1-15)"
+msgFunc norm "CPU = $(grep name /proc/cpuinfo | tail -1| cut -d ":" -f 2)"
 mem=($(awk -F ':| kB' '/MemTotal|MemAvail/ {printf $2}' /proc/meminfo))
 memused="$((mem[0] - mem[1]))"
 memused="$((memused / 1024))"
 memtotal="$((mem[0] / 1024))"
 memory="${memused}MB / ${memtotal}MB"
 msgFunc norm "RAM used/total = ($memory)"
+msgFunc norm " "
+# Get and display cachedir size read cachedir variable from file
+local CacheDir=""
+source /etc/pacman.conf 2>/dev/null
+if [ -z "${CacheDir}" ]
+then
+	#if not set , set to expected default
+	CacheDir=/var/cache/pacman/pkg/
+fi
+msgFunc norm "Pacman cache = $CacheDir"
+msgFunc norm "Space used by pkg downloaded in cache: $(du -sh "$CacheDir" 2>/dev/null|awk '{print $1}'
+)"
+msgFunc norm "Hold packages: $(grep "HoldPkg" /etc/pacman.conf | cut -d "=" -f 2 )"
+msgFunc norm "Number of orphans: $(pacman -Qtdq | wc -l)"
+msgFunc norm " "
+
+#msgFunc norm "Number of configured repositories:  "
+msgFunc norm "Packages by repositories"
+msgFunc norm "Core: $(paclist core | wc -l)"
+msgFunc norm "Extra: $(paclist extra | wc -l)"
+msgFunc norm "Community: $(paclist community | wc -l)"
+msgFunc norm "Multilib: $(paclist multilib | wc -l)"
+msgFunc norm "Other: $(pacman -Qm | wc -l)"
 msgFunc anykey
 clear
 
-msgFunc green "Installed Packages Information"
+msgFunc green "System information page 2"
 msgFunc norm "All installed packages: $(pacman -Q | wc -l)" 
 msgFunc norm "All native packages: $(pacman -Qn | wc -l)" 
 msgFunc norm "All explicitly installed packages: $(pacman -Qe | wc -l)" 
@@ -292,7 +316,7 @@ msgFunc norm "All .pacnew and .pacsave files: \
 $(find / -regextype posix-extended -regex ".+\.pac(new|save)" 2> /dev/null |wc -l)"
 msgFunc norm "5 Largest package :"
 expac -H M '%m\t%n' | sort -hr |head -5
-msgFunc norm "5 Newest package  :"
+msgFunc norm "5 Newest updated package :"
 expac --timefmt='%Y-%m-%d %T' '%l\t%n' | sort -hr |head -5 
 msgFunc anykey
 clear
@@ -322,7 +346,7 @@ function readconfigFunc
 				read -r choiceCCVar
 				if [ "$choiceCCVar" = "e" ]
 					then
-						nano  "$DEST5/cylonCfg.conf" || exitHandlerFunc fileerror "$DEST5/cylonCfg.conf"
+						$EDITOR "$DEST5/cylonCfg.conf" || exitHandlerFunc fileerror "$DEST5/cylonCfg.conf"
 						clear
 						msgFunc green "Exiting config file edit option"
 						msgFunc anykey "and exit cylon."
@@ -364,6 +388,8 @@ function readconfigFunc
 		rsyncDest="/run/media/$USER/Linux_backup/foo"
 		#ccyptfile
 		myccfile="/foo/foo/XXXX"
+		#clamavscan
+		clamav_customdir="$HOME/foo/foo"
 		msgFunc green "Done!"
 		return
 	fi
@@ -406,6 +432,10 @@ case "$1" in
 		msgFunc green "Done!"
 		;;
 	-v|--version)
+		msgFunc blue "_______ __   __         _____  __   _"
+		msgFunc blue "|         \_/   |      |     | | \  |"
+		msgFunc blue "|_____     |    |_____ |_____| |  \_|"
+		msgFunc norm " "
 		msgFunc norm "$(pacman -Qs cylon)" 
 		;;
 	-s|--system)
@@ -415,7 +445,9 @@ case "$1" in
 		HelpFunc HELP
 		;;
 	-b|--bleachbit)
-		SystemCleanFunc
+		while true; do
+			SystemCleanFunc
+		done
 	;;
 	-m|--maint)
 		SystemMaintAutoFunc

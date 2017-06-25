@@ -1,24 +1,19 @@
 #!/bin/bash
 #=========================HEADER==========================================
-
 #name:cylon
 #Title : Arch Linux distro maintenance bash script. 
 #Description: Updates, maintenance, backups and system checks in 
 #single menu driven optional script Command line program for Arch linx users. 
 #see readme.md(access thru cylon info page) or manpage "man cylon" for info.
-#First commit to AUR  =080916
-#Last update to github repo =200517
-#Last Version release =050517 
-#Version 4.0-1 See changelog.md at repo for version control
+#Version 4.1-2 See changelog.md at repo for version control
 #License: see license.md 
 #Written by Gavin lyons 
 #Software repo: https://github.com/gavinlyonsrepo/cylon
 #AUR package name : cylon , at aur.archlinux.org by glyons
 
 #=======================GLOBAL VARIABLES SETUP=============================
-
 #Syntax: Global: UPPERCASE  , local: XXXVar. local Array: XXXArr
-#Environmental variables : CYLONDEST 
+#Custom Environmental variable : CYLONDEST 
 #Variables also read from config file
 
 #colours for printf
@@ -32,15 +27,19 @@ NORMAL=$(printf "\033[0m")
 #prompt for select menus
 PS3="${BLUE}By your command:${NORMAL}"
 
-#Setup the Program Paths aka DESTs
-#1 and 2 are backups path from config file
-#3 = program output, 4 = general use
-#5 = config file,  6 = Documentation
-#7 = module library location
+#check if $EDITOR Environmental variable is set if not set it to nano
+#used for modifying config files
+if [ -z "${EDITOR}" ]
+then 
+	export EDITOR="nano"
+fi
 
-#set the path for the program output path DEST3
-#if environmental variable CYLONDEST exists set it to DEST3
-#and make the path for dest3
+#Setup the Program Paths aka DESTs
+#1 and 2 are backups path from config file 3 = program output, 4 = general use
+#5 = config file,  6 = Documentation 7 = module library location
+
+#if environmental variable CYLONDEST exists set it to program output path DEST3
+#and make the path for DEST3
 if [ -z "${CYLONDEST}" ]
 then 
 	#default path for program output
@@ -50,43 +49,49 @@ else
 fi
 mkdir -p "$DEST3"
 #set the path for optional config file DEST5 and
-#make the path for the optional config file ,left to user to create it
 DEST5="$HOME/.config/cylon"
 mkdir -p "$DEST5"
 #set path for readme.md changlog.md DEST6
 DEST6="/usr/share/doc/cylon"
 #set the path for the modules library functions. DEST7
-DEST7="/usr/lib/cylon/modules/"  #production code path
-#DEST7="./modules/" #development code path 
+#DEST7="/usr/lib/cylon/modules/"  #production code path
+DEST7="./modules/" #development code path 
 
 #====================FUNCTIONS===============================
-
 #Source the module files for the functions from the cylon library folder
 #at /usr/lib/cylon/modules/*  ,  Function syntax: nameFunc.
 for MYFILE in "$DEST7"*;
- do
-   # shellcheck disable=SC1090
-   source "$MYFILE"
+do
+	# shellcheck disable=SC1090
+	source "$MYFILE"
 done
 
 #==================MAIN CODE====================================
 
-#call check for user input options
-checkinputFunc "$1"
+#if a user input call checkinput function for user input options
+if [ -n "$1" ] 
+then
+	checkinputFunc "$1"
+fi
 
 #Display opening screen title 
+clear
 msgFunc line
-msgFunc highlight "$(pacman -Qs cylon | head -1 | cut -c 7-20)                    "
-msgFunc highlight "Arch Linux Maintenance Program "
+msgFunc blue "                           _         _        _                         "
+msgFunc blue "     /\                   | |       | |      (_)                        "
+msgFunc blue "    /  \     _ __    ___  | |__     | |       _   _ __    _   _  __  __ "
+msgFunc blue "   / /\ \   | '__|  / __| | '_ \    | |      | | | '_ \  | | | | \ \/ / "
+msgFunc blue "  / ____ \  | |    | (__  | | | |   | |____  | | | | | | | |_| |  >  <  "
+msgFunc blue " /_/    \_\ |_|     \___| |_| |_|   |______| |_| |_| |_|  \__,_| /_/\_\ "
+msgFunc line
+msgFunc highlight "$(pacman -Qs cylon | head -1 | cut -c 7-20) -- Arch Linux Maintenance Program"
 msgFunc norm "$(date +%T-%d-%a-Week%U-%b-%Y)"
 msgFunc norm "Unix epoch time $(date +%s)     "
 msgFunc line
 
-#loop until user exit 
+#Loop the display main menu function until user exit
 while true; do
-	#reset path to $HOME
 	cd ~ || exitHandlerFunc DEST4
-	#call the display main menu function
 	DisplayFunc
 done
-#====================== END ==============================
+#======================END==============================

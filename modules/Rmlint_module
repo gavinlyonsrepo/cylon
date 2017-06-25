@@ -19,8 +19,8 @@ contains readily prepared shell commands to remove duplicates and other
 finds. cylon wrapper  will scan, then optionally show report and then  
 optionally execute the rmlint.sh.
 EOF
-	     #check rmlint is installed
-            if ! checkPacFunc rmlint
+			#check rmlint is installed
+			if ! checkPacFunc rmlint
 				then #not installed
 				msgFunc anykey 
 				return
@@ -42,8 +42,8 @@ EOF
 					return
 				;;
 			esac
-			#read -r rmlintPath	            
-		     cd "$rmlintPathVar" || exitHandlerFunc DEST4
+			#read -r rmlintPath	
+			cd "$rmlintPathVar" || exitHandlerFunc DEST4
 			msgFunc norm " "
 			msgFunc norm "\"$rmlintPathVar\" chosen directory."
 			msgFunc line
@@ -61,7 +61,6 @@ EOF
 
 			msgFunc blue "Pick rmlint options for selected directory $rmlintPathVar"
 			select  choiceRMVar in "${optionsRMArr[@]}"
-			#check that paths exist and change path to DEST path
 			do
 			case "$choiceRMVar" in
 			

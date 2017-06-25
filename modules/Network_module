@@ -8,87 +8,123 @@
 # PROCESS : See options array
 function networkFunc
 {
-	clear        
+	clear
 	local choiceNVar=""
-	 #change dir for log files
-	 makeDirFunc "-NETINFO"
+	#change dir for log files
+	makeDirFunc "-NETINFO"
 	msgFunc norm "Files report will be written to path above -"
 	msgFunc blue "Network. options:-"
-				local optionsNArr=("$(checkPacFunc wavemon NOMES) -wireless network monitor" "$(checkPacFunc speedtest-cli  NOMES) -testing internet bandwidth"\
-				"Check if website up with netcat and ping" "ip addr" "netstat -r & route" "Check the status of UFW  Uncomplicated Firewall" "Return")
-				select choiceNVar in "${optionsNArr[@]}"
-				do
-				case "$choiceNVar" in  
-					"${optionsNArr[0]}") #wavemon - wireless network monitor"
-					#check wavemon is installed
-					if ! checkPacFunc wavemon 
-					then
-						msgFunc anykey 
-					return
-					fi
-					msgFunc green "Opening wavemon"
-					xterm -e "wavemon" &  
-					;;
+	local optionsNArr=("$(checkPacFunc wavemon NOMES) -wireless network monitor" "$(checkPacFunc speedtest-cli  NOMES) -testing internet bandwidth"\
+	"Check if website up with netcat and ping" "Display all interfaces which are currently available" "Display kernal routing table"\
+	"Check the status of UFW, Uncomplicated Firewall" "Network Time Synchronization status check"\
+	 "traceroute print route packets trace to network host" "tracepath traces path to a network host" "View all open ports " "Return")
+	select choiceNVar in "${optionsNArr[@]}"
+		do
+		case "$choiceNVar" in
+			"${optionsNArr[0]}") #wavemon - wireless network monitor"
+			#check wavemon is installed
+			if ! checkPacFunc wavemon 
+			then
+				msgFunc anykey 
+			return
+			fi
+			msgFunc green "Opening wavemon"
+			xterm -e "wavemon" &  
+			;;
 					
-					"${optionsNArr[1]}")  #speedtest-cli testing internet bandwidth
-					#check speedtest-cli  is installed
-					if ! checkPacFunc speedtest-cli
-					then
-						msgFunc anykey 
-					return
-					fi
-					local ServerIDVar=""
-					msgFunc green "Speedtest-cli"
-					msgFunc norm "Do you want to generate server list [y/n] ?"
-									if msgFunc yesno
-									then # yes
-											msgFunc green "List speedtest.net servers sorted by distance sent to file, cat top 20"
-											speedtest-cli --list > stclilist
-											head -n20 stclilist 
-									fi		
-									msgFunc norm "Do you want to specify a server ID [y/n] ?"
-									if msgFunc yesno
-										then #yes
-											msgFunc norm "Enter Server ID from list"
-											read -r ServerIDVar
-											clear
-											speedtest-cli --server "$ServerIDVar" | tee stclilog
-											return
-									fi		
+			"${optionsNArr[1]}")  #speedtest-cli testing internet bandwidth
+			#check speedtest-cli  is installed
+			if ! checkPacFunc speedtest-cli
+			then
+				msgFunc anykey 
+			return
+			fi
+			local ServerIDVar=""
+			msgFunc green "Speedtest-cli"
+			msgFunc norm "Do you want to generate server list [y/n] ?"
+			if msgFunc yesno
+			then # yes
+				msgFunc green "List speedtest.net servers sorted by distance sent to file, cat top 20"
+				speedtest-cli --list > stclilist
+				head -n20 stclilist 
+			fi		
+			msgFunc norm "Do you want to specify a server ID [y/n] ?"
+			if msgFunc yesno
+				then #yes
+					msgFunc norm "Enter Server ID from list"
+					read -r ServerIDVar	
+					#check integer
+					intchkFunc "$ServerIDVar"
 					clear
-					msgFunc green "Running Speedtest-cli "
-					speedtest-cli  | tee stclilog
-					;;
-					
-					"${optionsNArr[2]}")  #netcat 
-					local websiteVar=""
-					msgFunc green "Check if website up with netcat "
-					msgFunc norm "Enter website"
-					read -r websiteVar
-					msgFunc norm " "
-					checkNetFunc "$websiteVar"
-					msgFunc norm " "
-					ping -c 10 "$websiteVar"
-
-					;;
-					"${optionsNArr[3]}")  #ip a
-						ip a | tee ifconfiglog
-					;;
-					"${optionsNArr[4]}")  #netstat  andview route table
-						netstat -r 
-						route
-					;;
-					"${optionsNArr[5]}") #check firewall status
-					sudo ufw status verbose
-					;;
-					*)  #exit  
-						msgFunc green "Done!"	
-					return
-					;;
-				esac
-				break
-				done
+					speedtest-cli --server "$ServerIDVar" | tee stclilog
+				return
+			fi		
+			clear
+			msgFunc green "Running Speedtest-cli "
+			speedtest-cli  | tee stclilog
+			;;
+			
+			"${optionsNArr[2]}")  #netcat 
+			local websiteVar=""
+			msgFunc green "Check if website up with netcat:"
+			msgFunc norm "Enter website"
+			read -r websiteVar
+			msgFunc norm " "
+			checkNetFunc "$websiteVar"
+			msgFunc norm " "
+			msgFunc green "Check if website up with ping:"
+			ping -c 10 "$websiteVar"
+			;;
+			"${optionsNArr[3]}")  #ifconfig
+				msgFunc green "ifconfig short list: Kernel Interface table:"
+				ifconfig -s
+				msgFunc anykey
+				msgFunc norm " "
+				msgFunc green "ifconfig all + output to file:"
+				ifconfig -a | tee ifconfiglog
+				msgFunc anykey
+			;;
+			"${optionsNArr[4]}")  #display kernal routing table
+				msgFunc green "netstat -r:"
+				netstat -r 
+				msgFunc green "route -n:"
+				route  -n
+				msgFunc anykey
+			;;
+			"${optionsNArr[5]}") #check firewall status
+			sudo ufw status verbose
+			;;
+			"${optionsNArr[6]}") #Network Time Synchronization status check
+				systemctl status systemd-timesyncd 
+			;;
+			"${optionsNArr[7]}") #traceroute - print the route packets trace to network host
+					local trVar=""
+					msgFunc green "traceroute - print the route packets trace to network host"
+					msgFunc norm "Please enter network host name"
+					read -r trVar
+					traceroute "$trVar"
+					msgFunc anykey
+			;;
+			"${optionsNArr[8]}") #tracepath
+					local tpVar=""
+					msgFunc green "traces path to a network host discovering MTU along this path"
+					msgFunc norm "Please enter network host name"
+					read -r tpVar
+					tracepath "$tpVar"
+			;;
+			"${optionsNArr[9]}") #To view all open ports and the processes which opened them,
+					msgFunc green "netstat -lunpt:"
+					netstat -lunpt
+					msgFunc anykey
+			;;
+			*)  #exit  
 				msgFunc green "Done!"	
+			return
+			;;
+		esac
+		break
+		done
+		msgFunc green "Done!"	
 }
 
 #FUNCTION HEADER

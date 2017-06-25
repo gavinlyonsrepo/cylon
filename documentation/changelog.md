@@ -94,3 +94,13 @@
 	* added pacnew list to package list function
 	* added CYLONDEST check on cylon information page
 	* added more data to system information page
+
+*version 4.1-2 280617
+	* Now using $EDITOR variable to pick text editor
+	* Loop the bleachbit options menu -b for user convenance.
+	* New Clamavscan options and configfile setting.
+	* Two new maintenance options, find inodes usage and find biggest files
+	* Ascii art added 
+	* 3 new pacman option added(view log, optimise and paccache -ruk0) 
+	* Auditing SUID/SGID Files added to security + chage -l option
+	* Various new network options added.

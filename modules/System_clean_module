@@ -115,7 +115,7 @@ function SystemCleanFunc
 	#system clean with bleachbit (if this function called without "FOLDERS" input)
 	#query for preset option or custom?
 	msgFunc norm "Note: For Preset options see $HOME/.config/bleachbit/ or GUI "
-	msgFunc green "Bleachbit system clean. Use the Preset options set in the GUI? [y/n] ?"  
+	msgFunc green "Bleachbit system clean. Use the Preset options set by GUI, q to quit [y/n/q]?"
 	if msgFunc yesno
 		then #yes
 			#use options set in the graphical interface 

@@ -113,8 +113,13 @@ function CowerFunc
 						#make cower update directory
 						makeDirFunc "-AURUPDATES" 
 						cower -d -vuc #|| return
+						
 						# look for empty dir (i.e. if no updates) 
-						if [ "$(ls -A .)" ] 
+						#check  directory has child directories?
+						local subdircountVar=""
+						subdircountVar=$(find ./* -type d 2</dev/null | wc -l)
+						#check for more than 2 subdir 
+						if [  "$subdircountVar" -gt 0 ] 
 						then
 							msgFunc norm  "Package builds available"
 							ls 
@@ -170,11 +175,11 @@ function CowerFunc
 						msgFunc green "Edit cower config file"
 								if [ -f  "$XDG_CONFIG_HOME/cower/config" ] 
 								then
-									nano "$XDG_CONFIG_HOME/cower/config"
+									$EDITOR "$XDG_CONFIG_HOME/cower/config"
 								else 
 									 if [ -f "$HOME/.config/cower/config" ] 
 									 then
-										nano "$HOME/.config/cower/config"
+										$EDITOR "$HOME/.config/cower/config"
 									  else
 										msgFunc red "config file not found, see man cower"
 									fi

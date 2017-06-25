@@ -9,23 +9,26 @@
 #NOTE gnu-netcat is neeeded for the first option.      
 function PacmanFunc 
 {
-		clear
 		#Pacman package manager options:
-		msgFunc line
-		msgFunc green "Pacman package manager. Number of packages installed = $(pacman -Q | wc -l) "
-		msgFunc line
+		###old header removed for screen space
+		#msgFunc line
+		#msgFunc green "Pacman package manager. Number of packages installed = $(pacman -Q | wc -l) "
+		#msgFunc line
+		###
+		clear
 		msgFunc blue "Pacman package manager options:-"
 		local choicePMVar=""
 		local pacStingVar=""
 		local optionsPMArr=("Check Network and check for pacman updates (no download)" "pacman -Syu Upgrade packages" \
-		"pacman -Si Display extensive information about a given package" "pacman -S Install Package" \
+		"pacman -Si Display information for a package in database" "pacman -S Install Package" \
 		"pacman -Ss Search for packages in the database" \
 		"pacman -Rs Remove Package" "pacman -Qs Search for already installed packages" \
-		"pacman -Qi  Display extensive information for locally installed packages" "pacman -Ql  List all files owned by a given package." \
+		"pacman -Qi  Display information for locally installed packages" "pacman -Ql  List all files owned by a given package." \
 		"pacman -Qkk Verify packages" "paccache -r Prune older packages from cache, Keep last 3"\
+		"paccache -ruk0 To remove all cached versions of UNinstalled packages"\
 		"Remove all packages not required as dependencies (orphans)" "Make a copy of package lists"  \
 		"Back-up the local pacman database" "Arch Linux News Rss feed" "$(checkPacFunc arch-audit  NOMES)" \
-		"pactree options" "Edit pacman config file" "Return to main menu")
+		"pactree options" "Edit pacman config file" "View pacman log" "pacman optimize" "Return to main menu")
 		select choicePMVar in "${optionsPMArr[@]}"
 		do
 		case "$choicePMVar" in
@@ -100,31 +103,35 @@ function PacmanFunc
 				#The paccache script, deletes all cached  package 
 					#regardless of whether they're installed or not, 
 					#except for the most recent 3, 
-						sudo paccache -r
+					sudo paccache -r
 				;;
 				
-				"${optionsPMArr[11]}")   #delete orphans
+				"${optionsPMArr[11]}")msgFunc green "paccache -ruk0 : To remove all cached versions of uninstalled packages"
+				#To remove all cached versions of uninstalled packages, re-run paccache with: 
+					sudo paccache -ruk0
+				;;
+				
+				"${optionsPMArr[12]}")#delete orphans
 					msgFunc green "Delete orphans!"
 					#Remove all packages not required as dependencies (orphans)
-					sudo pacman -Rns "$(pacman -Qtdq)"
+					sudo pacman -Rns $(pacman -Qtdq)
 				;;
 
-				"${optionsPMArr[12]}")
+				"${optionsPMArr[13]}")
 					msgFunc green "Make copy of package lists"
 					pkglistFunc
 				;;
-				"${optionsPMArr[13]}") #backup the pacman database
+				"${optionsPMArr[14]}") #backup the pacman database
 					msgFunc green "Back-up the pacman database to :"
 					makeDirFunc "-BACKUPPACMAN"
 					tar -v -cjf pacman_database.tar.bz2 /var/lib/pacman/local
 				;;
-
 				
-				"${optionsPMArr[14]}") #Arch Linux News Rss feed
+				"${optionsPMArr[15]}") #Arch Linux News Rss feed
 					RssFunc
 					;;
 					
-				"${optionsPMArr[15]}") #run arch audit
+				"${optionsPMArr[16]}") #run arch audit
 					msgFunc green "Running arch-audit program :"
 					local archauditVar=""
 					#check archaudit is installed
@@ -144,7 +151,7 @@ function PacmanFunc
 					archauditVar=
 					;;
 				
-				"${optionsPMArr[16]}") #pactree
+				"${optionsPMArr[17]}") #pactree
 					local pactreeVar=""
 					msgFunc green "pactree options"
 					msgFunc norm "List a dependency tree of a package: pactree"
@@ -162,11 +169,34 @@ function PacmanFunc
 						pactree -r "$pacStingVar"
 					fi
 				;;
-				"${optionsPMArr[17]}") #edit pacman conf file
+				"${optionsPMArr[18]}") #edit pacman conf file
 					msgFunc green "Edit Pacman.conf file."
-					sudo nano  /etc/pacman.conf
+					sudo $EDITOR /etc/pacman.conf
 				;;
+				"${optionsPMArr[19]}") #view pacman log
+					msgFunc green "View pacman log /var/log/pacman.log"
+					sudo less /var/log/pacman.log
+				;;
+				"${optionsPMArr[20]}") #pacman-optimize
+					msgFunc green "pacman optimize"
+					cat <<-EOF
+					Pacman stores all package information in a collection of small files, 
+					one for each package. Improving database access speeds reduces the time 
+					taken in database-related tasks. 
+					pacman-optimize will attempt to put all the small files together in one 
+					(physical) location on the hard disk so that the 
+					hard disk head does not have to move so much when accessing all the data. 
+					This method is safe, but is not foolproof: 
+					it depends on your filesystem, disk usage and empty space fragmentation.
+					EOF
 					
+					msgFunc green "Continue? [y/n] "
+					if msgFunc yesno
+					then
+						sudo pacman-optimize
+					fi
+				;;
+				
 				*)  #exit  
 					msgFunc green "Done!"	
 					clear
@@ -186,13 +216,16 @@ function RssFunc
 {
 		#Display 4 Arch Linux News Rss feed
 		msgFunc green "Arch Linux News Rss feed"
-		msgFunc norm "Enter number of items of news to fetch or press [ENTER] for default of 3"
-		
+		msgFunc norm "Enter number of items of news to fetch or press [ENTER] for default of 1"
 		read -r numitemsVar
+		#check if empty
 		if [ -z "${numitemsVar}" ]
 			then 
-				numitemsVar=3 #default
+				numitemsVar=1 #default if user just pressed enter
 		fi
+		
+		#integer check function call
+		intchkFunc "$numitemsVar"
 		# Set numitemsVar to N in awk  to be the number of latest news to fetch
 		newsVar=$(echo -e $(curl --silent https://www.archlinux.org/feeds/news/  | awk -v N="$numitemsVar" ' NR == 1 {countVar = N; while (countVar) {print;getline; if($0 ~ /<\/item>/) countVar=countVar-1} ; sub(/<\/item>.*/,"</item>") ;print}'))
 		#  THE RSS PARSER Remove some tags 
