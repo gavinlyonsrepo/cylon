@@ -32,13 +32,13 @@ Table of contents
 Installation
 -----------------------------------------------
 cylon is installed by PKGBUILD on a Arch based Linux system.
-The PKGBUILD file is available in the AUR Arch user repository.
+The PKGBUILD file is available in the AUR - Arch user repository.
 Install it using an AUR helper program  or installations instructions 
 on Arch user repository page of Arch linux wiki.
+The program will work on any arch based system. Arch, manjaro, antergos etc.
 * AUR package name : cylon
 * AUR maintainer : glyons
 * AUR location: https://aur.archlinux.org/packages/cylon/
-
 
 Usage
 -------------------------------------------
@@ -49,19 +49,19 @@ cylon -[options]
 
 Options list (standalone cannot be combined):
 
-| Option          | Description |
+| Option          | Description     |
 | --------------- | --------------- |
 | -h --help | Print cylon information and exit |
 | -s --system | Print system information and exit |
 | -v --version  | Print version information and exit |
-| -c --config  | Opens the cylon config file for editing and exit |
-| -d --default | Bleachbit system clean , this will execute options selected in bleachbit GUI or bleachbit config file |
-| -b --bleachbit | Opens the bleachbit select menus |
+| -c --config   | Opens the cylon config file for editing and exit |
+| -d --default  | Bleachbit system clean , this will execute options selected in bleachbit GUI or bleachbit config file |
+| -b --bleachbit  | Opens the bleachbit select menus |
 | -m --maint | Runs Automatic system maintenance scan This carries many of the menu functions in system maintenance menu in a single sweep, It will not change system just create report files|
-| -u --update | Runs a full update report with various execution options. Report provides Arch news rss reader & arch-audit vulnerable packages output CVE data(Common Vulnerabilities and Exposures) & number and type of updates available for all repos |
+| -u --update     | Runs a full update report with various execution options. Report provides Arch news rss reader & arch-audit vulnerable packages output CVE data(Common Vulnerabilities and Exposures) & number and type of updates available for all repos |
 | -p --print | print the package lists (REF1) |
 | -r --rss | print arch news reader with option to fetch number of items |
-| -z --delete | display the AUR package removal dialog menu function |
+| -z --delete     | display the AUR package removal dialog menu function |
 | -l --lint | shortcut to open rmlint wrapper menu |
 
 Files and setup
@@ -138,10 +138,10 @@ Just copy and paste this into file and change paths for your setup.
 
 Output and environment variables
 -------------------------------------
-Most system output (logfiles, backups, downloads and updates etc) 
+Most system output (logfiles, downloads and updates etc) 
 is placed at below path, unless otherwise specified on screen.
 Output folders are created with following time/date stamp syntax HHMM-DDMONYY-X 
-where X is output type i.e backup, update etc. The default path is:
+where X is output type i.e download, update etc. The default path is:
 ```sh
 $HOME/Documents/Cylon
 ```
@@ -154,11 +154,11 @@ This optional Environment variable is provided for users
 who wish to use different destination path for program output folder
 if variable is not set or does not exist, cylon uses the default path.
 
+"nano" is used as default text editor for editing config files 
+IF $EDITOR user environment variable is not set. 
 ```sh
 $EDITOR
 ```
-"nano" is used as default text editor for editing config files 
-IF $EDITOR user environment variable is not set. 
 
 Dependencies
 -------------------------------------
@@ -210,7 +210,7 @@ be already installed on many systems.
 Features
 ----------------------
 
-The program functions are divided into 6 main sections:
+The program functions are divided into 6 sections:
 update, maintenance, backup, security, network and miscellaneous.
 The update section is the core of the program and provides a wrapper for 
 pacman, pacaur and cower. It provides an extension to cower 
@@ -223,7 +223,7 @@ The maintenance section provides a variety of scans and checks, it also
 a provides command line wrapper for rmlint and bleach-bit. 
 The backup section provides a wrapper for gdrive program. as well as ability
 to backup system using various tools.
-The security section provides a wrapper for ccrypt and a extended launcher 
+The security section provides a wrapper for ccrypt and an extended launcher 
 for various security tools as well as a password generator.
 The network section provides various tools to check network and configuration.
 Other misc functions include an option to edit config file, information menus for
@@ -419,8 +419,8 @@ and new features welcome.
 
 History
 ------------------
-* First Commit to AUR: v1.3-1 08-09-16
-* Latest Version release : v4.0-1 26-05-17 
+* First Commit to AUR: version 1.3-1 08-09-16
+* Latest Version release : version 4.1-2 26-06-17 
 * See changelog.md in documentation section for version control history
 
 Copyright
