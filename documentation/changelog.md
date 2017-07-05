@@ -1,6 +1,6 @@
-#Version control:
+# Version control:
 
-###version 1  010916  (first commit to AUR)
+### Version 1  010916  (first commit to AUR)
 
 	* google drive function added 
 	* Extra cower and pacman options added 
@@ -10,7 +10,7 @@
 	* rootkithunter option 
 	* Rmlint option.
 
-###version 2  021016 
+### Version 2  021016 
 	*.Added option for lostfiles, system info page.
 	* Added cylon info page with check for optdepends
 	* Added error handling for missing optdepends in the functions 
@@ -26,14 +26,14 @@
 	* Added an rsync option(config file needs new options for rsync) 
 	* Added new shred folder and files option. 
 
-###version 3.0-1 101216. 
+### Version 3.0-1 101216. 
 	* pacman -Ql added
 	* pacaur with 8 options added. 
 	* xterm, inxi, lynis and htop options added, 
 	* Options for linux command line arguments inputs added
 	* systemd-analyze - Analyze system boot-up performance added to system check.
  
-###version 3.1-2 151216.
+### Version 3.1-2 151216.
 	* Added openbsd-netcat as optdepends due to conflict with gnu-netcat.
 	* Added 3 new options to pacman menu 
 	* Added 3 new options to pacaur 
@@ -67,7 +67,7 @@
 	* Arch-Audit in cylon -u option now consists of two options -q & -u.
 	* Arch-Audit was moved from AUR to main repos SW changed to reflect this.
 
-###version 3.6-7 + 3.6.1-8 200417 
+### Version 3.6-7 + 3.6.1-8 200417 
 	* packages dialog and expac added as depends
 	* new file misc_module added (coding optimisation)
 	* cower -dc download only option added + AUR comment reader
@@ -76,7 +76,7 @@
 	* new options added and others moved to System maintenance menu
 	* Added environmental variable user can now set output directory path.
 	
-###version 3.7-9 050517
+### Version 3.7-9 050517
 	* corrected minor issue of no pause at end after system update run 
 	* Changed menu layout added system security option etc
 	* added extra drive option to config file now 4 syncs options.
@@ -84,7 +84,7 @@
 	* added -m flag to run a auto scan of most maintenance menu functions.
 	* xterm terminal now opens on cylon program output folder path.
 	
-###version 4.0-1 270517
+### Version 4.0-1 270517
 	* Various code optimizations 
 	* added menu to update function
 	* added -p flag print the package lists 
@@ -97,7 +97,7 @@
 	* added CYLONDEST check on cylon information page
 	* added more data to system information page
 
-###version 4.1-2 280617
+### Version 4.1-2 280617
 	* Now using $EDITOR variable to pick text editor
 	* Loop the bleachbit options menu -b for user convenance.
 	* New Clamavscan options and configfile setting.
