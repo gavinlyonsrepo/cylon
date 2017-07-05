@@ -40,25 +40,25 @@
 	* Added 2 new options to cower 
 	* Added two new runtime options -c and -u 
 
-###version 3.2-3 211216
+### Version 3.2-3 211216
 	* Added manpage and system icon
 	* Modules added, split functions into separate files 
 	* Changed system maintenance routine to menu select
 
-###version 3.3-4 291216
+### Version 3.3-4 291216
 	* Added "n/a" text to menu options for non installed packages,
 	* Added old configuration file scan and Diskspace usage options
 	* new icon added. 
 	* Systemctl status show option added.
 
-###version 3.4-5 250317
+### Version 3.4-5 250317
 	* ccrypt file setting added to config file called myccfile,
 	* add -d option for bleachbit system clean. Use the options set in the GUI/file.
 	* changes to -u option, RSS feed added
 	* rmlint menu 6 extra options added.
 	* gdrive change --delete-extraneous option added to Sync local directory 
 
-###version 3.5-6 050417
+### Version 3.5-6 050417
 	* Uninstall AUR packages menu function added to cower and pacaur menus
 	* Added extra gdrive option, requires two new option in config file for use.
 	* Changed input for file/directory paths to a dialog GUI option 
