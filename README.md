@@ -11,7 +11,7 @@ The program is mainly console text based but also uses dialog GUI's
 at a few points for directory and file selection.
 A detailed list of the over 100 options and features is 
 provided below in features section.
-* Author: Gavin Lyons
+* Main Author: Gavin Lyons
 
 Table of contents
 ---------------------------
@@ -387,24 +387,12 @@ system and cylon. Weather forecast and terminal launcher.
 
 * 3 day weather forecast by wttr.in
 
-
-(REF1): packages files list referenced above at marker.
-
-| Contents | Filename |
-| -------- | -------- |
-| All installed packages | pkglistQ.txt |
-| All native packages | pkglistQn.txt |
-| All explicitly installed packages | pkglistQe.txt |
-| All explicitly installed native packages that are not direct or optional dependencies | pkglistQgent.txt |
-| All foreign installed packages | pkglistQm.txt |
-| All foreign explicitly installed packages | pkglistQme.txt |
-| All explicitly installed packages not in base nor base-devel with size and description | pkglistNonBase.txt |
-| All installed packages sorted by size | pkglistSize.txt |
-| All installed packages sorted by install date | pkglistDate.txt |
-| All .pacnew and .pacsave files on system | pacNewSaveFiles.txt |
-
 See Also
 -----------
+(REF1): packages files list referenced above at marker REF1 can be viewed 
+in package_lists.md, which is in the sub-folder documentation of repository 
+The package files list is a collection of various lists describing your system
+
 There are screenshots in the repository screenshot folder and 
 various support documents in the repository documentation folder.
 
@@ -422,7 +410,8 @@ History
 * First Commit to AUR: version 1.3-1 08-09-16
 * Latest Version release : version 4.1-2 26-06-17 
 * See changelog.md in documentation section for version control history
-
+* Contributors: "binaryplease"  "uros-stegic" 
+ 
 Copyright
 ---------
 Copyright (C) 2016 Gavin Lyons 
