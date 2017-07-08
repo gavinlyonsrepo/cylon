@@ -264,7 +264,7 @@ msgFunc green "System Information display Page 1"
 msgFunc line
 
 msgFunc norm "Uptime = $(uptime -p)"
-msgFunc norm "Kernal = $(uname -svr)"
+msgFunc norm "Kernel = $(uname -svr)"
 msgFunc norm "Operating System = = $(uname -mo)"
 msgFunc norm "Network node name = $(uname -n)"
 msgFunc norm "User name = $USER"
