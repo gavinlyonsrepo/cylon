@@ -15,8 +15,8 @@ Function headers in the files contain more information.
 | Pacaur_module | pacaurFunc |
 | System_back_module | SystemBackFunc |
 | Ccrypt_module | ccryptFunc |
-| Misc_module | checkinputFunc DisplayFunc exitHandlerFunc HelpFunc msgFunc readconfigFunc weatherFunc makeDirFunc |
-| Pacman_module | pacmanFunc pkglistFunc updateFunc checkPacFunc rssFunc AsciiArtFunc |
+| Misc_module | checkinputFunc AsciiArtFunc DisplayFunc exitHandlerFunc HelpFunc msgFunc readconfigFunc weatherFunc makeDirFunc |
+| Pacman_module | pacmanFunc pkglistFunc updateFunc checkPacFunc rssFunc |
 | System_clean_module | SystemCleanFunc |
 | Cower_module | DelQmeFunc cowerFunc |
 | Network_module | networkFunc checknetFunc |
