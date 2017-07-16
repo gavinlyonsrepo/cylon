@@ -106,3 +106,12 @@
 	* 3 new pacman option added(view log, optimise and paccache -ruk0) 
 	* Auditing SUID/SGID Files added to security + chage -l option
 	* Various new network options added.
+
+### Version 4.2-3 200717
+	* Package list expanded from 10 to 20 items
+	* Extra information added to system display.
+	* Pull request by "uros-stegic" to fix typo on system display page added
+	* Dependency array code optimisation to HelpFunc instead of long list
+	* prompt and information display for orphan delete option added
+	* CowerFunc new option to search AUR packages by orphan maintainer.
+	* Ascii art placed in function AsciiArtFunc.

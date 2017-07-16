@@ -17,7 +17,7 @@ function msgFunc
 	
 		line) #print blue horizontal line of =
 			printf '\033[36;1m%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' =
-			msgFunc norm
+			printf '%s' "${NORMAL}"
 		;;
 		anykey) #any key prompt, appends second text input to prompt
 		    printf '%s' "${GREEN}" 
@@ -31,15 +31,7 @@ function msgFunc
 		blue) printf '%s\n' "${BLUE}$2${NORMAL}" ;;
 		yellow)printf '%s\n' "${YELLOW}$2${NORMAL}" ;;
 		highlight)printf '%s\n' "${HL}$2${NORMAL}" ;;
-		
-		norm) #print normal text colour
-			if [ "$2" = "" ]
-				then
-				#just change colour to norm if no text sent
-					printf '%s' "${NORMAL}"
-				return
-			fi
-			printf '%s\n' "${NORMAL}$2" ;;
+		norm) printf '%s\n' "${NORMAL}$2" ;;
 			
 		yesno) #print yes no quit prompt
 			local yesnoVar=""
@@ -205,46 +197,29 @@ clear
 		clear
 		msgFunc norm " "
 		msgFunc green "Dependencies"
-		#dialog   needed to generate GUI menus
-		checkPacFunc dialog  "NOTE: non-optional"
-		#cower   needed to generate GUI menus
-		checkPacFunc expac  "NOTE: non-optional"
-		#cower  (optional) – AUR package for AUR work
-		checkPacFunc cower "NOTE: AUR package"
-		#gdrive  (optional) – AUR package for google drive backup
-		checkPacFunc gdrive "NOTE: AUR package"
-		#lostfiles (optional) – AUR package for finding lost files
-		checkPacFunc lostfiles "NOTE: AUR package"
-		#pacaur (optional – AUR package for AUR work
-		checkPacFunc pacaur  "NOTE: AUR package"
-		#arch-audit(optional) - Arch CVE Monitoring Team data
-		checkPacFunc arch-audit 
-		#rmlint (optional) – Finds lint and other unwanted
-		checkPacFunc rmlint
-		#rkhunter (optional) – finds root kits malware
-		checkPacFunc rkhunter
-		#gnu-netcat (optional) – used for checking network
-		checkPacFunc gnu-netcat "NOTE: No need if using openbsd-netcat"
-		#openbsd-netcat(optional) – used for checking network
-		checkPacFunc openbsd-netcat "NOTE: No need if using gnu-netcat"
-		#clamav  (optional) – used for finding malware
-		checkPacFunc clamav
-		#bleachbit  (optional) – used for system clean
-		checkPacFunc bleachbit 
-		#ccrypt (optional) – Encrypt and decrypt files
-		checkPacFunc ccrypt
-		#rsync (optional) – backup utility
-		checkPacFunc rsync
-		#lynis (optional) – system auditor
-		checkPacFunc lynis
-		#inxi (optional) – CLI system information script 
-		checkPacFunc inxi
-		#htop (optional) – Command line system information script 
-		checkPacFunc htop
-		#wavemon (optional) – wireless network monitor 
-		checkPacFunc wavemon
-		#speedtest-cli (optional) – testing internet bandwidth
-		checkPacFunc speedtest-cli
+		#create array to hold Dependencies
+		local DependenciesArr=("dialog:NOTE non-optional" "expac:NOTE non-optional" "cower:NOTE AUR package" \
+"gdrive:NOTE AUR package" "lostfiles:NOTE AUR package" "pacaur:NOTE AUR package" "arch-audit" "rmlint" "rkhunter" \
+"gnu-netcat:NOTE No need if using openbsd-netcat" "openbsd-netcat:NOTE No need if using gnu-netcat" \
+"clamav" "bleachbit" "ccrypt" "rsync" "lynis" "inxi" "htop" "wavemon" "speedtest-cli")
+		#loop thru and display the array
+		local tLenVar=""
+		local packageVar=""
+		local noteVar=""
+		tLenVar="${#DependenciesArr[@]}" #length of array
+		for (( i=0; i<"${tLenVar}"; i++ ));
+		do
+			#Does the string have a NOTE in it if yes parse note to noteVar?
+			if [[ "${DependenciesArr[i]}" == *"NOTE"* ]]; then
+				#extract from this string using parameter expansion 
+				packageVar=${DependenciesArr[i]%:*} #retain before the colon
+				noteVar=${DependenciesArr[i]##*:} #retain after the colon
+				checkPacFunc "$packageVar" "$noteVar"
+			else
+				checkPacFunc "${DependenciesArr[i]}"
+			fi
+		done
+		
 		msgFunc green "Do you want to view readme [y/n] ?"
 		if msgFunc yesno
 			then #yes
@@ -265,44 +240,48 @@ msgFunc line
 
 msgFunc norm "Uptime = $(uptime -p)"
 msgFunc norm "Kernel = $(uname -svr)"
-msgFunc norm "Operating System = = $(uname -mo)"
+msgFunc norm "Operating System = $(uname -mo)"
 msgFunc norm "Network node name = $(uname -n)"
 msgFunc norm "User name = $USER"
-#msgFunc norm "Screen Resolution = $(xrandr |grep "\*" | cut -c 1-15)"
+msgFunc norm "Shell = $SHELL"
+#stopped working msgFunc norm "Screen Resolution = $(xrandr |grep "\*" | cut -c 1-15)"
+msgFunc norm "Screen Resolution = $(xdpyinfo | awk -F '[ x]+' '/dimensions:/{print $3}') x $(xdpyinfo | awk -F '[ x]+' '/dimensions:/{print $4}')"
 msgFunc norm "CPU = $(grep name /proc/cpuinfo | tail -1| cut -d ":" -f 2)"
-mem=($(awk -F ':| kB' '/MemTotal|MemAvail/ {printf $2}' /proc/meminfo))
-memused="$((mem[0] - mem[1]))"
-memused="$((memused / 1024))"
-memtotal="$((mem[0] / 1024))"
-memory="${memused}MB / ${memtotal}MB"
-msgFunc norm "RAM used/total = ($memory)"
-msgFunc norm " "
+local memArr=($(awk -F ':| kB' '/MemTotal|MemAvail/ {printf $2}' /proc/meminfo))
+local memusedVar="$((memArr[0] - memArr[1]))"
+memusedVar="$((memusedVar / 1024))"
+local memtotalVar="$((memArr[0] / 1024))"
+local memoryVar="${memusedVar}MB / ${memtotalVar}MB"
+msgFunc norm "RAM used/total = ($memoryVar)"
+msgFunc norm "Editor variable = $EDITOR"
 # Get and display cachedir size read cachedir variable from file
-local CacheDir=""
+local CacheDirVar=""
 source /etc/pacman.conf 2>/dev/null
-if [ -z "${CacheDir}" ]
+if [ -z "${CacheDirVar}" ]
 then
 	#if not set , set to expected default
-	CacheDir=/var/cache/pacman/pkg/
+	CacheDirVar=/var/cache/pacman/pkg/
 fi
-msgFunc norm "Pacman cache = $CacheDir"
-msgFunc norm "Space used by pkg downloaded in cache: $(du -sh "$CacheDir" 2>/dev/null|awk '{print $1}'
+msgFunc norm "Pacman cache = $CacheDirVar"
+msgFunc norm "Space used by pkg downloaded in cache: $(du -sh "$CacheDirVar" 2>/dev/null|awk '{print $1}'
 )"
 msgFunc norm "Hold packages: $(grep "HoldPkg" /etc/pacman.conf | cut -d "=" -f 2 )"
 msgFunc norm "Number of orphans: $(pacman -Qtdq | wc -l)"
-msgFunc norm " "
 
 #msgFunc norm "Number of configured repositories:  "
-msgFunc norm "Packages by repositories"
+msgFunc norm "Packages by repositories:-"
 msgFunc norm "Core: $(paclist core | wc -l)"
 msgFunc norm "Extra: $(paclist extra | wc -l)"
 msgFunc norm "Community: $(paclist community | wc -l)"
 msgFunc norm "Multilib: $(paclist multilib | wc -l)"
-msgFunc norm "Other: $(pacman -Qm | wc -l)"
+msgFunc norm "Foreign: $(pacman -Qm | wc -l)"
 msgFunc anykey
 clear
 
 msgFunc green "System information page 2"
+msgFunc norm "Searching / please wait ...."
+msgFunc norm "All .pacnew and .pacsave files: \
+$(find / -regextype posix-extended -regex ".+\.pac(new|save)" 2> /dev/null |wc -l)"
 msgFunc norm "All installed packages: $(pacman -Q | wc -l)" 
 msgFunc norm "All native packages: $(pacman -Qn | wc -l)" 
 msgFunc norm "All explicitly installed packages: $(pacman -Qe | wc -l)" 
@@ -312,12 +291,12 @@ msgFunc norm "All explicitely installed pkgs not base/base-devel grps: \
 $(comm -23 <(pacman -Qeq | sort) <(pacman -Qgq base base-devel | sort) | wc -l ) "
 msgFunc norm "All foreign installed packages: $(pacman -Qm | wc -l)"
 msgFunc norm "All foreign explicitly installed packages: $(pacman -Qme | wc -l)"
-msgFunc norm "All .pacnew and .pacsave files: \
-$(find / -regextype posix-extended -regex ".+\.pac(new|save)" 2> /dev/null |wc -l)"
-msgFunc norm "5 Largest package :"
-expac -H M '%m\t%n' | sort -hr |head -5
-msgFunc norm "5 Newest updated package :"
-expac --timefmt='%Y-%m-%d %T' '%l\t%n' | sort -hr |head -5 
+msgFunc norm "All packages installed as dependencies: $(pacman -Qd | wc -l) "
+msgFunc norm "All modified by user system backup file: $(pacman -Qii | awk '/^MODIFIED/ {print $2}' | wc -l)"
+msgFunc norm "4 Largest packages :"
+expac -H M '%m\t%n' | sort -hr |head -4
+msgFunc norm "4 Newest updated packages :"
+expac --timefmt='%Y-%m-%d %T' '%l\t%n' | sort -hr |head -4 
 msgFunc anykey
 clear
 
@@ -432,9 +411,7 @@ case "$1" in
 		msgFunc green "Done!"
 		;;
 	-v|--version)
-		msgFunc blue "_______ __   __         _____  __   _"
-		msgFunc blue "|         \_/   |      |     | | \  |"
-		msgFunc blue "|_____     |    |_____ |_____| |  \_|"
+		AsciiArtFunc "CYLON"
 		msgFunc norm " "
 		msgFunc norm "$(pacman -Qs cylon)" 
 		;;
@@ -484,18 +461,18 @@ clear
 # INPUTS : $1 text is appended to name  $2 bit flag  to change dir or not
 function makeDirFunc
 {
-			local dirVar=""
-			#makes dirs for output appends passed text to name
-			#check if coming from system backup other path 1 yes 0 no.
-			if [ "$2" != 1 ]
-				then 
-				cd "$DEST3" || exitHandlerFunc DEST3
-			fi
-			dirVar=$(date +%H%M-%d%b%y)"$1"
-			mkdir "$dirVar"
-			cd "$dirVar" || exitHandlerFunc DEST4
-			msgFunc norm "Directory for output made at:-"
-			pwd	 
+	local dirVar=""
+	#makes dirs for output appends passed text to name
+	#check if coming from system backup other path 1 yes 0 no.
+	if [ "$2" != 1 ]
+		then 
+		cd "$DEST3" || exitHandlerFunc DEST3
+	fi
+	dirVar=$(date +%H%M-%d%b%y)"$1"
+	mkdir "$dirVar"
+	cd "$dirVar" || exitHandlerFunc DEST4
+	msgFunc norm "Directory for output made at:-"
+	pwd	 
 }
 
 #FUNCTION HEADER
@@ -503,13 +480,34 @@ function makeDirFunc
 # DESCRIPTION:3 day weather forecast
 function WeatherFunc
 {
-					msgFunc norm "3 day weather forecast by WTTR.IN"
-					msgFunc norm "Type a City name, airport code, domain name or area code:-"
-					local mycityVar=""
-					read -r mycityVar		
-					clear
-					curl wttr.in/"$mycityVar"
-					msgFunc anykey 
-					clear
+	msgFunc norm "3 day weather forecast by WTTR.IN"
+	msgFunc norm "Type a City name, airport code, domain name or area code:-"
+	local mycityVar=""
+	read -r mycityVar		
+	clear
+	curl wttr.in/"$mycityVar"
+	msgFunc anykey 
+	clear
 }
 
+#FUNCTION HEADER
+# NAME :  AsciiArtFunc
+# DESCRIPTION:display asciiArt
+# INPUTS : $1 text to pick art
+function AsciiArtFunc
+{
+if [ "$1" = "ARCH" ]
+then
+	msgFunc blue "                           _         _        _                         "
+	msgFunc blue "     /\                   | |       | |      (_)                        "
+	msgFunc blue "    /  \     _ __    ___  | |__     | |       _   _ __    _   _  __  __ "
+	msgFunc blue "   / /\ \   | '__|  / __| | '_ \    | |      | | | '_ \  | | | | \ \/ / "
+	msgFunc blue "  / ____ \  | |    | (__  | | | |   | |____  | | | | | | | |_| |  >  <  "
+	msgFunc blue " /_/    \_\ |_|     \___| |_| |_|   |______| |_| |_| |_|  \__,_| /_/\_\ "
+elif [ "$1" = "CYLON" ]
+then
+		msgFunc blue "_______ __   __         _____  __   _"
+		msgFunc blue "|         \_/   |      |     | | \  |"
+		msgFunc blue "|_____     |    |_____ |_____| |  \_|"
+fi
+}

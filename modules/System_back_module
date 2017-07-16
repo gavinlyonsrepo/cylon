@@ -121,8 +121,11 @@ function SystemBackFunc
 				sync
 			;;&
 			"${optionsBu2Arr[3]}"|"${optionsBu2Arr[5]}")#packages
-				#pass Backup to pkglistFunc to not create directory
+				#pass Backup to pkglistFunc to not create the directory in the function
+				mkdir "PKGLISTFILES" || exitHandlerFunc DEST4
+				cd "PKGLISTFILES" || exitHandlerFunc DEST4
 				pkglistFunc "Backup"
+				cd ..
 			;;&
 			"${optionsBu2Arr[4]}"|"${optionsBu2Arr[5]}")#tar
 				msgFunc green "Make tarball of all except tmp dev proc sys run"

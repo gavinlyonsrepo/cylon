@@ -10,197 +10,215 @@
 #NOTES : Needs cower(AUR) installed  gnu-netcat is needed for option 5     
 function CowerFunc
 {
-			 #check cower is installed
-			if ! checkPacFunc cower
-				then
-				msgFunc anykey 
-				return
-			fi
-			clear
-			msgFunc line
-			msgFunc green "AUR packages management by cower. Number of foreign packages installed = $(pacman -Qm | wc -l)"
-			msgFunc line
-			msgFunc norm
-			#local variables
-			local cowerTDVar=""
-			local cowerPacVar=""
-			local choiceCmVar=""
+#check cower is installed
+if ! checkPacFunc cower
+	then
+	msgFunc anykey 
+	return
+fi
+clear
+msgFunc line
+msgFunc green "AUR packages management by cower. Number of foreign packages installed = $(pacman -Qm | wc -l)"
+msgFunc line
+msgFunc norm
+#local variables
+local cowerTDVar=""
+local cowerPacVar=""
+local choiceCmVar=""
 
-			#check for Targetdir setting in cower file
+#check for Targetdir setting in cower file
+if [ -f  "$XDG_CONFIG_HOME/cower/config" ] 
+then
+	cowerTDVar=$( grep  'TargetDir' < "$XDG_CONFIG_HOME/cower/config" )
+	if [[ $cowerTDVar == *'#'* ]]; then
+		msgFunc norm ""
+	else
+		msgFunc red "WARNING: The setting TargetDir in cower config file detected as set"
+		msgFunc red "Must be commented out as #TargetDir for cylon to work"
+		 grep  'TargetDir' < "$XDG_CONFIG_HOME/cower/config"
+	fi
+else 
+	if [ -f "$HOME/.config/cower/config" ] 
+	then
+		cowerTDVar=$( grep  'TargetDir' < "$HOME/.config/cower/config" )
+		if [[ $cowerTDVar == *'#'* ]]; then
+			msgFunc norm ""
+		else
+			msgFunc red "WARNING: The setting TargetDir in cower config file detected as set"
+			msgFunc red "Must be commented out as #TargetDir for cylon to work"
+			grep  'TargetDir' < "$HOME/.config/cower/config"
+		fi
+	else
+		msgFunc red "config file not found, see man cower"
+	fi
+fi
+
+#Display cower menu options
+msgFunc blue "AUR package install and updates by cower, options:-"
+local optionsCArr=("Check network and check for AUR updates (no download), cower -uc" "Information for package, cower -ic" "Search for package, cower -sc" \
+"Download package, cower -dc + optional Install" "Get updates for installed packages, cower -dvuc + Update" \
+"Download package only, no install. cower -dc" \
+"Make copy of package lists" "Read AUR Package comments" "Edit cower config file" \
+"Remove foreign packages explicitly installed menu" "Display AUR packages with no Maintainer" "Return")
+select choiceCmVar in "${optionsCArr[@]}"
+do
+case "$choiceCmVar" in
+	"${optionsCArr[0]}") #check for updates 
+		msgFunc green  "Check network and then check for updates"
+		#check network connectivity if good get updates numbers from arch
+		checkNetFunc "aur.archlinux.org"
+		msgFunc norm "Number of updates available for installed AUR packages :..."
+		cower -u | wc -l
+		cower -uc
+		msgFunc anykey
+	;;
+	#search AUR with cower with optional install
+	"${optionsCArr[1]}")msgFunc green "${GREEN}Information for AUR package , cower -i"
+		msgFunc norm "Type a AUR package name:-"
+		read -r cowerPacVar
+		msgFunc norm " " 
+		cower -i -c "$cowerPacVar" 
+		msgFunc anykey
+	;;
+
+	"${optionsCArr[2]}") msgFunc green "${GREEN}Search for AUR package, cower -s"
+	#cower -s 
+		msgFunc norm "Type a AUR package name:-"
+		read -r cowerPacVar		
+		msgFunc norm " " 
+		cower -s -c "$cowerPacVar" 
+		msgFunc anykey
+	;;
+
+	"${optionsCArr[3]}")#cower -d Download AUR package with an optional install
+		msgFunc green "${GREEN}Download AUR package cower -d with an optional install"
+		makeDirFunc "-AURDOWNLOAD"
+		#build and install packages
+		msgFunc norm "Type a AUR package name:-"
+		read -r cowerPacVar		
+		cower -d -c	 "$cowerPacVar" || return
+		cd "$cowerPacVar" || return
+		msgFunc green "$cowerPacVar PKGBUILD: Please read"
+		cat PKGBUILD
+		msgFunc green "PKGBUILDS displayed above. Install  [y/n] ?"
+		if msgFunc yesno
+			then #yes
+				msgFunc norm  "Installing package $cowerPacVar"
+				makepkg -si		
+		fi
+	 ;;
+		
+	#check for updates cower and optional install 
+	"${optionsCArr[4]}")msgFunc green "Update AUR packages  cower -du  "		
+	#make cower update directory
+	makeDirFunc "-AURUPDATES" 
+	cower -d -vuc #|| return
+	
+	# look for empty dir (i.e. if no updates) 
+	#check  directory has child directories?
+	local subdircountVar=""
+	subdircountVar=$(find ./* -type d 2</dev/null | wc -l)
+	#check for more than 2 subdir 
+	if [  "$subdircountVar" -gt 0 ] 
+	then
+		msgFunc norm  "Package builds available"
+		ls 
+		msgFunc norm " "
+		msgFunc green "View package builds [y/n] ?"
+		if msgFunc yesno
+			then #yes
+			msgFunc green " Viewing  PKGBUILDS of updates :-" 
+			#cat PKGBUILDs to screen
+			find . -name PKGBUILD -exec cat {} \; | more
+			msgFunc green "PKGBUILDS displayed above."
+			msgFunc anykey
+			msgFunc line
+		fi
+		msgFunc green "Install all updates [y/n] ?"
+		if msgFunc yesno
+			then #yes
+				#build and install all donwloaded PKGBUILD files 
+				msgFunc norm  "Installing packages"
+				find . -name PKGBUILD -execdir makepkg -si \;
+		fi
+	else
+		msgFunc norm "No updates found for installed AUR packages by Cower."
+	fi	
+	;;
+						
+	"${optionsCArr[5]}") #cower -d Download AUR package with NO Install.
+		msgFunc green "${GREEN}Download AUR package cower -d"
+		makeDirFunc "-AURDOWNLOAD"
+		#build and install packages
+		msgFunc norm "Type a AUR package name:-"
+		read -r cowerPacVar		
+		cower -d -c	 "$cowerPacVar" || return
+		msgFunc anykey
+	;;
+						
+	"${optionsCArr[6]}") #Make copy of package lists"
+	msgFunc green "Make copy of package lists"
+	pkglistFunc
+	msgFunc anykey
+	;;
+						
+	"${optionsCArr[7]}") #read comments
+			msgFunc green "Read AUR Package comments"
+			makeDirFunc "-AURDOWNLOAD"
+			msgFunc norm "Type a AUR package name:-"
+			read -r cowerPacVar		
+			aururl="aur.archlinux.org"
+			curl -s "https://${aururl}/packages/$cowerPacVar/?comments=all" | sed -r -n -e "/<div id=\"news\">/,/<!-- End of main content -->/p" | sed -e 's/<[^>]*>//g' > AURcommentfile.
+			msgFunc anykey
+	;;
+	"${optionsCArr[8]}") #edit the config file see man cower
+	msgFunc green "Edit cower config file"
 			if [ -f  "$XDG_CONFIG_HOME/cower/config" ] 
-					then
-						cowerTDVar=$( grep  'TargetDir' < "$XDG_CONFIG_HOME/cower/config" )
-						if [[ $cowerTDVar == *'#'* ]]; then
-							msgFunc norm ""
-						else
-							msgFunc red "WARNING: The setting TargetDir in cower config file detected as set"
-							msgFunc red "Must be commented out as #TargetDir for cylon to work"
-							 grep  'TargetDir' < "$XDG_CONFIG_HOME/cower/config"
-						fi
-					else 
-						if [ -f "$HOME/.config/cower/config" ] 
-						then
-							cowerTDVar=$( grep  'TargetDir' < "$HOME/.config/cower/config" )
-							if [[ $cowerTDVar == *'#'* ]]; then
-								msgFunc norm ""
-							else
-								msgFunc red "WARNING: The setting TargetDir in cower config file detected as set"
-								msgFunc red "Must be commented out as #TargetDir for cylon to work"
-								grep  'TargetDir' < "$HOME/.config/cower/config"
-							fi
-						else
-							msgFunc red "config file not found, see man cower"
-						fi
-					fi
-
-			#Display cower menu options
-			msgFunc blue "AUR package install and updates by cower, options:-"
-			local optionsCArr=("Check network and check for AUR updates (no download), cower -uc" "Information for package, cower -ic" "Search for package, cower -sc" \
-			"Download package, cower -dc + optional Install" "Get updates for installed packages, cower -dvuc + Update" \
-			"Download package only, no install. cower -dc" \
-			"Make copy of package lists" "Read AUR Package comments"\
-			"Edit cower config file" "Remove foreign packages explicitly installed menu" "Return")
-			select choiceCmVar in "${optionsCArr[@]}"
-			do
-			case "$choiceCmVar" in    
-						"${optionsCArr[0]}") #check for updates 
-							msgFunc green  "Check network and then check for updates"
-							#check network connectivity if good get updates numbers from arch
-							checkNetFunc "aur.archlinux.org"
-							msgFunc norm "Number of updates available for installed AUR packages :..."
-							cower -u | wc -l
-							cower -uc
-							msgFunc anykey
-						;;
-						#search AUR with cower with optional install
-						"${optionsCArr[1]}")msgFunc green "${GREEN}Information for AUR package , cower -i"
-							msgFunc norm "Type a AUR package name:-"
-							read -r cowerPacVar
-							msgFunc norm " " 
-							cower -i -c "$cowerPacVar" 
-							msgFunc anykey
-						;;
-						
-						"${optionsCArr[2]}") msgFunc green "${GREEN}Search for AUR package, cower -s"
-						#cower -s 
-							msgFunc norm "Type a AUR package name:-"
-							read -r cowerPacVar		
-							msgFunc norm " " 
-							cower -s -c "$cowerPacVar" 
-							msgFunc anykey
-						;;
-						
-						"${optionsCArr[3]}")#cower -d Download AUR package with an optional install
-							msgFunc green "${GREEN}Download AUR package cower -d with an optional install"
-							makeDirFunc "-AURDOWNLOAD"
-							#build and install packages
-							msgFunc norm "Type a AUR package name:-"
-							read -r cowerPacVar		
-							cower -d -c	 "$cowerPacVar" || return
-							cd "$cowerPacVar" || return
-							msgFunc green "$cowerPacVar PKGBUILD: Please read"
-							cat PKGBUILD
-							msgFunc green "PKGBUILDS displayed above. Install  [y/n] ?"
-							if msgFunc yesno
-								then #yes
-									msgFunc norm  "Installing package $cowerPacVar"
-									makepkg -si		
-							fi
-						 ;;
-						
-						#check for updates cower and optional install 
-						"${optionsCArr[4]}")msgFunc green "Update AUR packages  cower -du  "		
-						#make cower update directory
-						makeDirFunc "-AURUPDATES" 
-						cower -d -vuc #|| return
-						
-						# look for empty dir (i.e. if no updates) 
-						#check  directory has child directories?
-						local subdircountVar=""
-						subdircountVar=$(find ./* -type d 2</dev/null | wc -l)
-						#check for more than 2 subdir 
-						if [  "$subdircountVar" -gt 0 ] 
-						then
-							msgFunc norm  "Package builds available"
-							ls 
-							msgFunc norm " "
-							msgFunc green "View package builds [y/n] ?"
-							if msgFunc yesno
-								then #yes
-								msgFunc green " Viewing  PKGBUILDS of updates :-" 
-								#cat PKGBUILDs to screen
-								find . -name PKGBUILD -exec cat {} \; | more
-								msgFunc green "PKGBUILDS displayed above."
-								msgFunc anykey
-								msgFunc line
-							fi
-							msgFunc green "Install all updates [y/n] ?"
-							if msgFunc yesno
-								then #yes
-									#build and install all donwloaded PKGBUILD files 
-									msgFunc norm  "Installing packages"
-									find . -name PKGBUILD -execdir makepkg -si \;
-							fi
-						else
-							msgFunc norm "No updates found for installed AUR packages by Cower."
-						fi	
-						;;
-						
-						"${optionsCArr[5]}") #cower -d Download AUR package with NO Install.
-							msgFunc green "${GREEN}Download AUR package cower -d"
-							makeDirFunc "-AURDOWNLOAD"
-							#build and install packages
-							msgFunc norm "Type a AUR package name:-"
-							read -r cowerPacVar		
-							cower -d -c	 "$cowerPacVar" || return
-							msgFunc anykey
-						;;
-						
-						"${optionsCArr[6]}") #Make copy of package lists"
-						msgFunc green "Make copy of package lists"
-						pkglistFunc
-						msgFunc anykey
-						;;
-						
-						"${optionsCArr[7]}") #read comments
-								msgFunc green "Read AUR Package comments"
-								makeDirFunc "-AURDOWNLOAD"
-								msgFunc norm "Type a AUR package name:-"
-								read -r cowerPacVar		
-								aururl="aur.archlinux.org"
-								curl -s "https://${aururl}/packages/$cowerPacVar/?comments=all" | sed -r -n -e "/<div id=\"news\">/,/<!-- End of main content -->/p" | sed -e 's/<[^>]*>//g' > AURcommentfile.
-								msgFunc anykey
-						;;
-						"${optionsCArr[8]}") #edit the config file see man cower
-						msgFunc green "Edit cower config file"
-								if [ -f  "$XDG_CONFIG_HOME/cower/config" ] 
-								then
-									$EDITOR "$XDG_CONFIG_HOME/cower/config"
-								else 
-									 if [ -f "$HOME/.config/cower/config" ] 
-									 then
-										$EDITOR "$HOME/.config/cower/config"
-									  else
-										msgFunc red "config file not found, see man cower"
-									fi
-								fi
-						msgFunc anykey
-					;;
-					
-					"${optionsCArr[9]}") #Delete foreign packages 
-							DelQmFunc
-					;;
-						
-					*)  #exit to main menu 
-						clear
-						return
-					;;
-				 esac
-				 break
-				 done
-				msgFunc green "Done!"
+			then
+				$EDITOR "$XDG_CONFIG_HOME/cower/config"
+			else 
+				 if [ -f "$HOME/.config/cower/config" ] 
+				 then
+					$EDITOR "$HOME/.config/cower/config"
+				  else
+					msgFunc red "config file not found, see man cower"
+				fi
+			fi
+	msgFunc anykey
+	;;
+	
+	"${optionsCArr[9]}") #Delete foreign packages 
+			DelQmFunc
+	;;
+		
+	"${optionsCArr[10]}") #Display installed AUR packages with no Maintainer  
+		msgFunc green "Display AUR packages with no Maintainer scan ..."
+		local orphansVar=0
+		local statusVar=""
+		for i in $(pacman -Qmq); 
+		do
+				statusVar=$(cower -i --format %m "$i")
+				if [ "$statusVar" == "(orphan)" ]; then
+					msgFunc norm "$i"
+					orphansVar=1
+				fi
+		done
+		
+		if [ $orphansVar -eq 0 ]; then
+				msgFunc yellow "No AUR packages with no Maintainer found!"
+		fi
+		msgFunc anykey
+	;;
+	
+	*)  #exit to main menu 
+		clear
+		return
+	;;
+esac
+break
+done
+msgFunc green "Done!"
 }
-
 
 #FUNCTION HEADER
 # NAME :  DelQmFunc
@@ -214,33 +232,32 @@ function DelQmFunc
 	IFS=$'\n' DelQmArr=($(sort <<<"${DelQmArr[*]}"))
 	unset IFS
 	dialog --title "Output of pacman -Qmq:" --begin 1 1  --no-items --menu "Select Package to Remove:" 20 40 10 "${DelQmArr[@]}"  2>/tmp/cylontempfile
-				case $? in
-				0)
-					clear
-					msgFunc norm " "
-					local mySelectionVar=""
-					mySelectionVar=$(cat /tmp/cylontempfile)
-					msgFunc yellow "\"$mySelectionVar\" is the chosen package."
-					msgFunc anykey "and uninstall it. pacman -Rs"
-					sudo pacman -Rs "$mySelectionVar"
-					mySelectionVar=""
-					rm /tmp/cylontempfile
-					msgFunc anykey
-					DelQmArr=()
-					clear
-				;;
-				1)
-					clear
-					msgFunc yellow "Cancel pressed."
-					DelQmArr=()
-					return
-				;;
-				255)
-					clear
-					msgFunc yellow "Esc pressed."
-					DelQmArr=()
-					return
-				;;
-			esac
-			
-}  
+		case $? in
+		0)
+			clear
+			msgFunc norm " "
+			local mySelectionVar=""
+			mySelectionVar=$(cat /tmp/cylontempfile)
+			msgFunc yellow "\"$mySelectionVar\" is the chosen package."
+			msgFunc anykey "and uninstall it. pacman -Rs"
+			sudo pacman -Rs "$mySelectionVar"
+			mySelectionVar=""
+			rm /tmp/cylontempfile
+			msgFunc anykey
+			DelQmArr=()
+			clear
+		;;
+		1)
+			clear
+			msgFunc yellow "Cancel pressed."
+			DelQmArr=()
+			return
+		;;
+		255)
+			clear
+			msgFunc yellow "Esc pressed."
+			DelQmArr=()
+			return
+		;;
+	esac
+}

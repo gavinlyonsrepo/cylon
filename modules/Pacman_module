@@ -112,14 +112,20 @@ function PacmanFunc
 				;;
 				
 				"${optionsPMArr[12]}")#delete orphans
-					msgFunc green "Delete orphans!"
+					msgFunc green "Remove orphans!"
 					#Remove all packages not required as dependencies (orphans)
-					sudo pacman -Rns $(pacman -Qtdq)
+					msgFunc norm "Number of orphans: $(pacman -Qtdq | wc -l)"
+					pacman -Qtdq 
+					msgFunc norm "Do you want to remove them? [y/n]"
+					if msgFunc yesno 
+					then
+						sudo pacman -Rns $(pacman -Qtdq) || msgFunc yellow "no orphans to remove"
+					fi
 				;;
 
 				"${optionsPMArr[13]}")
 					msgFunc green "Make copy of package lists"
-					pkglistFunc
+					pkglistFunc "$@"
 				;;
 				"${optionsPMArr[14]}") #backup the pacman database
 					msgFunc green "Back-up the pacman database to :"
@@ -214,108 +220,129 @@ function PacmanFunc
 # DESCRIPTION :     Display 4 Arch Linux News Rss feed
 function RssFunc 
 {
-		#Display 4 Arch Linux News Rss feed
-		msgFunc green "Arch Linux News Rss feed"
-		msgFunc norm "Enter number of items of news to fetch or press [ENTER] for default of 1"
-		read -r numitemsVar
-		#check if empty
-		if [ -z "${numitemsVar}" ]
-			then 
-				numitemsVar=1 #default if user just pressed enter
-		fi
-		
-		#integer check function call
-		intchkFunc "$numitemsVar"
-		# Set numitemsVar to N in awk  to be the number of latest news to fetch
-		newsVar=$(echo -e $(curl --silent https://www.archlinux.org/feeds/news/  | awk -v N="$numitemsVar" ' NR == 1 {countVar = N; while (countVar) {print;getline; if($0 ~ /<\/item>/) countVar=countVar-1} ; sub(/<\/item>.*/,"</item>") ;print}'))
-		#  THE RSS PARSER Remove some tags 
-		newsVar=$(echo -e "$newsVar" | \
-		awk '{
-		sub(/<lastBuildDate[^>]*>([^>]*>)/,"");sub(/<language[^>]*>([^>]*>)/,"");sub(/<title[^>]*>([^>]*>)/,"");sub(/<link[^>]*>([^>]*>)/,""); 
-		while (sub(/<guid[^>]*>([^>]*>)/,"")); 
-		while (sub(/<dc:creator[^>]*>([^>]*>)/,""));
-		while (sub(/<description[^>]*>([^>]*>)/,"")); print }' | \
-		sed -e ':a;N;$!ba;s/\n/ /g')
-		echo -e "$(echo -e "$newsVar" | \
-		sed -e 's/&amp;/\&/g
-		s/&lt;\|&#60;/</g
-		s/&gt;\|&#62;/>/g
-		s/<\/a>/£/g
-		s/href\=\"/§/g
-		s/<title>/\\n\\n :: \\e[01;31m/g; s/<\/title>/\\e[00m ::/g
-		s/<link>/\\n [ \\e[01;36m/g; s/<\/link>/\\e[00m ]\\n/g
-		s/<p\( [^>]*\)\?>\|<br\s*\/\?>/\n/g
-		s/<b\( [^>]*\)\?>\|<strong\( [^>]*\)\?>/\\e[01;30m/g; s/<\/b>\|<\/strong>/\\e[00;37m/g
-		s/<i\( [^>]*\)\?>\|<em\( [^>]*\)\?>/\\e[41;37m/g; s/<\/i>\|<\/em>/\\e[00;37m/g
-		s/<u\( [^>]*\)\?>/\\e[4;37m/g; s/<\/u>/\\e[00;37m/g
-		s/<code\( [^>]*\)\?>/\\e[00m/g; s/<\/code>/\\e[00;37m/g
-		s/<a[^§|t]*§\([^\"]*\)\"[^>]*>\([^£]*\)[^£]*£/\\e[01;31m\2\\e[00;37m \\e[01;34m[\\e[00;37m \\e[04m\1\\e[00;37m\\e[01;34m ]\\e[00;37m/g
-		s/<li\( [^>]*\)\?>/\n \\e[01;34m*\\e[00;37m /g
-		s/<!\[CDATA\[\|\]\]>//g
-		s/\|>\s*<//g
-		s/ *<[^>]\+> */ /g
-		s/[<>£§]//g')"    
-		#end
+	#Display 4 Arch Linux News Rss feed
+	msgFunc green "Arch Linux News Rss feed"
+	msgFunc norm "Enter number of items of news to fetch or press [ENTER] for default of 1"
+	read -r numitemsVar
+	#check if empty
+	if [ -z "${numitemsVar}" ]
+		then 
+			numitemsVar=1 #default if user just pressed enter
+	fi
+	
+	#integer check function call
+	intchkFunc "$numitemsVar"
+	# Set numitemsVar to N in awk  to be the number of latest news to fetch
+	newsVar=$(echo -e $(curl --silent https://www.archlinux.org/feeds/news/  | awk -v N="$numitemsVar" ' NR == 1 {countVar = N; while (countVar) {print;getline; if($0 ~ /<\/item>/) countVar=countVar-1} ; sub(/<\/item>.*/,"</item>") ;print}'))
+	#  THE RSS PARSER Remove some tags 
+	newsVar=$(echo -e "$newsVar" | \
+	awk '{
+	sub(/<lastBuildDate[^>]*>([^>]*>)/,"");sub(/<language[^>]*>([^>]*>)/,"");sub(/<title[^>]*>([^>]*>)/,"");sub(/<link[^>]*>([^>]*>)/,""); 
+	while (sub(/<guid[^>]*>([^>]*>)/,"")); 
+	while (sub(/<dc:creator[^>]*>([^>]*>)/,""));
+	while (sub(/<description[^>]*>([^>]*>)/,"")); print }' | \
+	sed -e ':a;N;$!ba;s/\n/ /g')
+	echo -e "$(echo -e "$newsVar" | \
+	sed -e 's/&amp;/\&/g
+	s/&lt;\|&#60;/</g
+	s/&gt;\|&#62;/>/g
+	s/<\/a>/£/g
+	s/href\=\"/§/g
+	s/<title>/\\n\\n :: \\e[01;31m/g; s/<\/title>/\\e[00m ::/g
+	s/<link>/\\n [ \\e[01;36m/g; s/<\/link>/\\e[00m ]\\n/g
+	s/<p\( [^>]*\)\?>\|<br\s*\/\?>/\n/g
+	s/<b\( [^>]*\)\?>\|<strong\( [^>]*\)\?>/\\e[01;30m/g; s/<\/b>\|<\/strong>/\\e[00;37m/g
+	s/<i\( [^>]*\)\?>\|<em\( [^>]*\)\?>/\\e[41;37m/g; s/<\/i>\|<\/em>/\\e[00;37m/g
+	s/<u\( [^>]*\)\?>/\\e[4;37m/g; s/<\/u>/\\e[00;37m/g
+	s/<code\( [^>]*\)\?>/\\e[00m/g; s/<\/code>/\\e[00;37m/g
+	s/<a[^§|t]*§\([^\"]*\)\"[^>]*>\([^£]*\)[^£]*£/\\e[01;31m\2\\e[00;37m \\e[01;34m[\\e[00;37m \\e[04m\1\\e[00;37m\\e[01;34m ]\\e[00;37m/g
+	s/<li\( [^>]*\)\?>/\n \\e[01;34m*\\e[00;37m /g
+	s/<!\[CDATA\[\|\]\]>//g
+	s/\|>\s*<//g
+	s/ *<[^>]\+> */ /g
+	s/[<>£§]//g')"    
+	#end
 }
 
 #FUNCTION HEADER
 # NAME :            pkglistFunc
 #INPUT $1 Backup if called from backup do not create directory
 # DESCRIPTION :creates a copy of packages list see below.
-#OUTPUT seven files see below
-#NOTE called from pacman pacur cower and backup  functions 
+#OUTPUT mutliple files see below
+#NOTE called from pacman pacur cower and backup functions 
  # shellcheck disable=SC2120
 function pkglistFunc
 {
-				msgFunc green "Making a copy of package lists "
-				#check for input if Backup called from backup do not create dir
-				if [ "$1" != "Backup" ]
-				then
-					makeDirFunc "-PKGINFO"
-				fi
-				
-				msgFunc green "All installed packages: pkglistQ.txt" 
-				pacman -Q | wc -l
-				pacman -Q  > pkglistQ.txt
-				
-				msgFunc green "All native packages: pkglistQn.txt" 
-				pacman -Qn | wc -l
-				pacman -Qn > pkglistQn.txt
-				
-				msgFunc green "All explicitly installed packages: pkglistQe.txt" 
-				pacman -Qe | wc -l
-				pacman -Qe  > pkglistQe.txt
-				
-				msgFunc green "All explicitly installed native packages that are"
-				msgFunc green "not direct or optional dependencies: pkglistQgent.txt"
-				pacman -Qqent | wc -l
-				pacman -Qqent > pkglistQqent.txt
-				
-				msgFunc green "All foreign installed packages: pkglistQm.txt"
-				pacman -Qm | wc -l
-				pacman -Qm > pkglistQm.txt
-				
-				msgFunc green "All foreign explicitly installed packages: pkglistQme.txt"
-				pacman -Qme | wc -l
-				pacman -Qme > pkglistQme.txt
-				
-				msgFunc green "All explicitly installed packages not in base nor base-devel with size"
-				msgFunc green "and description: pkglistNonBase.txt"
-				expac -H M "%011m\t%-20n\t%10d" $(comm -23 <(pacman -Qqen | sort) <(pacman -Qqg base base-devel | sort))\
-				| sort -hr > pkglistNonBase.txt 
-				wc -l < pkglistNonBase.txt 
-				
-				msgFunc green "All installed packages sorted by size: pkglistSize.txt"
-				expac -H M '%m\t%n' | sort -hr > pkglistSize.txt
-				msgFunc norm "Largest package :$(head -1 pkglistSize.txt)"
-				
-				msgFunc green "All installed packages sorted by install date: pkglistDate.txt"
-				expac --timefmt='%Y-%m-%d %T' '%l\t%n' | sort -hr > pkglistDate.txt
-				msgFunc norm "Newest package :$(head -1 pkglistDate.txt)"
-				
-				msgFunc green "All .pacnew and .pacsave files :  pacNewSaveFiles.txt"
-				find / -regextype posix-extended -regex ".+\.pac(new|save)" 2> /dev/null > pacNewSaveFiles.txt
-				wc -l < pacNewSaveFiles.txt 
+	clear
+	msgFunc green "Making a copy of package lists"
+	#check for input if Backup called from backup do not create dir
+	if [ "$1" != "Backup" ]
+	then
+		makeDirFunc "-PKGINFO"
+	fi
+	msgFunc norm "Searching / please wait ...."
+	#find pacsave
+	msgFunc norm "All .pacnew and .pacsave files : pacNewSaveFiles.txt" #1
+	find / -regextype posix-extended -regex ".+\.pac(new|save)" 2> /dev/null > pacNewSaveFiles.txt
+	#pacman -Q*
+	msgFunc norm "All installed packages: pkglistQ.txt" #2
+	pacman -Q  > pkglistQ.txt
+	
+	msgFunc norm "All native packages: pkglistQn.txt"  #3
+	pacman -Qn > pkglistQn.txt
+	
+	msgFunc norm "All explicitly installed packages: pkglistQe.txt"  #4
+	pacman -Qe  > pkglistQe.txt
+	
+	msgFunc norm "All explicitly installed native packages that are" #5
+	msgFunc norm "not direct or optional dependencies: pkglistQent.txt"
+	pacman -Qent > pkglistQent.txt
+	
+	msgFunc norm "All foreign installed packages: pkglistQm.txt" #6
+	pacman -Qm > pkglistQm.txt
+	
+	msgFunc norm "All foreign explicitly installed packages: pkglistQme.txt" #7
+	pacman -Qme > pkglistQme.txt
+	
+	msgFunc norm "All orphan packages not required as dependencies: pkgOpn.txt"
+	pacman -Qtdq > pkgOpn.txt #8
+	
+	msgFunc norm "All modified by user system backup files : pkgSysBck.txt"
+	pacman -Qii | awk '/^MODIFIED/ {print $2}' > pkgSysBck.txt  #9
+	
+	msgFunc norm "All packages installed as dependencies : pkgDepInstall.txt"
+	pacman -Qd > pkgDepInstall.txt #10
+	
+	msgFunc norm "All explicitly installed native packages quiet output for system restore : pkglistQqne.txt"
+	pacman -Qqne > pkglistQqne.txt #11
+	
+	#expac
+	msgFunc norm "All explicitly installed packages not in base nor base-devel with size"
+	msgFunc norm "and description: pkglistNonBase.txt"
+	expac -H M "%011m\t%-20n\t%10d" $(comm -23 <(pacman -Qqen | sort) <(pacman -Qqg base base-devel | sort))\
+	| sort -hr > pkglistNonBase.txt #12 
+	
+	msgFunc norm "All installed packages sorted by size: pkglistSize.txt"
+	expac -H M '%m\t%n' | sort -hr > pkglistSize.txt #13
+	
+	msgFunc norm "All installed packages sorted by install date: pkglistDate.txt"
+	expac --timefmt='%Y-%m-%d %T' '%l\t%n' | sort -hr > pkglistDate.txt #14
+	
+	msgFunc norm "All installed groups: pkgGroups.txt"
+	expac -g '%G' | sort -u > pkgGroups.txt #15
+	#paclist
+	msgFunc norm "Packages by repositories:-"
+	msgFunc norm "Core: $(paclist core > pkgCore.txt ) : pkgCore.txt" #16
+	msgFunc norm "Extra: $(paclist extra > pkgExtra.txt ) : pkgExtra.txt" #17
+	msgFunc norm "Community: $(paclist community > pkgComm.txt ) : pkgComm.txt" #18
+	msgFunc norm "Multilib: $(paclist multilib > pkgMulib.txt ): pkgMulib.txt" #19
+	
+	msgFunc norm "System packages list information summary : pkginfo.txt"  #20
+	{
+	echo "See https://github.com/gavinlyonsrepo/cylon/blob/master/documentation/package_lists.md for more information" 
+	echo "Line count of package files:"
+	wc -l ./*txt | head -n -1 | sort
+	} >> pkginfo.txt
 }
 
 ##FUNCTION HEADER
@@ -362,26 +389,26 @@ function updateFunc
 		msgFunc blue "Update options:-"
 		local optionsPArr=("pacman -Syu Update Main only" \
 "pacaur -Syu Update  All" "pacaur -u Update AUR only " "No Update exit")
-				select choiceUfVar in "${optionsPArr[@]}"
-				do
-				case "$choiceUfVar" in  
-				"${optionsPArr[0]}")
-					sudo pacman -Syu
-				;;
-				
-				"${optionsPArr[1]}")
-					pacaur -Syu
-				;;
-				
-				"${optionsPArr[2]}")
-					pacaur -u
-				;;
-				
-				*)msgFunc norm " "
-				;;
-				esac
-				break
-				done
+		select choiceUfVar in "${optionsPArr[@]}"
+		do
+		case "$choiceUfVar" in  
+		"${optionsPArr[0]}")
+			sudo pacman -Syu
+		;;
+		
+		"${optionsPArr[1]}")
+			pacaur -Syu
+		;;
+		
+		"${optionsPArr[2]}")
+			pacaur -u
+		;;
+		
+		*)msgFunc norm " "
+		;;
+		esac
+		break
+		done
 		msgFunc green "Done!"
 		msgFunc anykey
 }

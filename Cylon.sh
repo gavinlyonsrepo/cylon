@@ -20,9 +20,10 @@
 RED=$(printf "\033[31;1m")
 GREEN=$(printf "\033[32;1m")
 YELLOW=$(printf "\033[33;1m")
+#DARKBLUE=$(printf "\033[34;1m") #not used.
 BLUE=$(printf "\033[36;1m")
 HL=$(printf "\033[42;1m")
-NORMAL=$(printf "\033[0m") 
+NORMAL=$(printf "\033[0m")
 
 #prompt for select menus
 PS3="${BLUE}By your command:${NORMAL}"
@@ -37,9 +38,7 @@ fi
 #Setup the Program Paths aka DESTs
 #1 and 2 are backups path from config file 3 = program output, 4 = general use
 #5 = config file,  6 = Documentation 7 = module library location
-
 #if environmental variable CYLONDEST exists set it to program output path DEST3
-#and make the path for DEST3
 if [ -z "${CYLONDEST}" ]
 then 
 	#default path for program output
@@ -48,7 +47,7 @@ else
 	DEST3="$CYLONDEST"
 fi
 mkdir -p "$DEST3"
-#set the path for optional config file DEST5 and
+#set the path for optional config file DEST5 
 DEST5="$HOME/.config/cylon"
 mkdir -p "$DEST5"
 #set path for readme.md changlog.md DEST6
@@ -77,12 +76,7 @@ fi
 #Display opening screen title 
 clear
 msgFunc line
-msgFunc blue "                           _         _        _                         "
-msgFunc blue "     /\                   | |       | |      (_)                        "
-msgFunc blue "    /  \     _ __    ___  | |__     | |       _   _ __    _   _  __  __ "
-msgFunc blue "   / /\ \   | '__|  / __| | '_ \    | |      | | | '_ \  | | | | \ \/ / "
-msgFunc blue "  / ____ \  | |    | (__  | | | |   | |____  | | | | | | | |_| |  >  <  "
-msgFunc blue " /_/    \_\ |_|     \___| |_| |_|   |______| |_| |_| |_|  \__,_| /_/\_\ "
+AsciiArtFunc "ARCH"
 msgFunc line
 msgFunc highlight "$(pacman -Qs cylon | head -1 | cut -c 7-20) -- Arch Linux Maintenance Program"
 msgFunc norm "$(date +%T-%d-%a-Week%U-%b-%Y)"

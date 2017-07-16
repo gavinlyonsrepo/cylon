@@ -389,9 +389,9 @@ system and cylon. Weather forecast and terminal launcher.
 
 See Also
 -----------
-(REF1): packages files list referenced above at marker REF1 can be viewed 
-in package_lists.md, which is in the sub-folder documentation of repository 
-The package files list is a collection of various lists describing your system
+(REF1): Packages files list referenced above at marker REF1 can be viewed 
+in package_lists.md, which is in the sub-folder documentation of repository. 
+The package files list is a collection of 20 plus lists describing the system.
 
 There are screenshots in the repository screenshot folder and 
 various support documents in the repository documentation folder.
@@ -408,7 +408,7 @@ and new features welcome.
 History
 ------------------
 * First Commit to AUR: version 1.3-1 08-09-16
-* Latest Version release : version 4.1-2 26-06-17 
+* Latest Version release : version 4.2-3 20-07-17 
 * See changelog.md in documentation section for version control history
 * Contributors: "binaryplease"  "uros-stegic" 
  
