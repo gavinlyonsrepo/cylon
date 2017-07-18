@@ -29,7 +29,7 @@ Reporting bugs, discussing installed packages
 | 20 | System packages information summary | pkginfo.txt |
 
 
-#Index commands
+# Index commands
 
 1. find / -regextype posix-extended -regex ".+\.pac(new|save)" 2> /dev/null
 2. pacman -Q
