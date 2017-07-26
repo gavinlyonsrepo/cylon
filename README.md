@@ -107,6 +107,8 @@ The config file can be edited from a main menu option or by option -c
 
 cylonCfg.conf file setup example:
 Just copy and paste this into file and change paths for your setup.
+alternatively a config file template with dummy values is in documentation folder
+of the repository.
 
 > Destination1="/run/media/$USER/Linux_backup"
 >
