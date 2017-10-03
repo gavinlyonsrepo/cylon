@@ -260,11 +260,11 @@ msgFunc norm "Operating System = $(uname -mo)"
 msgFunc norm "Network node name = $(uname -n)"
 msgFunc norm "User name = $USER"
 msgFunc norm "Shell = $SHELL"
-#if type -p xrandr >/dev/null; then
+if type -p xrandr >/dev/null; then
 	msgFunc norm "Screen Resolution = $(xrandr |grep "\*" | cut -c 1-15)"  2>/dev/null
-#elif type -p xdpyinfo >/dev/null; then
-#	msgFunc norm "Screen Resolution = $(xdpyinfo | awk -F '[ x]+' '/dimensions:/{print $3}') x $(xdpyinfo | awk -F '[ x]+' '/dimensions:/{print $4}')"
-#fi
+elif type -p xdpyinfo >/dev/null; then
+	msgFunc norm "Screen Resolution = $(xdpyinfo | awk -F '[ x]+' '/dimensions:/{print $3}') x $(xdpyinfo | awk -F '[ x]+' '/dimensions:/{print $4}')"
+fi
 msgFunc norm "CPU = $(grep name /proc/cpuinfo | tail -1| cut -d ":" -f 2)"
 local memArr=($(awk -F ':| kB' '/MemTotal|MemAvail/ {printf $2}' /proc/meminfo))
 local memusedVar="$((memArr[0] - memArr[1]))"

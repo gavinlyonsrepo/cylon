@@ -89,6 +89,7 @@ while true; do # loop until exit
 			else
 				find / -path /proc -prune -o -type l -! -exec test -e {} \; -print 2>/dev/null > symlinkerr
 			fi
+			msgFunc anykey 
 		;;
 	
 		"${optionsSMArr[5]}")
@@ -124,6 +125,7 @@ while true; do # loop until exit
 			else
 				du -H / 2> /dev/null | sort -n -r >> diskspace
 			fi
+			
 		;;
 		"${optionsSMArr[8]}") #find files
 			msgFunc green "Find 200 of the biggest files"
