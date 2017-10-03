@@ -444,7 +444,7 @@ and new features welcome.
 History
 ------------------
 * First Commit to AUR: version 1.3-1 08-09-16
-* Latest Version release : version 4.2-3 20-07-17 
+* Latest Version release : version 4.3-4 03-10-17 
 * See changelog.md in documentation section for version control history
 * Contributors: "binaryplease"  "uros-stegic" 
  
