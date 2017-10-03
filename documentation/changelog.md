@@ -117,6 +117,6 @@
 	* Ascii art placed in function AsciiArtFunc.
 
 ### Version 4.3-4 031017
-	* Added optional environmental variable for config file location CYLON_DEST
+	* Added optional environmental variable for config file location CYLON_CONFIG
 	* changed 6 menus so they loop until user return.
 	* return codes added
