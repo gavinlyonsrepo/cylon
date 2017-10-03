@@ -73,15 +73,15 @@ function ccryptFunc
 			do
 			case "$choiceCcVar" in 
 			"${optionsccArr[0]}") #Encrypt.
-				msgFunc green "Decrypt  a files to standard output., ccrypt -e"
+				msgFunc green "Ecrypt a file, ccrypt -e"
 				ccrypt -e "$myccfile"
 			;;
 			"${optionsccArr[1]}") #Decrypt
-				msgFunc green "Decrypt  a files to standard output., ccrypt -d"
+				msgFunc green "Decrypt a file, ccrypt -d"
 				ccrypt -d "$myccfile"
 			;;
 			"${optionsccArr[2]}") #Decrypt  files to standard output.
-				msgFunc green "Decrypt  file to standard output., ccrypt -c"
+				msgFunc green "Decrypt file to standard output., ccrypt -c"
 				ccrypt -c "$myccfile"
 			;;
 			"${optionsccArr[3]}") #Edit a Decrypted file

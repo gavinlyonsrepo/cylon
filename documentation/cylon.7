@@ -22,6 +22,13 @@ Sets the output folder for downloads updates etc
 if variable is not set or does not exist,, cylon uses default path at 
 $HOME/Documents/Cylon
 
+.TP
+.B \ CYLON_CONFIG
+example= export CYLON_CONFIG="$HOME/TEST/cylon/config"  ,
+Optional destination for config file.
+if variable is not set or does not exist,, cylon uses default path at 
+$HOME/.config/cylon/cylonCfg.conf
+
 
 .SH OPTIONS
 .TP
@@ -60,10 +67,9 @@ Display the AUR package removal dialog menu function.
 .TP
 .B \-r --rss 
 Print arch news reader last four items
-.TP
 
-.SH FILES
-cylon files 
+
+.SH CYLON FILES
 .TP
 .B \ 
 /usr/bin/cylon (the shell script)
@@ -86,7 +92,8 @@ cylon files
 .B \ 
 $HOME/.config/cylon/cylonCfg.conf (optional, user made, not installed)
 
-.SH CONFIG FILE OPTIONS
+
+.SH CONFIG FILE SETTINGS
 .TP
 .B \ Destination1="/foo/foo/" 
 Backup path 1 destination
@@ -132,7 +139,7 @@ Custom path for clamavscan
 .IP \fB0\fR
 Everything went well
 .IP \fB1\fR
-Error occured and has handled by exithandler function.
+Error occured and  handled by exithandler function.
 
 .SH OTHER
 Most system output (logsfiles, backups, downloads and updates etc) 

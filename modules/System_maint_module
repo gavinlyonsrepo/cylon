@@ -12,196 +12,197 @@
 
 function SystemMaintFunc
 {
-			clear 
-			local choiceSMVar=""
-			local optionsSMArr=("Failed Systemd Services and status" "Check Journalctl log for Errors"\
-				"Check Journalctl for fstrim SSD trim" "Analyze system boot-up performance"\
-				"Check for Broken Symlinks" "Find files where no group or User corresponds to file's numeric ID"\
-				"$(checkPacFunc lostfiles NOMES)" "Diskspace usage" "Find 200 of the biggest files" "Find inodes usage" "Old configuration files scan"\
-				 "Print sensors information" "Clean journal files"\
-				 "Delete core dumps /var/lib/systemd/coredump/" "Delete files"\
-				  "$(checkPacFunc inxi NOMES)"\
-				  "$(checkPacFunc bleachbit NOMES)"\
-				"$(checkPacFunc rmlint NOMES)" "$(checkPacFunc htop NOMES)" "Return")
+clear
+local optionsSMArr=("Failed Systemd Services and status" "Check Journalctl log for Errors"\
+		"Check Journalctl for fstrim SSD trim" "Analyze system boot-up performance"\
+		"Check for Broken Symlinks" "Find files where no group or User corresponds to file's numeric ID"\
+		"$(checkPacFunc lostfiles NOMES)" "Diskspace usage" "Find 200 of the biggest files" "Find inodes usage" "Old configuration files scan"\
+		 "Print sensors information" "Clean journal files"\
+		 "Delete core dumps /var/lib/systemd/coredump/" "Delete files"\
+		  "$(checkPacFunc inxi NOMES)"\
+		  "$(checkPacFunc bleachbit NOMES)"\
+		"$(checkPacFunc rmlint NOMES)" "$(checkPacFunc htop NOMES)" "Return")
+while true; do # loop until exit
+	local choiceSMVar=""
+	#change dir for log files
+	makeDirFunc "-SYSINFO"
+	msgFunc blue "System Maintenance options"
+	select  choiceSMVar in "${optionsSMArr[@]}"
+	do
+	case  "$choiceSMVar" in
+		"${optionsSMArr[0]}")
+		# -systemd --failed:
+			msgFunc green "Systemd status"
+			msgFunc green "Done!"
+			systemctl status > Systemdstatus
+			msgFunc green "All Failed Systemd Services"
+			systemctl --failed --all
+			systemctl --failed --all > Systemderrlog
+			msgFunc green "Done!"
+			msgFunc green "All Failed Active Systemd Services"
+			systemctl --failed
+			systemctl --failed >> Systemderrlog
+		;;
+		"${optionsSMArr[1]}")
+			# -Logfiles:
+			msgFunc green "Check log Journalctl for Errors"
+			journalctl -p 3 -xb > Journalctlerrlog
+		;;
 
-			#change dir for log files
-			makeDirFunc "-SYSINFO"
-			msgFunc blue "System Maintenance options"
-			select  choiceSMVar in "${optionsSMArr[@]}"
-			do
-			case  "$choiceSMVar" in
-				"${optionsSMArr[0]}")
-				# -systemd --failed:
-					msgFunc green "Systemd status"
-					msgFunc green "Done!"
-					systemctl status > Systemdstatus
-					msgFunc green "All Failed Systemd Services"
-					systemctl --failed --all
-					systemctl --failed --all > Systemderrlog
-					msgFunc green "Done!"
-					msgFunc green "All Failed Active Systemd Services"
-					systemctl --failed
-					systemctl --failed >> Systemderrlog
-				;;
-				"${optionsSMArr[1]}")
-					# -Logfiles:
-					msgFunc green "Check log Journalctl for Errors"
-					journalctl -p 3 -xb > Journalctlerrlog
-				;;
-
-				"${optionsSMArr[2]}")
-				#check if ssd trim functioning  ok in log
-				#am I on a sdd drive? , 0 for SDD 1 for HDD from command
-				local sdxVar=""
-				sdxVar="$(df /boot/ --output=source | tail -1 | cut -c 6-8)"
-				sdxVar=$(grep 0 /sys/block/"$sdxVar"/queue/rotational) 
-					if [ "$sdxVar" = "0" ] 
-						then
-						msgFunc green "Check Journalctl for fstrim SSD trim"
-						echo "SSD trim" > JournalctlerrSDDlog
-						journalctl -u fstrim > JournalctlerrSDDlog
-						else 
-						msgFunc red "HDD detected no SSD trim check done"
-					fi
-				;;
-			
-				"${optionsSMArr[3]}")
-					# systemd-analyze - Analyze system boot-up performance
-					msgFunc green "Analyze system boot-up performance"
-					{
-					echo "Analyze boot-up performance"  
-					systemd-analyze time 
-					echo "CRITICAL-CHAIN" 
-					systemd-analyze critical-chain 
-					echo "BLAME" 
-					systemd-analyze blame 
-					} >>  systemdanalyzelog   
-				;;
-				"${optionsSMArr[4]}")
-					#Checking for broken symlinks:
-					msgFunc green "Checking for Broken Symlinks"
-					#root or home?
-					msgFunc norm "Do you want to scan / or $HOME? [R/h]"
-					local choiceSYMVar
-					if [ "$choiceSYMVar" = "h" ]
-					then
-						find "$HOME" -type l -! -exec test -e {} \; -print > symlinkerr
-					else
-						find / -path /proc -prune -o -type l -! -exec test -e {} \; -print 2>/dev/null > symlinkerr
-					fi
-				;;
-			
-				"${optionsSMArr[5]}")
-					msgFunc green "Find files where no group or User corresponds to file's numeric user/group ID."
-					find / -nogroup > filenogrouplog 2> /dev/null
-					find / -nouser  > filenouserlog  2> /dev/null
-				;;
-				
-				"${optionsSMArr[6]}")
-				#check if lostfiles package (AUR) installed
-					if ! checkPacFunc lostfiles
-					then
-						msgFunc anykey 
-					return
-					fi
-					msgFunc green "Lostfiles :-Search for files which are not part of installed Arch Linux packages"
-					msgFunc norm  "Lostfiles strict scan running, outputing to file"
-					sudo bash -c "lostfiles strict  > lostfilesStrictlist.txt" 
-					msgFunc green "Done!"
-					msgFunc norm  "Lostfiles relaxed scan running, outputing to file"
-					sudo bash -c  "lostfiles relaxed > lostfilesRelaxedlist.txt" 
-				;;
-			
-				"${optionsSMArr[7]}")
-				msgFunc green "Diskspace usage"
-				# This is GOLD for finding out what is taking so much space on your drives!
-					msgFunc norm "Do you want to scan / or $HOME? [R/h]"
-					local choiceDUVar=""
-					read -r choiceDUVar
-					if [ "$choiceDUVar" = "h" ]
-					then
-						du -H "$HOME" 2> /dev/null | sort -n -r >> diskspace
-					else
-						du -H / 2> /dev/null | sort -n -r >> diskspace
-					fi
-				;;
-				"${optionsSMArr[8]}") #find files
-					msgFunc green "Find 200 of the biggest files"
-					find / -type f -exec du -Sh {} + 2>/dev/null | sort -rh | head -n 200 > filesortsize
-				;;
-				"${optionsSMArr[9]}") #inodes
-					msgFunc green "Find inodes usage"
-					df -ih | grep sd.
-					msgFunc norm "Output list to fileinodescan"
-					du / -Sh --inodes 2>/dev/null | sort -nr | head -2000 >fileinodescan
-				;;
-				"${optionsSMArr[10]}") #old config files
-					configFileScanFunc
-				;;
-				"${optionsSMArr[11]}")
-						msgFunc green "Print sensor information"
-						sensors
-				;;
-				"${optionsSMArr[12]}")
-					msgFunc green "Clean journalctl files(systemd logging system)"
-					msgFunc norm "Remove archived journal files until the disk space they use falls "
-					msgFunc norm "below 100M: press y or any other key to quit [y/n] ?"
-						if msgFunc yesno
-						then #yes
-							sudo journalctl --vacuum-size=100M
-						else
-							return
-						fi
-				;;
-				"${optionsSMArr[13]}")
-					msgFunc green "Delete core dumps /var/lib/systemd/coredump/"
-					sudo rm -rvf /var/lib/systemd/coredump/*
-				;;
-				"${optionsSMArr[14]}")  # delete folders /files
-					SystemCleanFunc "FOLDERS"
-				;;
-				
-				"${optionsSMArr[15]}")
-					#check if inxi package  installed
-					if ! checkPacFunc inxi
-					then
-						msgFunc anykey 
-						clear
-					break
-					fi
-					# inxi  - Command line system information script for console and IRC
-					msgFunc green "get output of inxi -Fixz"
-					inxi -Fixz | tee inxioutput
-				;;
-				"${optionsSMArr[16]}") #system clean with bleachbit
-					SystemCleanFunc
-				;;
-				"${optionsSMArr[17]}") #rmlint 
-					RmLintFunc
-				;;
-				"${optionsSMArr[18]}")  # htop - interactive process viewer
-					#check if htop package  installed
-					if ! checkPacFunc htop
-					then
-						msgFunc anykey 
-						clear
-					break
-					fi
-					xterm -e "htop" &  
-				;;
-				
-				*)#quit
-					msgFunc green "Done!"
-					clear
-					return
-				;;
-				
-			esac
-			break 
-			done
-			msgFunc green "Done!"	
-			msgFunc anykey 
+		"${optionsSMArr[2]}")
+		#check if ssd trim functioning  ok in log
+		#am I on a sdd drive? , 0 for SDD 1 for HDD from command
+		local sdxVar=""
+		sdxVar="$(df /boot/ --output=source | tail -1 | cut -c 6-8)"
+		sdxVar=$(grep 0 /sys/block/"$sdxVar"/queue/rotational) 
+		if [ "$sdxVar" = "0" ] 
+			then
+			msgFunc green "Check Journalctl for fstrim SSD trim"
+			echo "SSD trim" > JournalctlerrSDDlog
+			journalctl -u fstrim > JournalctlerrSDDlog
+			else 
+			msgFunc red "HDD detected no SSD trim check done"
+		fi
+		;;
+	
+		"${optionsSMArr[3]}")
+			# systemd-analyze - Analyze system boot-up performance
+			msgFunc green "Analyze system boot-up performance"
+			{
+			echo "Analyze boot-up performance"  
+			systemd-analyze time 
+			echo "CRITICAL-CHAIN" 
+			systemd-analyze critical-chain 
+			echo "BLAME" 
+			systemd-analyze blame 
+			} >>  systemdanalyzelog   
+		;;
+		"${optionsSMArr[4]}")
+			#Checking for broken symlinks:
+			msgFunc green "Checking for Broken Symlinks"
+			#root or home?
+			msgFunc norm "Do you want to scan / or $HOME? [R/h]"
+			local choiceSYMVar
+			if [ "$choiceSYMVar" = "h" ]
+			then
+				find "$HOME" -type l -! -exec test -e {} \; -print > symlinkerr
+			else
+				find / -path /proc -prune -o -type l -! -exec test -e {} \; -print 2>/dev/null > symlinkerr
+			fi
+		;;
+	
+		"${optionsSMArr[5]}")
+			msgFunc green "Find files where no group or User corresponds to file's numeric user/group ID."
+			find / -nogroup > filenogrouplog 2> /dev/null
+			find / -nouser  > filenouserlog  2> /dev/null
+		;;
+		
+		"${optionsSMArr[6]}")
+		#check if lostfiles package (AUR) installed
+			if ! checkPacFunc lostfiles
+			then
+				msgFunc anykey 
+			return
+			fi
+			msgFunc green "Lostfiles :-Search for files which are not part of installed Arch Linux packages"
+			msgFunc norm  "Lostfiles strict scan running, outputing to file"
+			sudo bash -c "lostfiles strict  > lostfilesStrictlist.txt" 
+			msgFunc green "Done!"
+			msgFunc norm  "Lostfiles relaxed scan running, outputing to file"
+			sudo bash -c  "lostfiles relaxed > lostfilesRelaxedlist.txt" 
+		;;
+	
+		"${optionsSMArr[7]}")
+		msgFunc green "Diskspace usage"
+		# This is GOLD for finding out what is taking so much space on your drives!
+			msgFunc norm "Do you want to scan / or $HOME? [R/h]"
+			local choiceDUVar=""
+			read -r choiceDUVar
+			if [ "$choiceDUVar" = "h" ]
+			then
+				du -H "$HOME" 2> /dev/null | sort -n -r >> diskspace
+			else
+				du -H / 2> /dev/null | sort -n -r >> diskspace
+			fi
+		;;
+		"${optionsSMArr[8]}") #find files
+			msgFunc green "Find 200 of the biggest files"
+			find / -type f -exec du -Sh {} + 2>/dev/null | sort -rh | head -n 200 > filesortsize
+		;;
+		"${optionsSMArr[9]}") #inodes
+			msgFunc green "Find inodes usage"
+			df -ih | grep sd.
+			msgFunc norm "Output list to fileinodescan"
+			du / -Sh --inodes 2>/dev/null | sort -nr | head -2000 >fileinodescan
+		;;
+		"${optionsSMArr[10]}") #old config files
+			configFileScanFunc
+		;;
+		"${optionsSMArr[11]}")
+				msgFunc green "Print sensor information"
+				sensors
+		;;
+		"${optionsSMArr[12]}")
+			msgFunc green "Clean journalctl files(systemd logging system)"
+			msgFunc norm "Remove archived journal files until the disk space they use falls "
+			msgFunc norm "below 100M: press y or any other key to quit [y/n] ?"
+			if msgFunc yesno
+			then #yes
+				sudo journalctl --vacuum-size=100M
+			else
+				return
+			fi
+		;;
+		"${optionsSMArr[13]}")
+			msgFunc green "Delete core dumps /var/lib/systemd/coredump/"
+			sudo rm -rvf /var/lib/systemd/coredump/*
+		;;
+		"${optionsSMArr[14]}")  # delete folders /files
+			SystemCleanFunc "FOLDERS"
+		;;
+		
+		"${optionsSMArr[15]}")
+			#check if inxi package  installed
+			if ! checkPacFunc inxi
+			then
+				msgFunc anykey 
+				clear
+			break
+			fi
+			# inxi  - Command line system information script for console and IRC
+			msgFunc green "get output of inxi -Fixz"
+			inxi -Fixz | tee inxioutput
+		;;
+		"${optionsSMArr[16]}") #system clean with bleachbit
+			SystemCleanFunc
+		;;
+		"${optionsSMArr[17]}") #rmlint 
+			RmLintFunc
+		;;
+		"${optionsSMArr[18]}")  # htop - interactive process viewer
+			#check if htop package  installed
+			if ! checkPacFunc htop
+			then
+				msgFunc anykey 
+				clear
+			break
+			fi
+			xterm -e "htop" &  
+		;;
+		
+		*)#quit
+			msgFunc green "Done!"
 			clear
+			return
+		;;
+		
+	esac
+	break
+	done
+msgFunc green "Done!"	
+msgFunc anykey 
+clear
+done
 }
 
 #FUNCTION HEADER

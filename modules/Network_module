@@ -13,7 +13,8 @@ function networkFunc
 	#change dir for log files
 	makeDirFunc "-NETINFO"
 	msgFunc norm "Files report will be written to path above -"
-	msgFunc blue "Network. options:-"
+	while true; do
+	msgFunc blue "Network options :-"
 	local optionsNArr=("$(checkPacFunc wavemon NOMES) -wireless network monitor" "$(checkPacFunc speedtest-cli  NOMES) -testing internet bandwidth"\
 	"Check if website up with netcat and ping" "Display all interfaces which are currently available" "Display kernal routing table"\
 	"Check the status of UFW, Uncomplicated Firewall" "Network Time Synchronization status check"\
@@ -50,30 +51,30 @@ function networkFunc
 			fi		
 			msgFunc norm "Do you want to specify a server ID [y/n] ?"
 			if msgFunc yesno
-				then #yes
-					msgFunc norm "Enter Server ID from list"
-					read -r ServerIDVar	
-					#check integer
-					intchkFunc "$ServerIDVar"
-					clear
-					speedtest-cli --server "$ServerIDVar" | tee stclilog
-				return
-			fi		
-			clear
-			msgFunc green "Running Speedtest-cli "
-			speedtest-cli  | tee stclilog
+			then #yes
+				msgFunc norm "Enter Server ID from list"
+				read -r ServerIDVar	
+				#check integer
+				intchkFunc "$ServerIDVar"
+				clear
+				speedtest-cli --server "$ServerIDVar" | tee stclilog
+			else #no
+				clear
+				msgFunc green "Running Speedtest-cli "
+				speedtest-cli  | tee stclilog
+			fi
 			;;
 			
 			"${optionsNArr[2]}")  #netcat 
 			local websiteVar=""
-			msgFunc green "Check if website up with netcat:"
-			msgFunc norm "Enter website"
+			msgFunc norm "Enter website to check"
 			read -r websiteVar
+			msgFunc green "Check if website up with ping:"
+			ping -c 10 "$websiteVar"
+			msgFunc green "Check if website up with netcat:"
 			msgFunc norm " "
 			checkNetFunc "$websiteVar"
 			msgFunc norm " "
-			msgFunc green "Check if website up with ping:"
-			ping -c 10 "$websiteVar"
 			;;
 			"${optionsNArr[3]}")  #ifconfig
 				msgFunc green "ifconfig short list: Kernel Interface table:"
@@ -119,12 +120,16 @@ function networkFunc
 			;;
 			*)  #exit  
 				msgFunc green "Done!"	
+				clear
 			return
 			;;
 		esac
-		break
+		break #comment out break to make menu loop
 		done
-		msgFunc green "Done!"	
+	msgFunc green "Done!"	
+	done
+	
+	
 }
 
 #FUNCTION HEADER

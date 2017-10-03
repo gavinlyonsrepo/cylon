@@ -5,220 +5,216 @@
 #FUNCTION HEADER
 # NAME : PacmanFunc
 # DESCRIPTION : Pacman package manager options
-# PROCESS : See options array      
-#NOTE gnu-netcat is neeeded for the first option.      
+# PROCESS : See options array
+#NOTE gnu-netcat is needed for the first option.
 function PacmanFunc 
 {
-		#Pacman package manager options:
-		###old header removed for screen space
-		#msgFunc line
-		#msgFunc green "Pacman package manager. Number of packages installed = $(pacman -Q | wc -l) "
-		#msgFunc line
-		###
-		clear
-		msgFunc blue "Pacman package manager options:-"
-		local choicePMVar=""
-		local pacStingVar=""
-		local optionsPMArr=("Check Network and check for pacman updates (no download)" "pacman -Syu Upgrade packages" \
-		"pacman -Si Display information for a package in database" "pacman -S Install Package" \
-		"pacman -Ss Search for packages in the database" \
-		"pacman -Rs Remove Package" "pacman -Qs Search for already installed packages" \
-		"pacman -Qi  Display information for locally installed packages" "pacman -Ql  List all files owned by a given package." \
-		"pacman -Qkk Verify packages" "paccache -r Prune older packages from cache, Keep last 3"\
-		"paccache -ruk0 To remove all cached versions of UNinstalled packages"\
-		"Remove all packages not required as dependencies (orphans)" "Make a copy of package lists"  \
-		"Back-up the local pacman database" "Arch Linux News Rss feed" "$(checkPacFunc arch-audit  NOMES)" \
-		"pactree options" "Edit pacman config file" "View pacman log" "pacman optimize" "Return to main menu")
-		select choicePMVar in "${optionsPMArr[@]}"
-		do
-		case "$choicePMVar" in
-				"${optionsPMArr[0]}")
-				msgFunc green "Pacman updates ready:-.... "
-				#check gnu-netcat is installed
-				#check network connectivity if good get updates numbers from arch
-					checkNetFunc "archlinux.org"
-					msgFunc norm   "Number of Pacman updates ready...> $(checkupdates | wc -l)"
-					checkupdates
-				;;
-				"${optionsPMArr[1]}") #update pacman
-					msgFunc green "Update system with Pacman."
-					sudo pacman -Syu
-				;;
-				"${optionsPMArr[2]}") #pacman -Si Display extensive information about a given package
-					msgFunc green "Display information  for Package."
+clear
+while true; do # loop until user exit
+	msgFunc blue "Pacman package manager options:-"
+	local choicePMVar=""
+	local pacStingVar=""
+	local optionsPMArr=("Check Network and check for pacman updates (no download)" "pacman -Syu Upgrade packages" \
+	"pacman -Si Display information for a package in database" "pacman -S Install Package" \
+	"pacman -Ss Search for packages in the database" \
+	"pacman -Rs Remove Package" "pacman -Qs Search for already installed packages" \
+	"pacman -Qi  Display information for locally installed packages" "pacman -Ql  List all files owned by a given package." \
+	"pacman -Qkk Verify packages" "paccache -r Prune older packages from cache, Keep last 3"\
+	"paccache -ruk0 To remove all cached versions of UNinstalled packages"\
+	"Remove all packages not required as dependencies (orphans)" "Make a copy of package lists"  \
+	"Back-up the local pacman database" "Arch Linux News Rss feed" "$(checkPacFunc arch-audit  NOMES)" \
+	"pactree options" "Edit pacman config file" "View pacman log" "pacman optimize" "Return to main menu")
+	select choicePMVar in "${optionsPMArr[@]}"
+	do
+	case "$choicePMVar" in
+			"${optionsPMArr[0]}")
+			msgFunc green "Pacman updates ready:-.... "
+			#check gnu-netcat is installed
+			#check network connectivity if good get updates numbers from arch
+				checkNetFunc "archlinux.org"
+				msgFunc norm   "Number of Pacman updates ready...> $(checkupdates | wc -l)"
+				checkupdates
+			;;
+			"${optionsPMArr[1]}") #update pacman
+				msgFunc green "Update system with Pacman."
+				sudo pacman -Syu
+			;;
+			"${optionsPMArr[2]}") #pacman -Si Display extensive information about a given package
+				msgFunc green "Display information  for Package."
+				msgFunc norm "Please enter package name"
+				read -r pacStingVar
+				pacman -Si "$pacStingVar"
+			;;
+			"${optionsPMArr[3]}") #pacman -S Install Package
+				msgFunc green "Install package."
+				msgFunc norm "Please enter package name"
+				read -r pacStingVar
+				sudo pacman -S "$pacStingVar"
+			;;
+			"${optionsPMArr[4]}")   #pacman -Ss Search Repos for Package
+				msgFunc green "Search for packages in the database."
+				msgFunc norm "Please enter package name"
+				read -r pacStingVar
+				pacman -Ss "$pacStingVar"
+			;;
+			"${optionsPMArr[5]}") #pacman -Rs Delete Package
+				msgFunc green "Remove Package."
+				msgFunc norm "Please enter package name"
+				read -r pacStingVar
+				sudo pacman -Rs "$pacStingVar"
+			;;
+			"${optionsPMArr[6]}")   #pacman -Qs Search for already installed packages
+				msgFunc green "Search for already installed packages."
+				msgFunc norm "Please enter package name"
+				read -r pacStingVar
+				pacman -Qs "$pacStingVar"
+			;;
+			"${optionsPMArr[7]}") #pacman -Qi Display extensive information about a given package(local install)
+				msgFunc green "Display information  for Package."
+				msgFunc norm "Please enter package name"
+				read -r pacStingVar
+				pacman -Qi "$pacStingVar"
+			;;
+			"${optionsPMArr[8]}") #pacman -Ql  List all files owned by a given package.
+				msgFunc green "List all files owned by a given package."
+				msgFunc norm "Please enter package name"
+				read -r pacStingVar
+				pacman -Ql "$pacStingVar"
+			;;
+			"${optionsPMArr[9]}") #pacman -Qkk  Verify all packages
+				makeDirFunc "-PKGINFO"
+				msgFunc green "Verify  packages pacman -Qkk"
+				msgFunc norm "Yes for just one package, no for all [y/n] ?"
+				if msgFunc yesno
+				then # yes
 					msgFunc norm "Please enter package name"
 					read -r pacStingVar
-					pacman -Si "$pacStingVar"
-				;;
-				"${optionsPMArr[3]}") #pacman -S Install Package
-					msgFunc green "Install package."
-					msgFunc norm "Please enter package name"
-					read -r pacStingVar
-					sudo pacman -S "$pacStingVar"
-				;;
-				"${optionsPMArr[4]}")   #pacman -Ss Search Repos for Package
-					msgFunc green "Search for packages in the database."
-					msgFunc norm "Please enter package name"
-					read -r pacStingVar
-					pacman -Ss "$pacStingVar"
-				;;
-				"${optionsPMArr[5]}") #pacman -Rs Delete Package
-					msgFunc green "Remove Package."
-					msgFunc norm "Please enter package name"
-					read -r pacStingVar
-					sudo pacman -Rs "$pacStingVar"
-				;;
-				"${optionsPMArr[6]}")   #pacman -Qs Search for already installed packages
-					msgFunc green "Search for already installed packages."
-					msgFunc norm "Please enter package name"
-					read -r pacStingVar
-					pacman -Qs "$pacStingVar"
-				;;
-				"${optionsPMArr[7]}") #pacman -Qi Display extensive information about a given package(local install)
-					msgFunc green "Display information  for Package."
-					msgFunc norm "Please enter package name"
-					read -r pacStingVar
-					pacman -Qi "$pacStingVar"
-				;;
-				"${optionsPMArr[8]}") #pacman -Ql  List all files owned by a given package.
-					msgFunc green "List all files owned by a given package."
-					msgFunc norm "Please enter package name"
-					read -r pacStingVar
-					pacman -Ql "$pacStingVar"
-				;;
-				"${optionsPMArr[9]}") #pacman -Qkk  Verify all packages
-					makeDirFunc "-PKGINFO"
-					msgFunc green "Verify  packages pacman -Qkk"
-					msgFunc norm "Yes for just one package, no for all [y/n] ?"
-					if msgFunc yesno
-					then # yes
-						msgFunc norm "Please enter package name"
-						read -r pacStingVar
-						pacman -Qkk "$pacStingVar" > pkgver
-					else
-						pacman -Qkk > pkgverall
-					fi
-				;;
-				"${optionsPMArr[10]}")  msgFunc green  "Prune older packages from cache, paccache -r Keeps last 3"
-				#The paccache script, deletes all cached  package 
-					#regardless of whether they're installed or not, 
-					#except for the most recent 3, 
-					sudo paccache -r
-				;;
-				
-				"${optionsPMArr[11]}")msgFunc green "paccache -ruk0 : To remove all cached versions of uninstalled packages"
-				#To remove all cached versions of uninstalled packages, re-run paccache with: 
-					sudo paccache -ruk0
-				;;
-				
-				"${optionsPMArr[12]}")#delete orphans
-					msgFunc green "Remove orphans!"
-					#Remove all packages not required as dependencies (orphans)
-					msgFunc norm "Number of orphans: $(pacman -Qtdq | wc -l)"
-					pacman -Qtdq 
-					msgFunc norm "Do you want to remove them? [y/n]"
-					if msgFunc yesno 
-					then
-						sudo pacman -Rns $(pacman -Qtdq) || msgFunc yellow "no orphans to remove"
-					fi
-				;;
+					pacman -Qkk "$pacStingVar" > pkgver
+				else
+					pacman -Qkk > pkgverall
+				fi
+			;;
+			"${optionsPMArr[10]}")  msgFunc green  "Prune older packages from cache, paccache -r Keeps last 3"
+			#The paccache script, deletes all cached  package 
+				#regardless of whether they're installed or not, 
+				#except for the most recent 3, 
+				sudo paccache -r
+			;;
+			
+			"${optionsPMArr[11]}")msgFunc green "paccache -ruk0 : To remove all cached versions of uninstalled packages"
+			#To remove all cached versions of uninstalled packages, re-run paccache with: 
+				sudo paccache -ruk0
+			;;
+			
+			"${optionsPMArr[12]}")#delete orphans
+				msgFunc green "Remove orphans!"
+				#Remove all packages not required as dependencies (orphans)
+				msgFunc norm "Number of orphans: $(pacman -Qtdq | wc -l)"
+				pacman -Qtdq || msgFunc yellow "No orphans to remove" && break
+				msgFunc norm "Do you want to remove them? [y/n]"
+				if msgFunc yesno 
+				then
+					sudo pacman -Rns $(pacman -Qtdq) || msgFunc yellow "No orphans to remove"
+				fi
+			;;
 
-				"${optionsPMArr[13]}")
-					msgFunc green "Make copy of package lists"
-					pkglistFunc "$@"
-				;;
-				"${optionsPMArr[14]}") #backup the pacman database
-					msgFunc green "Back-up the pacman database to :"
-					makeDirFunc "-BACKUPPACMAN"
-					tar -v -cjf pacman_database.tar.bz2 /var/lib/pacman/local
+			"${optionsPMArr[13]}")
+				msgFunc green "Make copy of package lists"
+				pkglistFunc "$@"
+			;;
+			"${optionsPMArr[14]}") #backup the pacman database
+				msgFunc green "Back-up the pacman database to :"
+				makeDirFunc "-BACKUPPACMAN"
+				tar -v -cjf pacman_database.tar.bz2 /var/lib/pacman/local
+			;;
+			
+			"${optionsPMArr[15]}") #Arch Linux News Rss feed
+				RssFunc
 				;;
 				
-				"${optionsPMArr[15]}") #Arch Linux News Rss feed
-					RssFunc
-					;;
-					
-				"${optionsPMArr[16]}") #run arch audit
-					msgFunc green "Running arch-audit program :"
-					local archauditVar=""
-					#check archaudit is installed
-					if ! checkPacFunc arch-audit
-						then
-						msgFunc anykey 
-						return
-					fi
-					msgFunc norm "Press [A] for full output: or other options> -q=quiet, -u=upgradable, -uq."
-					read -r archauditVar
-					if [ "$archauditVar" = "A" ] 
-						then
-						arch-audit
-						else
-						 arch-audit "$archauditVar"
-					fi 
-					archauditVar=
-					;;
-				
-				"${optionsPMArr[17]}") #pactree
-					local pactreeVar=""
-					msgFunc green "pactree options"
-					msgFunc norm "List a dependency tree of a package: pactree"
-					msgFunc norm "Show packages that depend on the named package: pactree -r"
-					msgFunc norm "press [A] for pactree or [r] for pactree -r. [A/r]"
-					read -r pactreeVar
-					if [ "$pactreeVar" != "r" ]
+			"${optionsPMArr[16]}") #run arch audit
+				msgFunc green "Running arch-audit program :"
+				local archauditVar=""
+				#check archaudit is installed
+				if ! checkPacFunc arch-audit
 					then
-						msgFunc norm "Please enter package name"
-						read -r pacStingVar
-						pactree "$pacStingVar"
-					else
-						msgFunc norm "Please enter package name"
-						read -r pacStingVar
-						pactree -r "$pacStingVar"
-					fi
-				;;
-				"${optionsPMArr[18]}") #edit pacman conf file
-					msgFunc green "Edit Pacman.conf file."
-					sudo $EDITOR /etc/pacman.conf
-				;;
-				"${optionsPMArr[19]}") #view pacman log
-					msgFunc green "View pacman log /var/log/pacman.log"
-					sudo less /var/log/pacman.log
-				;;
-				"${optionsPMArr[20]}") #pacman-optimize
-					msgFunc green "pacman optimize"
-					cat <<-EOF
-					Pacman stores all package information in a collection of small files, 
-					one for each package. Improving database access speeds reduces the time 
-					taken in database-related tasks. 
-					pacman-optimize will attempt to put all the small files together in one 
-					(physical) location on the hard disk so that the 
-					hard disk head does not have to move so much when accessing all the data. 
-					This method is safe, but is not foolproof: 
-					it depends on your filesystem, disk usage and empty space fragmentation.
-					EOF
-					
-					msgFunc green "Continue? [y/n] "
-					if msgFunc yesno
-					then
-						sudo pacman-optimize
-					fi
-				;;
-				
-				*)  #exit  
-					msgFunc green "Done!"	
-					clear
+					msgFunc anykey 
 					return
+				fi
+				msgFunc norm "Press [A] for full output: or other options> -q=quiet, -u=upgradable, -uq."
+				read -r archauditVar
+				if [ "$archauditVar" = "A" ] 
+					then
+					arch-audit
+					else
+					 arch-audit "$archauditVar"
+				fi 
+				archauditVar=
 				;;
-		esac
-		break
-		done
-		msgFunc green "Done!"	
-		msgFunc anykey 
+			
+			"${optionsPMArr[17]}") #pactree
+				local pactreeVar=""
+				msgFunc green "pactree options"
+				msgFunc norm "List a dependency tree of a package: pactree"
+				msgFunc norm "Show packages that depend on the named package: pactree -r"
+				msgFunc norm "press [A] for pactree or [r] for pactree -r. [A/r]"
+				read -r pactreeVar
+				if [ "$pactreeVar" != "r" ]
+				then
+					msgFunc norm "Please enter package name"
+					read -r pacStingVar
+					pactree "$pacStingVar"
+				else
+					msgFunc norm "Please enter package name"
+					read -r pacStingVar
+					pactree -r "$pacStingVar"
+				fi
+			;;
+			"${optionsPMArr[18]}") #edit pacman conf file
+				msgFunc green "Edit Pacman.conf file."
+				sudo $EDITOR /etc/pacman.conf
+			;;
+			"${optionsPMArr[19]}") #view pacman log
+				msgFunc green "View pacman log /var/log/pacman.log"
+				sudo less /var/log/pacman.log
+			;;
+			"${optionsPMArr[20]}") #pacman-optimize
+				msgFunc green "pacman optimize"
+				cat <<-EOF
+				Pacman stores all package information in a collection of small files, 
+				one for each package. Improving database access speeds reduces the time 
+				taken in database-related tasks. 
+				pacman-optimize will attempt to put all the small files together in one 
+				(physical) location on the hard disk so that the 
+				hard disk head does not have to move so much when accessing all the data. 
+				This method is safe, but is not foolproof: 
+				it depends on your filesystem, disk usage and empty space fragmentation.
+				EOF
+				
+				msgFunc green "Continue? [y/n] "
+				if msgFunc yesno
+				then
+					sudo pacman-optimize
+				fi
+			;;
+			
+			*)  #exit  
+				msgFunc green "Done!"	
+				clear
+				return
+			;;
+	esac
+	break
+	done
+msgFunc green "Done!"	
+msgFunc anykey
+done
 }
 
 #FUNCTION HEADER
-# NAME :            RssFunc
-# DESCRIPTION :     Display 4 Arch Linux News Rss feed
-function RssFunc 
+# NAME :  RssFunc
+# DESCRIPTION : Display 4 Arch Linux News Rss feed
+function RssFunc
 {
 	#Display 4 Arch Linux News Rss feed
 	msgFunc green "Arch Linux News Rss feed"
@@ -366,6 +362,9 @@ function updateFunc
 		return
 		fi
 		clear
+		msgFunc line
+		AsciiArtFunc "CYLON"
+		msgFunc line
 		msgFunc green "Accessing archlinux.org Network Database...."
 		msgFunc line
 		RssFunc

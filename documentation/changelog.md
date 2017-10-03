@@ -115,3 +115,8 @@
 	* prompt and information display for orphan delete option added
 	* CowerFunc new option to search AUR packages by orphan maintainer.
 	* Ascii art placed in function AsciiArtFunc.
+
+### Version 4.3-4 031017
+	* Added optional environmental variable for config file location CYLON_DEST
+	* changed 6 menus so they loop until user return.
+	* return codes added

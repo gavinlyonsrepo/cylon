@@ -1,7 +1,7 @@
 #!/bin/bash
 #module containing functions called from cylon package
-#Functions: checkinputFunc, DisplayFunc.
-# exitHandlerFunc, HelpFunc, msgFunc, readconfigFunc, weatherFunc, makeDir
+#Functions: checkinputFunc, DisplayFunc. AsciiArtFunc
+# exitHandlerFunc, HelpFunc, msgFunc, readconfigFunc, weatherFunc, makeDirFunc
 
 #FUNCTION HEADER
 # NAME : msgFunc
@@ -55,9 +55,10 @@ function msgFunc
 #FUNCTION HEADER
 # NAME :  exitHandlerFunc 
 # DESCRIPTION: error handler deal with user 
-#exists and path not found errors and internet failure 
-# INPUTS:  $2 text of internet site down or filename
+#exits and path not found errors and internet failure 
+# INPUTS:  $2 text of internet site down or filename 
 # PROCESS : exitout DEST 1-6 netdown or file error or non-integer user input.
+# or bad argument option input
 function exitHandlerFunc
 {
 	#double square brackets without use of quotes on matching pattern 
@@ -77,6 +78,14 @@ function exitHandlerFunc
 			netdown) msgFunc red "Internet connectivity test to $2 failed" ;;
 			fileerror) msgFunc red "File error $2"  ;;
 			nonint) msgFunc red "Integer expected, user entered non-integer, program exiting";;
+			Badinput)
+				msgFunc red "$2 is an INVALID USER OPTION!"
+				msgFunc yellow "Usage: -b -c -d -h -l -m -p -r -s -u -v -z"
+				msgFunc yellow "type cylon -h for readme or man cylon for manpage at terminal"
+				msgFunc anykey "to view option details"
+				man cylon | grep -A36 OPTIONS 
+				#man "./documentation/cylon.7" | grep -A36 OPTIONS  ##development AID
+				;;
 			*) msgFunc yellow "Unknown input to error handler";;
 	 esac
 	msgFunc yellow "Goodbye $USER!"
@@ -169,8 +178,8 @@ clear
 	if [ "$1" = "HELP" ]
 		then
 		msgFunc line
-		msgFunc green "Cylon information and readme.md file  display." 
-		msgFunc line 
+		AsciiArtFunc "CYLON"
+		msgFunc line
 		#Program details print
 		cat <<-EOF
 		Cylon is an Arch Linux maintenance CLI program written in Bash script.
@@ -192,6 +201,13 @@ clear
 			msgFunc norm "Environment variable CYLONDEST is not Set"
 		else 
 			msgFunc norm "Environment variable CYLONDEST is set to $CYLONDEST"
+		fi
+		
+		if [ -z "${CYLON_CONFIG}" ]
+		then 
+			msgFunc norm "Environment variable CYLON_CONFIG is not Set"
+		else 
+			msgFunc norm "Environment variable CYLON_CONFIG is set to $CYLON_CONFIG"
 		fi
 		msgFunc anykey "and check which dependencies are installed"
 		clear
@@ -244,8 +260,11 @@ msgFunc norm "Operating System = $(uname -mo)"
 msgFunc norm "Network node name = $(uname -n)"
 msgFunc norm "User name = $USER"
 msgFunc norm "Shell = $SHELL"
-#stopped working msgFunc norm "Screen Resolution = $(xrandr |grep "\*" | cut -c 1-15)"
-msgFunc norm "Screen Resolution = $(xdpyinfo | awk -F '[ x]+' '/dimensions:/{print $3}') x $(xdpyinfo | awk -F '[ x]+' '/dimensions:/{print $4}')"
+#if type -p xrandr >/dev/null; then
+	msgFunc norm "Screen Resolution = $(xrandr |grep "\*" | cut -c 1-15)"  2>/dev/null
+#elif type -p xdpyinfo >/dev/null; then
+#	msgFunc norm "Screen Resolution = $(xdpyinfo | awk -F '[ x]+' '/dimensions:/{print $3}') x $(xdpyinfo | awk -F '[ x]+' '/dimensions:/{print $4}')"
+#fi
 msgFunc norm "CPU = $(grep name /proc/cpuinfo | tail -1| cut -d ":" -f 2)"
 local memArr=($(awk -F ':| kB' '/MemTotal|MemAvail/ {printf $2}' /proc/meminfo))
 local memusedVar="$((memArr[0] - memArr[1]))"
@@ -441,9 +460,8 @@ case "$1" in
 	-l|--lint)
 		RmLintFunc
 	;;
-	*)	msgFunc red    "Invalid option!"
-		msgFunc yellow "Usage: -b -c -d -h -l -m -p -r -s -u -v -z"
-		msgFunc yellow "See readme.md for details at cylon -h or man cylon"
+	*)	clear
+		exitHandlerFunc Badinput "$1"
 	;;
 esac
 #was there a input if yes quit?

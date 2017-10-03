@@ -24,6 +24,7 @@ Table of contents
   * [Output and environment variables](#output-and-environment-variables)
   * [Dependencies](#dependencies)
   * [Features](#features)
+  * [Return codes](#return-codes)
   * [See Also](#see-also)
   * [Communication](#communication)
   * [History](#history)
@@ -93,6 +94,7 @@ or ccrypt menu function or custom clamav scan option,
 the user does not need config file.
 * NAME: cylonCfg.conf 
 * PATH: ``` $HOME/.config/cylon/cylonCfg.conf ```
+This Path can be overwritten by environmental variable see next section.
 * SETTINGS:
 "DestinationX" is the path for backups.
 "gdrivedestX" is remote google drive directory file ID
@@ -140,6 +142,14 @@ of the repository.
 
 Output and environment variables
 -------------------------------------
+
+CYLONDEST and CYLON_CONFIG are two custom environmental variables used by program.
+If variable CYLONDEST and CYLON_CONFIG are not set or do not exist, 
+cylon uses the default path.
+
+
+CYLONDEST
+
 Most system output (logfiles, downloads and updates etc) 
 is placed at below path, unless otherwise specified on screen.
 Output folders are created with following time/date stamp syntax HHMM-DDMONYY-X 
@@ -153,8 +163,25 @@ How to set example:
 export CYLONDEST="$HOME/.cache/cylon"
 ```
 This optional Environment variable is provided for users
-who wish to use different destination path for program output folder
-if variable is not set or does not exist, cylon uses the default path.
+who wish to use different destination path for program output folder.
+
+
+CYLON_CONFIG
+
+The default path for config file is 
+```sh
+$HOME/.config/cylon/cylonCfg.conf
+```
+Optional Environment variable: $CYLON_CONFIG
+How to set example: 
+```sh
+export CYLON_CONFIG="$HOME/TEST/cylon/config"
+```
+This optional Environment variable is provided for users
+who wish to use different destination path for program config file.
+
+
+EDITOR
 
 "nano" is used as default text editor for editing config files 
 IF $EDITOR user environment variable is not set. 
@@ -388,6 +415,13 @@ system and cylon. Weather forecast and terminal launcher.
 	* Function can also run by option -h 
 
 * 3 day weather forecast by wttr.in
+
+
+Return codes
+---------------------
+* 0 - Normal non-error controlled exit.
+* 1 - Error occurred and was handled by exithandlerFunc function.
+
 
 See Also
 -----------
