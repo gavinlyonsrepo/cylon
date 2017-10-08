@@ -3,11 +3,11 @@ Overview
 --------------------------------------------
 * Name: cylon 
 * Title : Arch Linux distribution maintenance program.
-* Description: A menu driven bash script which provides updates, maintenance, 
+* Description: A TUI(terminal user interface) which provides updates, maintenance, 
 backups and system checks for an Arch based linux distribution.
-This script provides numerous tools 
+This program provides numerous tools 
 to Arch Linux users. The program is menu-based and written in bash.
-The program is mainly console text based but also uses dialog GUI's 
+The program is mainly text based  but also uses dialog GUI's 
 at a few points for directory and file selection.
 A detailed list of the over 100 options and features is 
 provided below in features section.
