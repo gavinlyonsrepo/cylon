@@ -110,11 +110,16 @@ while true; do # loop until user exit
 				msgFunc green "Remove orphans!"
 				#Remove all packages not required as dependencies (orphans)
 				msgFunc norm "Number of orphans: $(pacman -Qtdq | wc -l)"
-				pacman -Qtdq 
-				msgFunc norm "Do you want to remove them? [y/n]"
-				if msgFunc yesno 
-				then
-					sudo pacman -Rns $(pacman -Qtdq) || msgFunc yellow "No orphans to remove"
+				if [ $(pacman -Qtdq | wc -l) = "0" ]
+					then
+					msgFunc yellow  "No orphans to remove."
+				else
+					pacman -Qtdq
+					msgFunc norm "Do you want to remove them? [y/n]"
+					if msgFunc yesno
+					then
+						sudo pacman -Rns $(pacman -Qtdq)
+					fi
 				fi
 			;;
 

@@ -12,9 +12,9 @@
 #AUR package name : cylon , at aur.archlinux.org by glyons
 
 #=======================GLOBAL VARIABLES SETUP=============================
-#Syntax: Global: UPPERCASE  , local: XXXVar. local Array: XXXArr
-#Custom Environmental variable : CYLONDEST 
-#Variables also read from config file
+#Syntax: Global: UPPERCASE  , local: xxxVar. local Array: xxxArr
+#Custom Environmental variables : CYLONDEST  CYLON_CONFIG
+#Variables also read in from config file
 
 #colours for printf
 RED=$(printf "\033[31;1m")
