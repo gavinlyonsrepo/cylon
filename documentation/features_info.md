@@ -75,15 +75,18 @@ and falling back to $HOME/.config/pacaur/config
 **5: Network section**
 
 **6: Miscellaneous section**
-	* 11 The system information display has two pages of output. The first page
+
+* 11 The system information display has two pages of output. The first page
 displays some general information on system, the second displays information on 
 your package usage.
-	* 12 The cylon information display function has three pages of output.
+
+* 12 The cylon information display function has three pages of output.
 The first page displays some general information on cylon as well as
 a the status of environment variables used by program. The second page 
 checks the dependencies installation status. Dependencies not installed are 
 displayed in red. The third option is yes or no prompt to display the programs readme.
-	* 13 The 3 day weather forecast by wttr.in. 
+
+* 13 The 3 day weather forecast by wttr.in. 
 see: https://github.com/chubin/wttr.in 
 The command is: curl wttr.in/"$mX" 
 where X is City name, airport code, domain name or area code:- provided by user 
