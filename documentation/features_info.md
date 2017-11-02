@@ -85,7 +85,7 @@ partition table. It can detect which drive the file system is mounted and which 
 The bash command dd is used for this. It uses cp command for etc and home dir backup.
 It also offers option to run package list generator. and finally it uses tar command to 
 make a tarball of entire system excluding certain directories. 
-	* The rsync option takes source and destination from config file and uses following command
+* The rsync option takes source and destination from config file and uses following command
 sudo rsync -aAXv --delete  --exclude={"/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","/mnt/*","/media/*","/lost+found"} 
 see man rsync for more information.
 

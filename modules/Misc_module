@@ -81,7 +81,7 @@ function exitHandlerFunc
 			nonint) msgFunc red "Integer expected, user entered non-integer, program exiting";;
 			Badinput)
 				msgFunc red "$2 is an INVALID USER OPTION!"
-				msgFunc yellow "Usage: -b -c -d -h -l -m -p -r -s -u -v -z"
+				msgFunc yellow "Usage: -b -c -d -h -l -m -n -p -r -s -u -v -z"
 				msgFunc yellow "type cylon -h for readme or man cylon for manpage at terminal"
 				msgFunc anykey "to view option details"
 				man cylon | grep -A39 OPTIONS 
