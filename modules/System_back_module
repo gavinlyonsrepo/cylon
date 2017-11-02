@@ -81,7 +81,9 @@ function SystemBackFunc
 					msgFunc norm "Source: $rsyncsource"
 					msgFunc norm "Destination: $rsyncDest"
 					msgFunc anykey
-					rsync -av --delete "$rsyncsource" "$rsyncDest" 
+					sudo rsync -aAXv --delete \
+					--exclude={"/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","/mnt/*","/media/*","/lost+found"} \
+					"$rsyncsource" "$rsyncDest"
 					msgFunc green "Done!"
 					msgFunc anykey
 					return ;;	
@@ -94,19 +96,34 @@ function SystemBackFunc
 			makeDirFunc "-BACKUP" "$D3Var"
 			#begin the backup get user choice from user to what to back up
 			local choiceBu2Var=""
-			local optionsBu2Arr=("Copy of 1st 512 bytes for MBR system " "Copy of etc dir" \
+			local optionsBu2Arr=("Make copy of MBR or GPT with dd " "Copy of etc dir" \
 "Copy of home dir" "Copy of package lists" "Make tarball of all" "ALL" "Return")
 			msgFunc blue "Pick a Backup option:-"
 			select  choiceBu2Var in "${optionsBu2Arr[@]}"
 			do
 			case  "$choiceBu2Var" in
 			"${optionsBu2Arr[0]}"|"${optionsBu2Arr[5]}") #MBR
-				msgFunc green "Make copy of first 512 bytes MBR with dd"
+				msgFunc green "Make copy of MBR or GPT with dd"
 				#get /dev/sdxy where currenty filesystem is mounted 
 				local myddpathVar=""
+				local mbrVar=""
 				myddpathVar="$(df /boot/ --output=source | tail -1)"
-				msgFunc norm "$myddpathVar"
-				sudo dd if="$myddpathVar" of=hda-mbr.bin bs=512 count=1
+				#get the partition type 
+				mbrVar=$(sudo parted /dev/sda  print | grep -i 'Partition Table' | awk -F": " '{ print $2 }')
+				msgFunc norm "Filesystem is mounted  at : $myddpathVar"
+				if [ "$mbrVar" = "gpt" ]
+				then
+					msgFunc norm  "GPT partition table detected : $mbrVar"
+					sudo dd if="$myddpathVar" of=hda-gpt.bin bs=512 skip=1 count=62
+				elif [ "$mbrVar" = "msdos" ]
+				then
+					msgFunc norm "Standard MBR partition table detected : $mbrVar"
+					sudo dd if="$myddpathVar" of=hda-mbr.bin bs=512 count=1
+				else
+					msgFunc norm "$mbrVar"
+					msgFunc yellow "Unsupported partition table detected, nothing done "
+				fi
+				
 				msgFunc green "Done!"
 			;;&
 			"${optionsBu2Arr[1]}"|"${optionsBu2Arr[5]}")#etc

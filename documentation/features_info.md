@@ -6,7 +6,7 @@ that are not fully explained on screen or in the readme/man page.
 This document is newly created in version 4.3.
 The numbers in sub-menus below represent the number menu options on screen.
 
-NOTE: File is not complete and is a work in progress.
+NOTE: Some sections are not complete and file is a work in progress.
 
 **1: System update section**
 * pacman options
@@ -65,14 +65,49 @@ and falling back to /etc/xdg/pacaur/config
 user config $XDG_CONFIG_HOME/pacaur/config
 and falling back to $HOME/.config/pacaur/config
 	* 12 see cower option 10 above.
+	* 13 Desktop notifications are small, passive popup dialogs 
+that notify the user of particular events in an asynchronous manner
+cylon uses the command notify-send from libnotify to achive this. 
+There is parallel output in the terminal. This is the same as running cylon -n
+cylon -n can be used with a scheduling service like cron. If there is nothing to update
+no desktop notification is displayed
 
 **2: System maintenance section**
+n/a
 
 **3: System backup section**
+	* There is a main backup menu plus a gdrive and rsync option.
+	* The main backup menu first allows users to pick a backup destination
+This can be custom, from config file or the program output folder.
+Next it offers 5 options as outlined in readme. The first backs up the MBR or GPT
+partition table. It can detect which drive the file system is mounted and which type of partition 
+The bash command dd is used for this. It uses cp command for etc and home dir backup.
+It also offers option to run package list generator. and finally it uses tar command to 
+make a tarball of entire system excluding certain directories. 
+	* The rsync option takes source and destination from config file and uses following command
+sudo rsync -aAXv --delete  --exclude={"/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","/mnt/*","/media/*","/lost+found"} 
+see man rsync for more information.
+
+* gdrive options
+gdrive is a backup client that connects to google drive.
+gdrive readme for initial config https://github.com/prasmussen/gdrive ,
+gdrive option syncs will Delete extraneous remote files.
+There are nine gdrive options, see gdrive_module and the link above for detailed info
+	* 1 uses the "gdrive sync list" command
+	* 2-5 use the "gdrive sync upload --delete-extraneous" command
+	* 6 uses "gdrive sync content" command
+	* 7 uses the "gdrive about" command
+	* 8 uses the "gdrive list" command after querying user for number of files, order and query
+see these links for more information on queries and ordering 
+https://developers.google.com/drive/search-parameters)
+https://godoc.org/google.golang.org/api/drive/v3#FilesListCall.OrderBy
+	* 9 uses command "gdrive info" to get file info.
 
 **4: System security section**
+n/a
 
 **5: Network section**
+n/a
 
 **6: Miscellaneous section**
 

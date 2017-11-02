@@ -1,6 +1,6 @@
 Modules files overview
 ------------------
-There are twelve module library files containing 30 functions.
+There are twelve module library files containing 31 functions.
 installed to 
 ```sh
 /usr/lib/cylon/modules/
@@ -12,7 +12,7 @@ Function headers in the files contain more information.
 | ------ | ------ |
 | AntiMalware_module | SystemSecFunc AntiMalwareFunc intchkFunc |
 | Gdrive_module | gdriveFunc |
-| Pacaur_module | pacaurFunc |
+| Pacaur_module | pacaurFunc notifyFunc |
 | System_back_module | SystemBackFunc |
 | Ccrypt_module | ccryptFunc |
 | Misc_module | checkinputFunc AsciiArtFunc DisplayFunc exitHandlerFunc HelpFunc msgFunc readconfigFunc weatherFunc makeDirFunc |
@@ -55,3 +55,4 @@ Function headers in the files contain more information.
 | SystemMaintAutoFunc | Carries out most maintenance checks in a single pass |
 | configFileScanFunc | Scans home folder for old configuration files |
 | AsciiArtFunc | Display the Ascii art to screen |
+| notifyFunc | Handles display of system updates desktop notifications with libnotify |

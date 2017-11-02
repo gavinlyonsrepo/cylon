@@ -1,13 +1,13 @@
 #!/bin/bash
 #module containing function called from cylon package
-#Functions:  pacaurFunc
+#Functions:  pacaurFunc notifyFunc
 
 #FUNCTION HEADER
 # NAME : pacaurFunc
 # DESCRIPTION:use pacaur utility to mange AUR packages
 # downloads, updates and searches
 # PROCESS :  see options array 
-#NOTES : needs pacaur(AUR) installed  gnu-netcat is needed 1 option      
+#NOTES : needs pacaur(AUR) installed  gnu-netcat is needed 1 option
 function pacaurFunc
 {
 #check if installed
@@ -31,7 +31,7 @@ while true; do # loop until exit
 		"Download and build the package, pacaur -m " "Download the package, pacaur -d"\
 		"Delete pacaur cache" "Edit pacaur config file" "Update all packages in all repositories, pacaur -Syu"\
 		"Make a copy of package lists" \
-		"Remove foreign packages explicitly installed menu" "Return")
+		"Remove foreign packages explicitly installed menu" "Display Desktop Notification" "Return")
 		select choicePVar in "${optionsPArr[@]}"
 		do
 		case "$choicePVar" in  
@@ -146,6 +146,9 @@ while true; do # loop until exit
 				"${optionsPArr[11]}") #Delete foreign packages 
 					DelQmFunc
 				;;
+				"${optionsPArr[12]}") #display desktop notification 
+					notifyFunc 
+				;;
 				*)#exit
 				msgFunc green "Done!"	
 				clear
@@ -156,4 +159,35 @@ while true; do # loop until exit
 		done
 msgFunc green "Done!"	
 done
+}
+
+#FUNCTION HEADER
+# NAME : notifyFunc
+# DESCRIPTION: displays desktop notification of updates 
+#NOTES : needs pacaur(AUR) and libnotify installed
+function notifyFunc
+{
+	if ! checkPacFunc pacaur
+	then
+		msgFunc anykey 
+	return
+	fi
+	
+	if ! checkPacFunc libnotify
+	then
+		msgFunc anykey 
+	return
+	fi
+	
+	checkNetFunc "archlinux.org"
+	
+	if [ "$(checkupdates| wc -l)" != 0 ] || [ "$(pacaur -k | wc -l)" != 0 ]
+	then
+		msgFunc norm "Displaying desktop notifications Cylon : Updates ready :"
+		msgFunc norm "Pacman = $(checkupdates| wc -l) : AUR = $(pacaur -k | wc -l) "
+		notify-send  "Cylon : Updates ready :" \
+		"Pacman = $(checkupdates| wc -l) : AUR = $(pacaur -k | wc -l) " --icon=dialog-information
+	else
+		msgFunc norm "Nothing to display , System up to date"
+	fi
 }

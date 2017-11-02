@@ -29,6 +29,12 @@ Optional destination for config file.
 if variable is not set or does not exist,, cylon uses default path at 
 $HOME/.config/cylon/cylonCfg.conf
 
+.TP
+.B \ CYLON_COLOR_OFF
+example= export CYLON_COLOR_OFF="on"  ,
+Optional destination for colour text output file.
+if variable is not set or does not exist, cylon uses its default colour scheme 
+if set no colour text.
 
 .SH OPTIONS
 .TP
@@ -67,7 +73,9 @@ Display the AUR package removal dialog menu function.
 .TP
 .B \-r --rss 
 Print arch news reader last four items
-
+.TP
+.B \-n --notify 
+Desktop notifications with update information.
 
 .SH CYLON FILES
 .TP

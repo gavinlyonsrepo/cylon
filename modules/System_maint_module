@@ -21,7 +21,7 @@ local optionsSMArr=("Failed Systemd Services and status" "Check Journalctl log f
 		 "Delete core dumps /var/lib/systemd/coredump/" "Delete files"\
 		  "$(checkPacFunc inxi NOMES)"\
 		  "$(checkPacFunc bleachbit NOMES)"\
-		"$(checkPacFunc rmlint NOMES)" "$(checkPacFunc htop NOMES)" "Return")
+		"$(checkPacFunc rmlint NOMES)" "List All Open Files" "Return")
 while true; do # loop until exit
 	local choiceSMVar=""
 	#change dir for log files
@@ -181,15 +181,8 @@ while true; do # loop until exit
 		"${optionsSMArr[17]}") #rmlint 
 			RmLintFunc
 		;;
-		"${optionsSMArr[18]}")  # htop - interactive process viewer
-			#check if htop package  installed
-			if ! checkPacFunc htop
-			then
-				msgFunc anykey 
-				clear
-			break
-			fi
-			xterm -e "htop" &  
+		"${optionsSMArr[18]}")  #  List All Open Files
+			find /proc/*/fd -xtype f -printf "%l\n" 2>/dev/null |grep -v " (deleted)$"| sort -u 
 		;;
 		
 		*)#quit

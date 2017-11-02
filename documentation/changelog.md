@@ -116,7 +116,16 @@
 	* CowerFunc new option to search AUR packages by orphan maintainer.
 	* Ascii art placed in function AsciiArtFunc.
 
-### Version 4.3-4 031017
-	* Added optional environmental variable for config file location CYLON_CONFIG
+### Version 4.3-4 + 4-3-1-5 031017
+	* Added optional environmental variable for config file location CYLON_CONFIG.
 	* changed 6 menus so they loop until user return.
 	* return codes added
+
+### Version 5.0-1 031117
+	* Two new package lists added to package list generator.
+	* New optional environment variable to allow for no colour "CYLON_COLOR_OFF".
+	* System information display optimisations.
+	* New system maintenance option added "List All Open Files", htop removed as dependency.
+	* Option to backup GPT partition added in addition to MBR. also rsync option optimised.
+	* New command line option added "notify -n" to enable desktop notifications.
+

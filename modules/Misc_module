@@ -13,6 +13,7 @@
 # OUTPUT yesno prompt return 1 or 0                       
 function msgFunc
 {
+	
 	case "$1" in 
 	
 		line) #print blue horizontal line of =
@@ -83,8 +84,7 @@ function exitHandlerFunc
 				msgFunc yellow "Usage: -b -c -d -h -l -m -p -r -s -u -v -z"
 				msgFunc yellow "type cylon -h for readme or man cylon for manpage at terminal"
 				msgFunc anykey "to view option details"
-				man cylon | grep -A36 OPTIONS 
-				#man "./documentation/cylon.7" | grep -A36 OPTIONS  ##development AID
+				man cylon | grep -A39 OPTIONS 
 				;;
 			*) msgFunc yellow "Unknown input to error handler";;
 	 esac
@@ -209,6 +209,13 @@ clear
 		else 
 			msgFunc norm "Environment variable CYLON_CONFIG is set to $CYLON_CONFIG"
 		fi
+		
+			if [ -z "${CYLON_COLOR_OFF}" ]
+		then 
+			msgFunc norm "Environment variable CYLON_COLOR_OFF is not Set"
+		else 
+			msgFunc norm "Environment variable CYLON_COLOR_OFF is set to $CYLON_COLOR_OFF"
+		fi
 		msgFunc anykey "and check which dependencies are installed"
 		clear
 		msgFunc norm " "
@@ -242,7 +249,7 @@ clear
 				msgFunc line
 				msgFunc green "Displaying cylonReadme.md file at $DEST6"
 				cd "$DEST6"  || exitHandlerFunc DEST6
-				more Readme.md 
+				less Readme.md 
 				msgFunc green "Done!" 
 				msgFunc line
 				msgFunc anykey
@@ -294,31 +301,32 @@ msgFunc norm "Extra: $(paclist extra | wc -l)"
 msgFunc norm "Community: $(paclist community | wc -l)"
 msgFunc norm "Multilib: $(paclist multilib | wc -l)"
 msgFunc norm "Foreign: $(pacman -Qm | wc -l)"
-msgFunc anykey
+msgFunc green "Do you want to display System information page 2? [y/n]"
+if msgFunc yesno
+	then #yes
+	clear
+	msgFunc green "System information page 2"
+	msgFunc norm "Searching / please wait ...."
+	msgFunc norm "All .pacnew and .pacsave files: \
+	$(find / -regextype posix-extended -regex ".+\.pac(new|save)" 2> /dev/null |wc -l)"
+	msgFunc norm "All installed packages: $(pacman -Q | wc -l)" 
+	msgFunc norm "All native packages: $(pacman -Qn | wc -l)" 
+	msgFunc norm "All explicitly installed packages: $(pacman -Qe | wc -l)" 
+	msgFunc norm "All explicitly installed native packages that are"
+	msgFunc norm "not direct or optional dependencies: $(pacman -Qqent | wc -l)"
+	msgFunc norm "All explicitely installed pkgs not base/base-devel grps: \
+	$(comm -23 <(pacman -Qeq | sort) <(pacman -Qgq base base-devel | sort) | wc -l ) "
+	msgFunc norm "All foreign installed packages: $(pacman -Qm | wc -l)"
+	msgFunc norm "All foreign explicitly installed packages: $(pacman -Qme | wc -l)"
+	msgFunc norm "All packages installed as dependencies: $(pacman -Qd | wc -l) "
+	msgFunc norm "All modified by user system backup file: $(pacman -Qii | awk '/^MODIFIED/ {print $2}' | wc -l)"
+	msgFunc norm "4 Largest packages :"
+	expac -H M '%m\t%n' | sort -hr |head -4
+	msgFunc norm "4 Newest updated packages :"
+	expac --timefmt='%Y-%m-%d %T' '%l\t%n' | sort -hr |head -4 
+	msgFunc anykey
+fi
 clear
-
-msgFunc green "System information page 2"
-msgFunc norm "Searching / please wait ...."
-msgFunc norm "All .pacnew and .pacsave files: \
-$(find / -regextype posix-extended -regex ".+\.pac(new|save)" 2> /dev/null |wc -l)"
-msgFunc norm "All installed packages: $(pacman -Q | wc -l)" 
-msgFunc norm "All native packages: $(pacman -Qn | wc -l)" 
-msgFunc norm "All explicitly installed packages: $(pacman -Qe | wc -l)" 
-msgFunc norm "All explicitly installed native packages that are"
-msgFunc norm "not direct or optional dependencies: $(pacman -Qqent | wc -l)"
-msgFunc norm "All explicitely installed pkgs not base/base-devel grps: \
-$(comm -23 <(pacman -Qeq | sort) <(pacman -Qgq base base-devel | sort) | wc -l ) "
-msgFunc norm "All foreign installed packages: $(pacman -Qm | wc -l)"
-msgFunc norm "All foreign explicitly installed packages: $(pacman -Qme | wc -l)"
-msgFunc norm "All packages installed as dependencies: $(pacman -Qd | wc -l) "
-msgFunc norm "All modified by user system backup file: $(pacman -Qii | awk '/^MODIFIED/ {print $2}' | wc -l)"
-msgFunc norm "4 Largest packages :"
-expac -H M '%m\t%n' | sort -hr |head -4
-msgFunc norm "4 Newest updated packages :"
-expac --timefmt='%Y-%m-%d %T' '%l\t%n' | sort -hr |head -4 
-msgFunc anykey
-clear
-
 }
 
 #FUNCTION HEADER
@@ -403,13 +411,7 @@ function readconfigFunc
 # NAME :           checkinputFunc
 # DESCRIPTION:CHECK INPUT OPTIONS from linux command line arguments passed to program on call
 # INPUTS :  $1 user input option
-#-v display version and exit
-#-s display system info and exit
-#-h display cylon info and exit 
-#-c open config file for edit.
-#-u update all
-#-d run bleachbit default as set in GUI
-#-b run the bleachbit function
+# see readme and man page for output options
 function checkinputFunc
 {
 case "$1" in
@@ -459,6 +461,9 @@ case "$1" in
 	;;
 	-l|--lint)
 		RmLintFunc
+	;;
+	-n| --notify)
+		notifyFunc
 	;;
 	*)	clear
 		exitHandlerFunc Badinput "$1"
