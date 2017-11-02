@@ -151,6 +151,7 @@ cylon uses the default path. CYLON_COLOR_OFF is used for turning off colored tex
 For information on setting environment variables see arch linux wiki.
 
 CYLONDEST
+
 Most system output (logfiles, downloads and updates etc) 
 is placed at below path, unless otherwise specified on screen.
 Output folders are created with following time/date stamp syntax HHMM-DDMONYY-X 
@@ -158,20 +159,22 @@ where X is output type i.e download, update etc. The default path is:
 ```sh
 $HOME/Documents/Cylon
 ```
-Optional Environment variable: $CYLONDEST
+
 This optional Environment variable is provided for users
 who wish to use different destination path for program output folder.
 
 CYLON_CONFIG
+
 The default path for config file is 
 ```sh
 $HOME/.config/cylon/cylonCfg.conf
 ```
-Optional Environment variable: $CYLON_CONFIG
+
 This optional Environment variable is provided for users
 who wish to use different destination path for program config file.
 
 CYLON_COLOR_OFF
+
 if it does not exist or is not set cylon uses colored output. 
 This optional Environment variable is provided for users
 who wish to see no colour in terminal. Set it equal to "on"

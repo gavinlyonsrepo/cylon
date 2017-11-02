@@ -65,7 +65,6 @@ fi
 
 DEST6="/usr/share/doc/cylon"
 DEST7="/usr/lib/cylon/modules/"
-
 mkdir -p "$DEST3"
 mkdir -p "$DEST5"
 

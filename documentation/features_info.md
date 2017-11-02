@@ -76,8 +76,9 @@ no desktop notification is displayed
 n/a
 
 **3: System backup section**
-	* There is a main backup menu plus a gdrive and rsync option.
-	* The main backup menu first allows users to pick a backup destination
+
+* There is a main backup menu plus a gdrive and rsync option.
+* The main backup menu first allows users to pick a backup destination
 This can be custom, from config file or the program output folder.
 Next it offers 5 options as outlined in readme. The first backs up the MBR or GPT
 partition table. It can detect which drive the file system is mounted and which type of partition 
