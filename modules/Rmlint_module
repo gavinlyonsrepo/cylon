@@ -104,7 +104,7 @@ EOF
 			if msgFunc yesno
 			then #yes
 				msgFunc green  "rmlint output file"
-				more rmlint.json		
+				less rmlint.json
 				msgFunc line
 				msgFunc anykey
 			fi

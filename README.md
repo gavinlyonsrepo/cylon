@@ -308,7 +308,7 @@ folder, see "see also" section.
 	* Edit pacaur config file
 	* Update all packages in all repositories, pacaur -Syu
 	* Write installed package lists to files (REF1)
-	* Remove foreign packages  menu
+	* Remove foreign packages menu
 	* Desktop and terminal notifications same as cylon -n option
 	
 * Full System update 
@@ -431,8 +431,9 @@ See Also
 in package_lists.md, which is in the sub-folder documentation of repository. 
 The package files list is a collection of 20 plus lists describing the system.
 
-There are screenshots in the repository screenshot folder 
- 
+There are 6 screenshots in the repository screenshot folder 
+
+
 In the repository documentation folder, there are various support documents.
 
 | File Name | description |
