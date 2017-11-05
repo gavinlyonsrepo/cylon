@@ -281,10 +281,13 @@ function pkglistFunc
 	then
 		makeDirFunc "-PKGINFO"
 	fi
-	msgFunc norm "Searching / please wait ...."
+	msgFunc norm "Searching please wait "
 	#find pacsave
 	msgFunc norm "All .pacnew and .pacsave files : pacNewSaveFiles.txt" #1
-	find / -path /run/media -prune -o -path /mnt -prune -o -regextype posix-extended -regex ".+\.pac(new|save)" 2> /dev/null > pacNewSaveFiles.txt
+	find / -path /run/media -prune -o -path /mnt -prune -o -regextype posix-extended -regex ".+\.pac(new|save)" \
+	 -fprint pacNewSaveFiles.txt -exec echo -n "." \; 2> /dev/null 
+	msgFunc norm " "
+	
 	#pacman -Q*
 	msgFunc norm "All installed packages: pkglistQ.txt" #2
 	pacman -Q  > pkglistQ.txt

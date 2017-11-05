@@ -88,7 +88,7 @@ https://wiki.archlinux.org/index.php/Cron
 
 **2: System maintenance section**
 
-*Many of the functions that can be selected from this sub-menu can be run in a single 
+* Many of the functions that can be selected from this sub-menu can be run in a single 
 sweep from the command line by running  cylon -m. This sweep will not change system
 only report.
 

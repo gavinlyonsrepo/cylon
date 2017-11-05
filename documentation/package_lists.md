@@ -37,7 +37,8 @@ The "pkglistFunc" is called at various places in program see (REF1) marker in re
 
 ### Commands used by index number in table. 
 
-1. find / -regextype posix-extended -regex ".+\.pac(new|save)" 2> /dev/null
+1. find / -path /run/media -prune -o -path /mnt -prune -o -regextype posix-extended -regex ".+\.pac(new|save)" \
+-fprint pacNewSaveFiles.txt -exec echo -n "." \; 2> /dev/null 
 2. pacman -Q
 3. pacman -Qn
 4. pacman -Qe
