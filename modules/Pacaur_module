@@ -183,7 +183,8 @@ function notifyFunc
 	
 	if [ "$(checkupdates| wc -l)" != 0 ] || [ "$(pacaur -k | wc -l)" != 0 ]
 	then
-		msgFunc norm "Displaying desktop notifications Cylon : Updates ready :"
+		msgFunc norm "Displaying desktop notifications"
+		msgFunc norm "Cylon : Updates ready :"
 		msgFunc norm "Pacman = $(checkupdates| wc -l) : AUR = $(pacaur -k | wc -l) "
 		notify-send  "Cylon : Updates ready :" \
 		"Pacman = $(checkupdates| wc -l) : AUR = $(pacaur -k | wc -l) " --icon=dialog-information

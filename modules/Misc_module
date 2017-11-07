@@ -224,7 +224,7 @@ clear
 		local DependenciesArr=("dialog:NOTE non-optional" "expac:NOTE non-optional" "cower:NOTE AUR package" \
 "gdrive:NOTE AUR package" "lostfiles:NOTE AUR package" "pacaur:NOTE AUR package" "arch-audit" "rmlint" "rkhunter" \
 "gnu-netcat:NOTE No need if using openbsd-netcat" "openbsd-netcat:NOTE No need if using gnu-netcat" \
-"clamav" "bleachbit" "ccrypt" "rsync" "lynis" "inxi" "htop" "wavemon" "speedtest-cli")
+"clamav" "bleachbit" "ccrypt" "rsync" "lynis" "inxi" "libnotify" "wavemon" "speedtest-cli")
 		#loop thru and display the array
 		local tLenVar=""
 		local packageVar=""
