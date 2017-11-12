@@ -174,7 +174,6 @@ msgFunc blue "Main Menu:"
 function HelpFunc 
 {
 clear
-
 	if [ "$1" = "HELP" ]
 		then
 		msgFunc line
@@ -257,10 +256,9 @@ clear
 		clear
 		return
 	fi
-msgFunc line
-msgFunc green "System Information display Page 1"
-msgFunc line
 
+# SYS system information section page 1
+msgFunc green "System Information display Page 1"
 msgFunc norm "Uptime = $(uptime -p)"
 msgFunc norm "Kernel = $(uname -svr)"
 msgFunc norm "Operating System = $(uname -mo)"
@@ -292,40 +290,55 @@ msgFunc norm "Pacman cache = $CacheDirVar"
 msgFunc norm "Space used by pkg downloaded in cache: $(du -sh "$CacheDirVar" 2>/dev/null|awk '{print $1}'
 )"
 msgFunc norm "Hold packages: $(grep "HoldPkg" /etc/pacman.conf | cut -d "=" -f 2 )"
-msgFunc norm "Number of orphans: $(pacman -Qtdq | wc -l)"
+msgFunc norm "Number of orphan packages not required as dependencies: $(pacman -Qtdq | wc -l)"
 
-#msgFunc norm "Number of configured repositories:  "
-msgFunc norm "Packages by repositories:-"
-msgFunc norm "Core: $(paclist core | wc -l)"
-msgFunc norm "Extra: $(paclist extra | wc -l)"
-msgFunc norm "Community: $(paclist community | wc -l)"
-msgFunc norm "Multilib: $(paclist multilib | wc -l)"
-msgFunc norm "Foreign: $(pacman -Qm | wc -l)"
+#system information section page 2
 msgFunc green "Do you want to display System information page 2? [y/n]"
 if msgFunc yesno
-	then #yes
+	then #yes 
 	clear
 	msgFunc green "System information page 2"
-	msgFunc norm "Searching / please wait ...."
-	msgFunc norm "All .pacnew and .pacsave files: \
-	$(find / -regextype posix-extended -regex ".+\.pac(new|save)" 2> /dev/null |wc -l)"
 	msgFunc norm "All installed packages: $(pacman -Q | wc -l)" 
 	msgFunc norm "All native packages: $(pacman -Qn | wc -l)" 
 	msgFunc norm "All explicitly installed packages: $(pacman -Qe | wc -l)" 
 	msgFunc norm "All explicitly installed native packages that are"
 	msgFunc norm "not direct or optional dependencies: $(pacman -Qqent | wc -l)"
 	msgFunc norm "All explicitely installed pkgs not base/base-devel grps: \
-	$(comm -23 <(pacman -Qeq | sort) <(pacman -Qgq base base-devel | sort) | wc -l ) "
+$(comm -23 <(pacman -Qeq | sort) <(pacman -Qgq base base-devel | sort) | wc -l ) "
 	msgFunc norm "All foreign installed packages: $(pacman -Qm | wc -l)"
 	msgFunc norm "All foreign explicitly installed packages: $(pacman -Qme | wc -l)"
 	msgFunc norm "All packages installed as dependencies: $(pacman -Qd | wc -l) "
-	msgFunc norm "All modified by user system backup file: $(pacman -Qii | awk '/^MODIFIED/ {print $2}' | wc -l)"
-	msgFunc norm "4 Largest packages :"
-	expac -H M '%m\t%n' | sort -hr |head -4
-	msgFunc norm "4 Newest updated packages :"
-	expac --timefmt='%Y-%m-%d %T' '%l\t%n' | sort -hr |head -4 
+	msgFunc norm "5 Largest packages :"
+	expac -H M '%m\t%n' | sort -hr |head -5
+	msgFunc norm "5 Newest updated packages :"
+	expac --timefmt='%Y-%m-%d %T' '%l\t%n' | sort -hr |head -5 
+fi
+
+#system information section page 2
+msgFunc green "Do you want to display System information page 3? [y/n]"
+if msgFunc yesno
+then
+	#yes 
+	clear
+	msgFunc green "System information page 3"
+	msgFunc norm "Packages Count by repositories:-"
+	msgFunc norm "Core: $(paclist core | wc -l)"
+	msgFunc norm "Extra: $(paclist extra | wc -l)"
+	msgFunc norm "Community: $(paclist community | wc -l)"
+	msgFunc norm "Multilib: $(paclist multilib | wc -l)"
+	msgFunc norm "Foreign: $(pacman -Qm | wc -l)"
+	msgFunc norm "Total: $(pacman -Q | wc -l)"
+	msgFunc norm " "
+	msgFunc norm "Packages Installed size by repositories:-"
+	msgFunc norm "Core: $(pacman -Qi  $(paclist core | awk '{print $1}' ) | awk '/Installed Size/ {if ($5=="MiB") {sum+=$4} else if ($5=="KiB") {sum+=($4/1024)}} END {print sum " MiB"}')"
+	msgFunc norm "Extra: $(pacman -Qi $(paclist extra | awk '{print $1}' ) | awk '/Installed Size/ {if ($5=="MiB") {sum+=$4} else if ($5=="KiB") {sum+=($4/1024)}} END {print sum " MiB"}')"
+	msgFunc norm "Community: $(pacman -Qi $(paclist community | awk '{print $1}' ) | awk '/Installed Size/ {if ($5=="MiB") {sum+=$4} else if ($5=="KiB") {sum+=($4/1024)}} END {print sum " MiB"}')"
+	msgFunc norm "Multilib: $(pacman -Qi $(paclist multilib | awk '{print $1}' ) | awk '/Installed Size/ {if ($5=="MiB") {sum+=$4} else if ($5=="KiB") {sum+=($4/1024)}} END {print sum " MiB"}')"
+	msgFunc norm "Foreign: $(pacman -Qi $(pacman -Qmq ) | awk '/Installed Size/ {if ($5=="MiB") {sum+=$4} else if ($5=="KiB") {sum+=($4/1024)}} END {print sum " MiB"}')"
+	msgFunc norm "Total: $(pacman -Qi  | awk '/Installed Size/ {if ($5=="MiB") {sum+=$4} else if ($5=="KiB") {sum+=($4/1024)}} END {print sum " MiB"}')"
 	msgFunc anykey
 fi
+
 clear
 }
 

@@ -114,7 +114,7 @@ function SystemBackFunc
 				if [ "$mbrVar" = "gpt" ]
 				then
 					msgFunc norm  "GPT partition table detected : $mbrVar"
-					sudo dd if="$myddpathVar" of=hda-gpt.bin bs=512 skip=1 count=62
+					sudo dd if="$myddpathVar" of=hda-gpt.bin bs=512 skip=1 count=33
 				elif [ "$mbrVar" = "msdos" ]
 				then
 					msgFunc norm "Standard MBR partition table detected : $mbrVar"
