@@ -61,6 +61,6 @@ The "pkglistFunc" is called at various places in program see (REF1) marker in re
 19. paclist extra 
 20. paclist community
 21. paclist multilib
-22. sed -n "/ installed "x" /{s/].*/]/p;q}" /var/log/pacman.log , see source code for source of "x"
-23  pacman -Qq | awk '/^.+(-cvs|-svn|-git|-hg|-bzr|-darcs)$/'
+22. sed -n "/ installed "x" /{s/].*/]/p;q}" /var/log/pacman.log NOTE: "x" = array containing pacman -Qq
+23. pacman -Qq | awk '/^.+(-cvs|-svn|-git|-hg|-bzr|-darcs)$/'
 24. wc -l ./*.txt | head -n -1 | sort
