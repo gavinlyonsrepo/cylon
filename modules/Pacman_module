@@ -281,32 +281,30 @@ function pkglistFunc
 	then
 		makeDirFunc "-PKGINFO"
 	fi
-	msgFunc norm "Searching please wait "
-	#find pacsave
+
 	msgFunc norm "All .pacnew and .pacsave files : pacNewSaveFiles.txt" #1
 	find / -path /run/media -prune -o -path /mnt -prune -o -regextype posix-extended -regex ".+\.pac(new|save)" \
 	 -fprint pacNewSaveFiles.txt -exec echo -n "." \; 2> /dev/null 
 	msgFunc norm " "
 	
-	#pacman -Q*
-	msgFunc norm "All installed packages: pkglistQ.txt" #2
-	pacman -Q  > pkglistQ.txt
+	msgFunc norm "All installed packages: pkgQ.txt" #2
+	pacman -Q  > pkgQ.txt
 	
-	msgFunc norm "All native packages: pkglistQn.txt"  #3
-	pacman -Qn > pkglistQn.txt
+	msgFunc norm "All native packages: pkgQn.txt"  #3
+	pacman -Qn > pkgQn.txt
 	
-	msgFunc norm "All explicitly installed packages: pkglistQe.txt"  #4
-	pacman -Qe  > pkglistQe.txt
+	msgFunc norm "All explicitly installed packages: pkgQe.txt"  #4
+	pacman -Qe  > pkgQe.txt
 	
 	msgFunc norm "All explicitly installed native packages that are" #5
-	msgFunc norm "not direct or optional dependencies: pkglistQent.txt"
-	pacman -Qent > pkglistQent.txt
+	msgFunc norm "not direct or optional dependencies: pkgQent.txt"
+	pacman -Qent > pkgQent.txt
 	
-	msgFunc norm "All foreign installed packages: pkglistQm.txt" #6
-	pacman -Qm > pkglistQm.txt
+	msgFunc norm "All foreign installed packages: pkgQm.txt" #6
+	pacman -Qm > pkgQm.txt
 	
-	msgFunc norm "All foreign explicitly installed packages: pkglistQme.txt" #7
-	pacman -Qme > pkglistQme.txt
+	msgFunc norm "All foreign explicitly installed packages: pkgQme.txt" #7
+	pacman -Qme > pkgQme.txt
 	
 	msgFunc norm "All orphan packages not required as dependencies: pkgOpn.txt"
 	pacman -Qtdq > pkgOpn.txt #8
@@ -314,39 +312,45 @@ function pkglistFunc
 	msgFunc norm "All modified by user system backup files : pkgSysBck.txt"
 	pacman -Qii | awk '/^MODIFIED/ {print $2}' > pkgSysBck.txt  #9
 	
-	msgFunc norm "All packages installed as dependencies : pkgDepInstall.txt"
-	pacman -Qd > pkglistDep.txt #10
+	msgFunc norm "All packages installed as dependencies : pkgQd.txt"
+	pacman -Qd > pkgQd.txt #10
 	
 	msgFunc norm "All explicitly installed native packages "
-	msgFunc norm "quiet output for system restore : pkglistQqne.txt"
-	pacman -Qqne > pkglistQqne.txt #11
+	msgFunc norm "quiet output for system restore : pkgQqne.txt"
+	pacman -Qqne > pkgQqne.txt #11
 	
 	msgFunc norm "All packages that are optional dependencies "
-	msgFunc norm "and not installed explicitly :pkglistOptdep.txt"
-	comm -13 <(pacman -Qdtq | sort) <(pacman -Qdttq | sort) > pkglistOptdep.txt #12
+	msgFunc norm "and not installed explicitly :pkgOptdep.txt"
+	comm -13 <(pacman -Qdtq | sort) <(pacman -Qdttq | sort) > pkgOptdep.txt #12
 
 	#expac
 	msgFunc norm "All explicitly installed packages not in base nor base-devel with size"
-	msgFunc norm "and description: pkglistNonBase.txt"
+	msgFunc norm "and description: pkgNonBase.txt"
 	expac -H M "%011m\t%-20n\t%10d" $(comm -23 <(pacman -Qqen | sort) <(pacman -Qqg base base-devel | sort))\
-	| sort -hr > pkglistNonBase.txt #13
+	| sort -hr > pkgNonBase.txt #13
 	
-	msgFunc norm "All installed packages sorted by size: pkglistSize.txt"
-	expac -H M '%m\t%n' | sort -hr > pkglistSize.txt #14
+	msgFunc norm "All explicitly installed packages that are not direct or optional dependencies" 
+	msgFunc norm "and not in base nor base-devel with size and description: pkgexpNonBase.txt"
+	expac -H M "%011m\t%-20n\t%10d" $(comm -23 <(pacman -Qqent | sort) <(pacman -Qqg base base-devel | sort))\
+	| sort -hr > pkgexpNonBase.txt #14
 	
-	msgFunc norm "All installed packages sorted by install/update date: pkglistDate.txt"
-	expac --timefmt='%Y-%m-%d %T' '%l\t%n' | sort -hr > pkglistDate.txt #15
+	msgFunc norm "All installed packages sorted by size: pkgSize.txt"
+	expac -H M '%m\t%n' | sort -hr > pkgSize.txt #15
+	
+	msgFunc norm "All installed packages sorted by install/update date: pkgDate.txt"
+	expac --timefmt='%Y-%m-%d %T' '%l\t%n' | sort -hr > pkgDate.txt #16
 	
 	msgFunc norm "All installed groups: pkgGroups.txt"
-	expac -g '%G' | sort -u > pkgGroups.txt #16
+	expac -g '%G' | sort -u > pkgGroups.txt #17
+	
 	#paclist
 	msgFunc norm "Packages by repositories:-"
-	msgFunc norm "Core: $(paclist core > pkgCore.txt ) : pkgCore.txt" #17
-	msgFunc norm "Extra: $(paclist extra > pkgExtra.txt ) : pkgExtra.txt" #18
-	msgFunc norm "Community: $(paclist community > pkgComm.txt ) : pkgComm.txt" #19
-	msgFunc norm "Multilib: $(paclist multilib > pkgMulib.txt ): pkgMulib.txt" #20
+	msgFunc norm "Core: $(paclist core > pkgCore.txt ) : pkgCore.txt" #18
+	msgFunc norm "Extra: $(paclist extra > pkgExtra.txt ) : pkgExtra.txt" #19
+	msgFunc norm "Community: $(paclist community > pkgComm.txt ) : pkgComm.txt" #20
+	msgFunc norm "Multilib: $(paclist multilib > pkgMulib.txt ): pkgMulib.txt" #21
 	
-	msgFunc norm "All installed packages sorted by very first install date: pkginstall.txt" #21
+	msgFunc norm "All installed packages sorted by very first install date: pkginstall.txt" #22
 	local pacQArr 
 	pacQArr=$(pacman -Qq)
 	IFS=$'\n' pacQArr=($(sort <<<"${pacQArr[*]}"))
@@ -362,9 +366,12 @@ function pkglistFunc
 		echo "${pacQArr[i]}" >> pkginstall.txt
 		sed -n "/ installed ${pacQArr[i]} /{s/].*/]/p;q}" /var/log/pacman.log  >> pkginstall.txt
 	done
-	
 	echo " "
-	msgFunc norm "System packages list information summary : pkginfo.txt"  #22
+	msgFunc norm "All development/unstable packages(cvs svn git hg bzr darcs) : pkgdevel.txt" #23
+	pacman -Qq | awk '/^.+(-cvs|-svn|-git|-hg|-bzr|-darcs)$/' >> pkgdevel.txt
+	
+	
+	msgFunc norm "System packages list information summary : pkginfo.txt"  #24
 	{
 	echo "See https://github.com/gavinlyonsrepo/cylon/blob/master/documentation/package_lists.md for more information" 
 	echo "Line count of package files:"

@@ -5,7 +5,7 @@ This file provides extra information for some features
 that are not fully explained on screen or in the readme/man page.
 The numbers in sub-menus below represent the numbered menu options on screen.
 
-NOTE: Some sections are not complete.
+NOTE: Some sections are not complete (WIP). 
 
 **1: System update section**
 * pacman options

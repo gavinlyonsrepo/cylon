@@ -1,5 +1,6 @@
 #!/bin/bash
-#module containing function called from cylon package
+#Module containing function called from cylon package
+#
 #Functions:  pacaurFunc notifyFunc
 
 #FUNCTION HEADER

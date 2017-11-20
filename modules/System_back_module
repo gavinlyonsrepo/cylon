@@ -1,15 +1,16 @@
 #!/bin/bash
 #Module containing functions called from cylon package
+#
 #Functions: SystemBackFunc
 
 #FUNCTION HEADER
-# NAME :          SystemBackFunc
+# NAME : SystemBackFunc
 # DESCRIPTION:carries out Full system backup + gdrive sync 
 #to google drive
-# INPUTS:  configfile from readconfigFunc   
+# INPUTS:  configfile from readconfigFunc
 # OUTPUTS : backups see Options array
 # PROCESS : system backup(5 options) + option to call gdriveFunc  +rsync option
-#NOTES :    needs rsync installed if using rsync option
+#NOTES : needs rsync installed if using rsync option
 
 function SystemBackFunc
 {
@@ -60,7 +61,7 @@ function SystemBackFunc
 						cd "$Path1Var" || exitHandlerFunc DEST4 
 						D3Var="1"
 						;;
-			"${optionsBUArr[4]}")   #gdrive function
+			"${optionsBUArr[4]}") #gdrive function
 					#check gdrive is installed
 					if ! checkPacFunc gdrive 
 					then
@@ -155,6 +156,6 @@ function SystemBackFunc
 				return
 			;;
 			esac
-			break 
+			break
 			done
 }

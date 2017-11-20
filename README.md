@@ -429,7 +429,7 @@ See Also
 -----------
 (REF1): Packages files list referenced above at marker REF1 can be viewed 
 in package_lists.md, which is in the sub-folder documentation of repository. 
-The package files list is a collection of 20 plus lists describing the system.
+The package files list is a collection of 24 lists describing the system.
 
 There are 6 screenshots in the repository screenshot folder 
 
