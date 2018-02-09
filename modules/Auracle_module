@@ -1,0 +1,204 @@
+#!/bin/bash
+#Module containing functions called from cylon package
+#Functions: auracleFunc
+
+#FUNCTION HEADER
+# NAME : auracleFunc
+# DESCRIPTION:use auracle utility to manage AUR packages
+# downloads, updates and searches
+# PROCESS : see options array 
+#NOTES : Needs auracle(AUR) installed  gnu-netcat is needed for option 5     
+function AuraFunc
+{
+#check auracle is installed
+if ! checkPacFunc auracle
+	then
+	msgFunc anykey 
+	return
+fi
+clear
+msgFunc line
+msgFunc green "AUR packages management by auracle. Number of foreign packages installed = $(pacman -Qm | wc -l)"
+msgFunc line
+msgFunc norm
+
+
+while true; do # loop until exit
+
+local auraclePacVar=""
+local choiceCmVar=""
+
+#Display auracle menu options
+msgFunc blue "AUR package install and updates by auracle, options:-"
+local optionsCArr=("Check network and check for AUR updates (no download), auracle sync" \
+"Information for package, auracle info" "Search for package, auracle search" \
+"Download package, auracle -r download + Install" \
+"Download package, auracle -r download" \
+"Update all installed AUR packages, auracle sync + download" \
+"Display AUR packages with no Maintainer" \
+"Display Foreign packages not in AUR" \
+"Make copy of package lists" "Read AUR Package comments"  \
+"Remove foreign packages explicitly installed menu" \
+ "Return")
+	select choiceCmVar in "${optionsCArr[@]}"
+	do
+	case "$choiceCmVar" in
+		"${optionsCArr[0]}") #check for updates 
+			msgFunc green  "Check network and then check for updates"
+			#check network connectivity if good get updates numbers from arch
+			checkNetFunc "aur.archlinux.org"
+			msgFunc norm "Number of updates available for installed AUR packages :..."
+			auracle sync | tee /dev/tty  | wc -l
+			msgFunc anykey
+		;;
+		# information for package AUR with auracle 
+		"${optionsCArr[1]}")msgFunc green "${GREEN}Information for AUR package , auracle info"
+			msgFunc norm "Type a AUR package name:-"
+			read -r auraclePacVar
+			msgFunc norm " " 
+			auracle info "$auraclePacVar" 
+			msgFunc anykey
+		;;
+	
+		"${optionsCArr[2]}") 	#auracle search
+			msgFunc green "${GREEN}Search for AUR package, auracle search"
+			msgFunc norm "Type a AUR package name:-"
+			read -r auraclePacVar		
+			msgFunc norm " " 
+			auracle search "$auraclePacVar" 
+			msgFunc anykey
+		;;
+	
+		"${optionsCArr[3]}")#auracle download Download AUR package with an optional install
+			msgFunc green "${GREEN}Download AUR package auracle download with install"
+			makeDirFunc "-AURDOWNLOAD"
+			#build and install packages
+			msgFunc norm "Type a AUR package name:-"
+			read -r auraclePacVar
+			auracle -r download "$auraclePacVar" || return
+			cd "$auraclePacVar" || return
+			msgFunc green "$auraclePacVar PKGBUILD: "
+			msgFunc anykey "to read"
+			cat PKGBUILD
+			msgFunc green "PKGBUILDS displayed above. Install [y/n] ?"
+			if msgFunc yesno
+				then #yes
+					msgFunc norm  "Installing package $auraclePacVar"
+					makepkg -si		
+			fi
+		;;
+			
+		"${optionsCArr[4]}") #auracle -d Download AUR package with NO Install.
+			msgFunc green "${GREEN}Download AUR package auracle -d"
+			makeDirFunc "-AURDOWNLOAD"
+			#build and install packages
+			msgFunc norm "Type a AUR package name:-"
+			read -r auraclePacVar		
+			auracle -r download	"$auraclePacVar" || return
+			msgFunc anykey
+		;;
+		
+		
+		"${optionsCArr[5]}") #check for updates auracle and optional install 
+		msgFunc green "Update AUR packages  auracle sync and download "		
+		#make auracle update directory
+		makeDirFunc "-AURUPDATES" 
+		auracle sync | awk  '{ print $1 }' | xargs auracle download
+		
+		# look for empty dir (i.e. if no updates) 
+		#check  directory has child directories?
+		local subdircountVar=""
+		subdircountVar=$(find ./* -type d 2</dev/null | wc -l)
+		#check for more than 2 subdir 
+		if [  "$subdircountVar" -gt 0 ] 
+		then
+			msgFunc norm  "Package builds available"
+			ls 
+			msgFunc norm " "
+			msgFunc green "View package builds [y/n] ?"
+			if msgFunc yesno
+				then #yes
+				msgFunc green " Viewing  PKGBUILDS of updates :-" 
+				#cat PKGBUILDs to screen
+				find . -name PKGBUILD -exec cat {} \; | more
+				msgFunc green "PKGBUILDS displayed above."
+				msgFunc anykey
+				msgFunc line
+			fi
+			msgFunc green "Install all updates [y/n] ?"
+			if msgFunc yesno
+				then #yes
+					#build and install all donwloaded PKGBUILD files 
+					msgFunc norm  "Installing packages"
+					find . -name PKGBUILD -execdir makepkg -si \;
+			fi
+		else
+			msgFunc norm "No updates found for installed AUR packages by auracle."
+			msgFunc anykey
+		fi	
+		;;
+
+		"${optionsCArr[6]}") #Display installed AUR packages with no Maintainer  
+			msgFunc green "Display AUR packages with no Maintainer scan ..."
+			local orphansVar=0
+			local statusVar=""
+			for i in $(pacman -Qmq); 
+			do
+					statusVar=$(auracle info "$i" | awk '/Maintainer/ {print $3}' )
+					if [ "$statusVar" == "(orphan)" ]; then
+						msgFunc norm "$i"
+						orphansVar=1
+					fi
+			done
+			
+			if [ $orphansVar -eq 0 ]; then
+					msgFunc yellow "No AUR packages with no Maintainer found!"
+			fi
+			msgFunc anykey
+		;;
+		
+		
+		"${optionsCArr[7]}") # Display Foreign packages not in AUR
+		msgFunc green "Display Foreign packages not in AUR"
+		checkNetFunc "aur.archlinux.org"
+		for p in $(pacman -Qmq); do
+			if [ -z "$(auracle info "$p")" ]; then
+				echo "$p" 
+			fi
+		done
+		msgFunc anykey
+		;;
+
+		
+		"${optionsCArr[8]}") #Make copy of package lists"
+		msgFunc green "Make copy of package lists"
+		pkglistFunc
+		msgFunc anykey
+		;;
+
+		"${optionsCArr[9]}") #read comments
+				msgFunc green "Read AUR Package comments"
+				makeDirFunc "-AURDOWNLOAD"
+				msgFunc norm "Type a AUR package name:-"
+				read -r auraclePacVar		
+				local aururl="aur.archlinux.org"
+				curl -s "https://${aururl}/packages/$auraclePacVar/?comments=all" | sed -r -n -e "/<div id=\"news\">/,/<!-- End of main content -->/p" | sed -e 's/<[^>]*>//g' > AURcommentfile.
+				msgFunc anykey
+		;;
+
+		"${optionsCArr[10]}") #Delete foreign packages 
+				DelQmFunc
+		;;
+
+		*)  #exit to main menu 
+			clear
+			return
+		;;
+	esac
+	break
+	done
+msgFunc green "Done!"
+done
+}
+
+

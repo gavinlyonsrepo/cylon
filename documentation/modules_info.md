@@ -10,17 +10,17 @@ Function headers in the files contain more information.
 
 | File name | Functions |
 | ------ | ------ |
-| AntiMalware_module | SystemSecFunc AntiMalwareFunc intchkFunc |
 | Gdrive_module | gdriveFunc |
 | Pacaur_module | pacaurFunc notifyFunc |
 | System_back_module | SystemBackFunc |
 | Ccrypt_module | ccryptFunc |
 | Misc_module | checkinputFunc AsciiArtFunc DisplayFunc exitHandlerFunc HelpFunc msgFunc readconfigFunc weatherFunc makeDirFunc |
-| Pacman_module | pacmanFunc pkglistFunc updateFunc checkPacFunc rssFunc |
+| Pacman_module | pacmanFunc pkglistFunc updateFunc checkPacFunc rssFunc DelQmeFunc |
 | System_clean_module | SystemCleanFunc |
-| Cower_module | DelQmeFunc cowerFunc |
+| Auracle_module | auraFunc |
 | Network_module | networkFunc checknetFunc |
 | Rmlint_module | RmLintFunc |
+| Security_module | SystemSecFunc AntiMalwareFunc intchkFunc |
 | System_maint_module | SystemMaintFunc SystemMaintAutoFunc configFileScanFunc |
 
 | Function name | Description |
@@ -47,7 +47,7 @@ Function headers in the files contain more information.
 | rssFunc | Arch Linux News reader of the Rss feed https://www.archlinux.org/feeds/news/ |
 | SystemCleanFunc | bleachbit wrapper |
 | DelQmeFunc | Delete foreign packages display menu |
-| cowerFunc | cower wrapper + extended functionality  |
+| auraFunc | auracle wrapper + extended functionality |
 | networkFunc | Handles the network options |
 | checknetFunc | Checks if network has connectivity with netcat |
 | RmLintFunc | rmlint wrapper |

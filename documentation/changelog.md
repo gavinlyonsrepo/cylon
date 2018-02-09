@@ -129,3 +129,8 @@
 	* Option to backup GPT partition added in addition to MBR. also rsync option optimised.
 	* New command line option added "notify -n" to enable desktop notifications.
 
+### Version 5.1-3 100218
+	* Optdepends AUR helper "Cower" replaced by "Auracle-git", as cower is obsolete see here.
+	[auracle](https://www.reddit.com/r/archlinux/comments/6ktsqg/auracle_the_next_generation_of_cower/)
+	* package list generator size increased from 24 to 25.
+	

@@ -198,11 +198,16 @@ also "n/a" is displayed besides uninstalled options in menus.
 
 gnu-netcat and openbsd-netcat peform same function, 
 only 1 can be or needs to be installed, both included because of conflicts.
-cower and pacaur are both AUR helpers you can install 
-just cower or both depending on preference. pacaur wraps cower 
-and needs it installed. 
-The setting TargetDir in cower config file must not be used
-cylon will check this and display warning.
+There are used to check that network is "up" at various points in program.
+
+Auracle and pacaur are both AUR helpers you can install 
+one or both depending on preference. Auracle is a minimalist helper. 
+Pacaur is more fully featured but is no longer maintained upstream and will 
+probably be replaced in Cylon in near future.
+Auracle is new and still in development hence the -git extension,
+it replaced cower in version 5.1-3, as cower is obsolete. 
+The original cower code module is still available in modules folder TWIC.
+
 libnotify should be installed on the vast majority of Arch systems already.
 gdrive readme for config https://github.com/prasmussen/gdrive ,
 gdrive option syncs will Delete extraneous remote files as of V3.4-5.
@@ -230,7 +235,7 @@ be already installed on many systems.
 | speedtest-cli  | testing internet bandwidth |
 | Arch-audit | Uses data collected by the Arch CVE team |
 | pacaur(AUR)  | for AUR helper functions |
-| cower(AUR) | for AUR helper functions |
+| auracle-git(AUR) | for AUR helper functions |
 | gdrive(AUR) | to sync to google drive |
 | lostfiles(AUR) | to scan for lostfiles |
 
@@ -240,11 +245,10 @@ Features
 The program functions are divided into 6 sections:
 update, maintenance, backup, security, network and miscellaneous.
 The update section is the core of the program and provides a wrapper for 
-pacman, pacaur and cower. It provides an extension to cower 
+pacman, pacaur and auracle. It provides an extension to auracle
 to allow it to install and update packages. It also provides 
 a full system update report function and various other options. 
-The setting TargetDir in cower config file must not be used
-cylon will check this and display warning.
+
 
 The maintenance section provides a variety of scans and checks, it also 
 a provides command line wrapper for rmlint and bleach-bit. 
@@ -284,19 +288,20 @@ folder, see "see also" section.
 	* View pacman log
 	* optimise pacman 
 	
-* AUR cower options 
-	* Check for updates ( NO downloads)
+* AUR helper auracle options 
+	* Check for updates sync ( NO downloads)
 	* Get Information for AUR package 
 	* Search for AUR package
 	* Download AUR package and install
-	* Fetch and install AUR packages
-	* Download package only, no install. 
+	* Download AUR package no install
+	* Sync and download AUR packages, i.e. update AUR packages on system. 
+	* Display AUR packages with no Maintainer
+	* Display Foreign packages not in AUR
 	* Write installed package lists to files (REF1)
 	* Read AUR Package comments
-	* Edit cower config file
-	* Remove foreign packages  menu
+	* Remove foreign packages menu
 	
-* AUR pacaur options
+* AUR helper pacaur options
 	* Check for updates ( NO downloads)
 	* Get Information for AUR package 
 	* Search for AUR package

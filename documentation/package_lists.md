@@ -34,7 +34,8 @@ The "pkglistFunc" is called at various places in program see (REF1) marker in re
 | 21 | All packages in repository multilib | pkgMulib.txt |
 | 22 | All installed packages sorted by original install date | pkginstall.txt |
 | 23 | All development/unstable packages(cvs svn git hg bzr darcs) | pkgdevel.txt |
-| 24 | System packages information summary | pkginfo.txt |
+| 24 | All foreign packages not in the AUR | pkgFNotAUR.txt |
+| 25 | System packages information summary | pkginfo.txt |
 
 
 ### Commands used by index number in table. 
@@ -63,4 +64,5 @@ The "pkglistFunc" is called at various places in program see (REF1) marker in re
 21. paclist multilib
 22. sed -n "/ installed "x" /{s/].*/]/p;q}" /var/log/pacman.log NOTE: "x" = array containing pacman -Qq
 23. pacman -Qq | awk '/^.+(-cvs|-svn|-git|-hg|-bzr|-darcs)$/'
-24. wc -l ./*.txt | head -n -1 | sort
+24. Multiple commands uses Auracle and connects to the internet 
+25. wc -l ./*.txt | head -n -1 | sort

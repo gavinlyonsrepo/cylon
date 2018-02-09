@@ -81,8 +81,9 @@ while true; do # loop until exit
 			#Checking for broken symlinks:
 			msgFunc green "Checking for Broken Symlinks"
 			#root or home?
+			local choiceSYMVar=""
 			msgFunc norm "Do you want to scan / or $HOME? [R/h]"
-			local choiceSYMVar
+			read -r choiceSYMVar
 			if [ "$choiceSYMVar" = "h" ]
 			then
 				find "$HOME" -type l -! -exec test -e {} \; -print > symlinkerr

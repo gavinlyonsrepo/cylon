@@ -44,7 +44,7 @@ function SystemCleanFunc
 				esac
 			msgFunc norm "\"$mydelfileVar\" chosen file."
 			msgFunc green "Execute bleachbit to delete file $mydelfileVar ? "
-			msgFunc red   "Press y or n [y/n] ?"
+			msgFunc yellow   "Press y or n [y/n] ?"
 			if msgFunc yesno
 			then #yes
 				bleachbit -s "$mydelfileVar" || exitHandlerFunc exitout
@@ -75,7 +75,7 @@ function SystemCleanFunc
 				esac
 			msgFunc norm "\"$mydelpathVar\" chosen directory."
 			msgFunc green "Execute bleachbit to delete folder $mydelpathVar ? "
-			msgFunc red   "Press y or n [y/n] ?"
+			msgFunc yellow   "Press y or n [y/n] ?"
 			if msgFunc yesno
 			then #yes
 				bleachbit -s "$mydelpathVar" || exitHandlerFunc exitout
@@ -92,9 +92,13 @@ function SystemCleanFunc
 				 rm -rvf "$HOME"/Downloads/*
 			;;
 			"${optionsFsArr[4]}")  msgFunc green "Deleting Cylon output folder $DEST3"
-				rm -rvf "$DEST3"
-				#remake the path for the program output DEST3
-				mkdir -p "$DEST3"
+				msgFunc norm "Deleting Cylon output folder $DEST3 ?"
+				msgFunc yellow  "Press y or n [y/n] ?"
+				if msgFunc yesno
+				then #yes
+					rm  -rvf "$DEST3"
+					mkdir -p "$DEST3"
+				fi
 			;;
 			*)  #exit  
 				msgFunc green "Done!"	

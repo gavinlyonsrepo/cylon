@@ -107,7 +107,7 @@ function DisplayFunc
 msgFunc blue "Main Menu:"
 	local choiceMainVar
 	local optionsMArr=(
-	"pacman" "$(checkPacFunc cower NOMES)" \
+	"pacman" "$(checkPacFunc auracle-git NOMES)" \
 	"$(checkPacFunc pacaur NOMES)" "System Update" "System Maintenance" \
 	"System backup" "System Security" "Network Maintenance" \
 	"xterm terminal" "View/Edit config file"\
@@ -119,8 +119,8 @@ msgFunc blue "Main Menu:"
 			"${optionsMArr[0]}")   #pacman update
 				PacmanFunc
 			;;
-			"${optionsMArr[1]}") #cower AUR helper
-				CowerFunc
+			"${optionsMArr[1]}") #auracle AUR helper
+				AuraFunc
 			;;
 			"${optionsMArr[2]}") #pacaur AUR helper
 				pacaurFunc
@@ -221,7 +221,7 @@ clear
 		msgFunc norm " "
 		msgFunc green "Dependencies"
 		#create array to hold Dependencies
-		local DependenciesArr=("dialog:NOTE non-optional" "expac:NOTE non-optional" "cower:NOTE AUR package" \
+		local DependenciesArr=("dialog:NOTE non-optional" "expac:NOTE non-optional" "auracle-git:NOTE AUR package" \
 "gdrive:NOTE AUR package" "lostfiles:NOTE AUR package" "pacaur:NOTE AUR package" "arch-audit" "rmlint" "rkhunter" \
 "gnu-netcat:NOTE No need if using openbsd-netcat" "openbsd-netcat:NOTE No need if using gnu-netcat" \
 "clamav" "bleachbit" "ccrypt" "rsync" "lynis" "inxi" "libnotify" "wavemon" "speedtest-cli")
@@ -479,6 +479,7 @@ case "$1" in
 	-n| --notify)
 		notifyFunc
 	;;
+	
 	*)	clear
 		exitHandlerFunc Badinput "$1"
 	;;
@@ -506,7 +507,7 @@ function makeDirFunc
 		cd "$DEST3" || exitHandlerFunc DEST3
 	fi
 	dirVar=$(date +%H%M-%d%b%y)"$1"
-	mkdir "$dirVar"
+	mkdir -p "$dirVar"
 	cd "$dirVar" || exitHandlerFunc DEST4
 	msgFunc norm "Directory for output made at:-"
 	pwd	 

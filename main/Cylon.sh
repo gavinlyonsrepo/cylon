@@ -5,7 +5,7 @@
 #Description: Updates, maintenance, backups and system checks in 
 #single menu driven optional script Command line program for Arch linx users. 
 #see readme.md(access thru cylon info page) or manpage "man cylon" for info.
-#Version 5.0-1 See changelog.md at repo for version control
+#See changelog.md at repo for version control v5.1-3
 #License: see license.md 
 #Written by Gavin lyons 
 #Software repo: https://github.com/gavinlyonsrepo/cylon
@@ -33,6 +33,7 @@ else #color on
 	HL=$(printf "\033[42;1m")
 	NORMAL=$(printf "\033[0m")
 fi
+
 
 #prompt for select menus
 PS3="${BLUE}By your command:${NORMAL}"

@@ -1,6 +1,7 @@
 #!/bin/bash
 #Module containing functions called from cylon package
-#Functions: DelQmeFunc and cowerFunc
+#Functions:  cowerFunc
+# ** NOTE obsolete replaced by auracle  02-2018 ** 
 
 #FUNCTION HEADER
 # NAME : CowerFunc
@@ -223,44 +224,4 @@ msgFunc green "Done!"
 done
 }
 
-#FUNCTION HEADER
-# NAME :  DelQmFunc
-# DESCRIPTION:Delete  foreign packages 
-# PROCESS : pacman -Qm pacman -Rs
-#Note called from cowerFunc and pacaurFunc
-function DelQmFunc
-{
-	local DelQmArr
-	DelQmArr=$(pacman -Qmq)
-	IFS=$'\n' DelQmArr=($(sort <<<"${DelQmArr[*]}"))
-	unset IFS
-	dialog --title "Output of pacman -Qmq:" --begin 1 1  --no-items --menu "Select Package to Remove:" 20 40 10 "${DelQmArr[@]}"  2>/tmp/cylontempfile
-		case $? in
-		0)
-			clear
-			msgFunc norm " "
-			local mySelectionVar=""
-			mySelectionVar=$(cat /tmp/cylontempfile)
-			msgFunc yellow "\"$mySelectionVar\" is the chosen package."
-			msgFunc anykey "and uninstall it. pacman -Rs"
-			sudo pacman -Rs "$mySelectionVar"
-			mySelectionVar=""
-			rm /tmp/cylontempfile
-			msgFunc anykey
-			DelQmArr=()
-			clear
-		;;
-		1)
-			clear
-			msgFunc yellow "Cancel pressed."
-			DelQmArr=()
-			return
-		;;
-		255)
-			clear
-			msgFunc yellow "Esc pressed."
-			DelQmArr=()
-			return
-		;;
-	esac
-}
+

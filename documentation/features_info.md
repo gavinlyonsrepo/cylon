@@ -23,30 +23,29 @@ improving database access speeds. pacman stores all package information in a col
 one for each package. Improving database access speeds reduces the time taken in database-related tasks, 
 e.g. searching packages and resolving package dependencies.  See pacman tips/tricks in Arch wiki for more information.
 
-* cower options
-	* see "man cower" for more details
+* Auracle options 
+	* Auracle replaced cower in version 5.1 the original module file 
+	is still present in modules directory TWIC. 
+	* see "man auracle" for more details
 	* Downloads and updates are downloaded to the Output folders as defined in 
-"Output and environment variables" section of readme.md. The setting "TargetDir" in cower config file must not be used
-cylon will check this and display warning.
+"Output and environment variables" section of readme.md. 
 	* 4 The optional install after download consists of a display of the PKGBUILD
 and prompt to install or not. 
-	* 5 After update command, Cylon checks if output directory has child directories
+	* 6 After a combined sync and download command, 
+	auracle sync | awk  '{ print $1 }' | xargs auracle download
+	Cylon checks if output directory has child directories.
 to see if there is an update downloaded, Next it offers to view PKGBUILD of any updates
 and finally asks do you want to install them. If you do not want to install some of the updates
 for some reason you can manually delete their folder from output folder before this point.
-	* 9 Config file
-cower honors a config file which will be looked for first at:
-$XDG_CONFIG_HOME/cower/config
-and falling back to: $HOME/.config/cower/config
-A documented example config file can be found at
-/usr/share/doc/cower/config.
-	* 10 The dialog package is used to create a GUI menu containing all foreign 
-packages on system , output of pacman -Qmq , If ok pressed pacman -Rs is used to remove package.
-	* 11 A AUR package without a maintainer or AUR Orphan Packages(not to be confused with system orphan see pacman section)
+	* 7 A AUR package without a maintainer or AUR Orphan Packages
+	(not to be confused with system orphan see pacman section)
 	Is a PKGBUILD in the AUR database with no maintainer. 
 	This option loops thru all foreign packages on system (output of pacman -Qmq)
-	and uses command "cower -i --format %m" to check for maintainer. It will show if any package on your system 
+	and uses command "Auracle info" to check for maintainer. It will show if any package on your system 
 	is not maintained in the AUR system.
+	* 11 The dialog package is used to create a GUI menu containing all foreign 
+packages on system , output of pacman -Qmq , If ok pressed pacman -Rs is used to remove package.
+
 	
 * pacaur options
 	* see "man pacaur" for more details
@@ -63,7 +62,7 @@ system config $XDG_CONFIG_DIRS/pacaur/config
 and falling back to /etc/xdg/pacaur/config
 user config $XDG_CONFIG_HOME/pacaur/config
 and falling back to $HOME/.config/pacaur/config
-	* 12 see cower option 10 above.
+	* 12 see auracle 11 above.
 	* 13 This option is the same as running cylon -n. 
 Desktop notifications are small, passive popup dialogs 
 that notify the user of particular events in an asynchronous manner
@@ -185,11 +184,11 @@ https://godoc.org/google.golang.org/api/drive/v3#FilesListCall.OrderBy
 
 **4: System security section**
 
-WIP
+WIP TODO
 
 **5: Network section**
 
-WIP
+WIP TODO
 
 **6: Miscellaneous section**
 

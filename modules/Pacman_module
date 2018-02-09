@@ -1,6 +1,6 @@
 #!/bin/bash
 #Module containing functions called from cylon package
-#Functions: pacmanFunc, pkglistFunc,updateFunc,checkPacFunc and rssFunc
+#Functions: pacmanFunc, pkglistFunc,updateFunc,checkPacFunc, DelQmFunc and rssFunc
 
 #FUNCTION HEADER
 # NAME : PacmanFunc
@@ -270,7 +270,7 @@ function RssFunc
 #INPUT $1 Backup if called from backup do not create directory
 # DESCRIPTION :creates a copy of packages list see below.
 #OUTPUT mutliple files see below
-#NOTE called from pacman pacur cower and backup functions 
+#NOTE called from pacman pacaur auracle and backup functions 
  # shellcheck disable=SC2120
 function pkglistFunc
 {
@@ -370,8 +370,20 @@ function pkglistFunc
 	msgFunc norm "All development/unstable packages(cvs svn git hg bzr darcs) : pkgdevel.txt" #23
 	pacman -Qq | awk '/^.+(-cvs|-svn|-git|-hg|-bzr|-darcs)$/' >> pkgdevel.txt
 	
+	if checkPacFunc auracle #24
+	then
+		checkNetFunc "aur.archlinux.org"
+		msgFunc norm "All foreign packages not in the AUR: pkgFNotAUR.txt" 
+		for p in $(pacman -Qmq); do
+			if [ -z "$(auracle info "$p")" ]; then
+				echo -n "."
+				echo "$p" >> pkgFNotAUR.txt
+			fi
+		done
+		echo " "
+	fi
 	
-	msgFunc norm "System packages list information summary : pkginfo.txt"  #24
+	msgFunc norm "System packages list information summary : pkginfo.txt"  #25
 	{
 	echo "See https://github.com/gavinlyonsrepo/cylon/blob/master/documentation/package_lists.md for more information" 
 	echo "Line count of package files:"
@@ -415,11 +427,11 @@ function updateFunc
 		arch-audit -q
 		msgFunc anykey
 		msgFunc line
-		msgFunc green "Number of Pacman updates ready ..> $(checkupdates | wc -l)"	
-		checkupdates
+		msgFunc green "Number of Pacman updates ready ..> "	
+		checkupdates | tee /dev/tty | wc -l
 		msgFunc line
-		msgFunc green "Number of updates available for installed AUR packages ..> $(cower -u | wc -l)"
-		cower -uc
+		msgFunc green "Number of updates available for installed AUR packages ..> "
+		auracle sync | tee /dev/tty  | wc -l
 		msgFunc line
 		#display update options
 		local choiceUfVar=""
@@ -482,4 +494,46 @@ function checkPacFunc
 		fi
 		return 1
 	fi 
+}
+
+#FUNCTION HEADER
+# NAME :  DelQmFunc
+# DESCRIPTION:Delete  foreign packages 
+# PROCESS : pacman -Qm pacman -Rs
+#Note called from auracleFunc and pacaurFunc
+function DelQmFunc
+{
+	local DelQmArr
+	DelQmArr=$(pacman -Qmq)
+	IFS=$'\n' DelQmArr=($(sort <<<"${DelQmArr[*]}"))
+	unset IFS
+	dialog --title "Output of pacman -Qmq:" --begin 1 1  --no-items --menu "Select Package to Remove:" 20 40 10 "${DelQmArr[@]}"  2>/tmp/cylontempfile
+		case $? in
+		0)
+			clear
+			msgFunc norm " "
+			local mySelectionVar=""
+			mySelectionVar=$(cat /tmp/cylontempfile)
+			msgFunc yellow "\"$mySelectionVar\" is the chosen package."
+			msgFunc anykey "and uninstall it. pacman -Rs"
+			sudo pacman -Rs "$mySelectionVar"
+			mySelectionVar=""
+			rm /tmp/cylontempfile
+			msgFunc anykey
+			DelQmArr=()
+			clear
+		;;
+		1)
+			clear
+			msgFunc yellow "Cancel pressed."
+			DelQmArr=()
+			return
+		;;
+		255)
+			clear
+			msgFunc yellow "Esc pressed."
+			DelQmArr=()
+			return
+		;;
+	esac
 }
