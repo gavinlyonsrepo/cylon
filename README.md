@@ -206,7 +206,7 @@ Pacaur is more fully featured but is no longer maintained upstream and will
 probably be replaced in Cylon in near future.
 Auracle is new and still in development hence the -git extension,
 it replaced cower in version 5.1-3, as cower is obsolete. 
-The original cower code module is still available in modules folder TWIC.
+The original cower code module is still available in documentation folder TWIC.
 
 libnotify should be installed on the vast majority of Arch systems already.
 gdrive readme for config https://github.com/prasmussen/gdrive ,
