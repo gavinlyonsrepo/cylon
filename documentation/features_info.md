@@ -24,7 +24,7 @@ one for each package. Improving database access speeds reduces the time taken in
 e.g. searching packages and resolving package dependencies.  See pacman tips/tricks in Arch wiki for more information.
 
 * Auracle options 
-	* Auracle replaced cower in version 5.1 the original module file 
+	* Auracle replaced cower in version 5.1 the original cower module file 
 	is still present in modules directory TWIC. 
 	* see "man auracle" for more details
 	* Downloads and updates are downloaded to the Output folders as defined in 
@@ -32,11 +32,14 @@ e.g. searching packages and resolving package dependencies.  See pacman tips/tri
 	* 4 The optional install after download consists of a display of the PKGBUILD
 and prompt to install or not. 
 	* 6 After a combined sync and download command, 
-	auracle sync | awk  '{ print $1 }' | xargs auracle download
+	auracle 
+	
+	sync | awk  '{ print $1 }' | xargs auracle download
+	
 	Cylon checks if output directory has child directories.
 to see if there is an update downloaded, Next it offers to view PKGBUILD of any updates
 and finally asks do you want to install them. If you do not want to install some of the updates
-for some reason you can manually delete their folder from output folder before this point.
+for some reason you can manually delete their folder from output folder at this point.
 	* 7 A AUR package without a maintainer or AUR Orphan Packages
 	(not to be confused with system orphan see pacman section)
 	Is a PKGBUILD in the AUR database with no maintainer. 
