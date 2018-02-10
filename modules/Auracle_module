@@ -88,8 +88,8 @@ local optionsCArr=("Check network and check for AUR updates (no download), aurac
 			fi
 		;;
 			
-		"${optionsCArr[4]}") #auracle -d Download AUR package with NO Install.
-			msgFunc green "${GREEN}Download AUR package auracle -d"
+		"${optionsCArr[4]}") #auracle  Download AUR package with NO Install.
+			msgFunc green "${GREEN}Download AUR package auracle "
 			makeDirFunc "-AURDOWNLOAD"
 			#build and install packages
 			msgFunc norm "Type a AUR package name:-"
@@ -180,7 +180,7 @@ local optionsCArr=("Check network and check for AUR updates (no download), aurac
 				msgFunc green "Read AUR Package comments"
 				makeDirFunc "-AURDOWNLOAD"
 				msgFunc norm "Type a AUR package name:-"
-				read -r auraclePacVar		
+				read -r auraclePacVar
 				local aururl="aur.archlinux.org"
 				curl -s "https://${aururl}/packages/$auraclePacVar/?comments=all" | sed -r -n -e "/<div id=\"news\">/,/<!-- End of main content -->/p" | sed -e 's/<[^>]*>//g' > AURcommentfile.
 				msgFunc anykey
