@@ -67,21 +67,16 @@ see:
 https://wiki.archlinux.org/index.php/Cron
 
 
-* pacaur options
-	* see "man pacaur" for more details
-	* 8 Delete pacaur cache
-environment  variable AURDEST 
-Determines where the packages build files (PKGBUILD, .SRCINFO and
-install script files) will be cloned. 
-If this environment variable is not defined, the clone directory
-will be set to $XDG_CACHE_HOME/pacaur
-with a fall back to $HOME/.cache/pacaur
-	* 9 pacaur config file
-User will be given option user to select user pacaur config file or the system one
-system config $XDG_CONFIG_DIRS/pacaur/config
-and falling back to /etc/xdg/pacaur/config
-user config $XDG_CONFIG_HOME/pacaur/config
-and falling back to $HOME/.config/pacaur/config
+* trizen options
+	* 8 Delete trizen clone dir
+Delete trizen clone dir files. default = /tmp/trizen-$USER
+The clone dir is the clone_dir setting from config file.
+The clone dir is the absolute path to the directory
+where trizen clones and builds packages. The setting is parsed from config file
+
+	* 9 trizen config file
+Edit trizen config file $HOME/.config/trizen/trizen.conf
+
 	* 12 see auracle 11 above.
 
 **2: System maintenance section**
