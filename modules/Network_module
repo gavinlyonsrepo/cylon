@@ -15,22 +15,18 @@ function networkFunc
 	msgFunc norm "Files report will be written to path above -"
 	while true; do
 	msgFunc blue "Network options :-"
-	local optionsNArr=("$(checkPacFunc wavemon NOMES) -wireless network monitor" "$(checkPacFunc speedtest-cli  NOMES) -testing internet bandwidth"\
+	local optionsNArr=("See wifi link quality continuously on screen" "$(checkPacFunc speedtest-cli  NOMES) -testing internet bandwidth"\
 	"Check if website up with netcat and ping" "Display all interfaces which are currently available" "Display kernal routing table"\
 	"Check the status of UFW, Uncomplicated Firewall" "Network Time Synchronization status check"\
 	 "traceroute print route packets trace to network host" "tracepath traces path to a network host" "View all open ports " "Return")
 	select choiceNVar in "${optionsNArr[@]}"
 		do
 		case "$choiceNVar" in
-			"${optionsNArr[0]}") #wavemon - wireless network monitor"
-			#check wavemon is installed
-			if ! checkPacFunc wavemon 
-			then
-				msgFunc anykey 
-			return
-			fi
-			msgFunc green "Opening wavemon"
-			xterm -e "wavemon" &  
+			"${optionsNArr[0]}") #See link quality continuously on screen
+					msgFunc norm "See wifi link quality continuously on screen"
+					msgFunc norm "press ctrl + c to return"
+					msgFunc anykey
+					watch -n 1 cat /proc/net/wireless
 			;;
 					
 			"${optionsNArr[1]}")  #speedtest-cli testing internet bandwidth

@@ -17,11 +17,11 @@ local optionsSMArr=("Failed Systemd Services and status" "Check Journalctl log f
 		"Check Journalctl for fstrim SSD trim" "Analyze system boot-up performance"\
 		"Check for Broken Symlinks" "Find files where no group or User corresponds to file's numeric ID"\
 		"$(checkPacFunc lostfiles NOMES)" "Diskspace usage" "Find 200 of the biggest files" "Find inodes usage" "Old configuration files scan"\
-		 "Print sensors information" "Clean journal files"\
-		 "Delete core dumps /var/lib/systemd/coredump/" "Delete files"\
-		  "$(checkPacFunc inxi NOMES)"\
-		  "$(checkPacFunc bleachbit NOMES)"\
-		"$(checkPacFunc rmlint NOMES)" "List All Open Files" "Return")
+		"Print sensors information" "Clean journal files"\
+		"Delete core dumps /var/lib/systemd/coredump/" "Delete files"\
+		"$(checkPacFunc bleachbit NOMES)"\
+		"$(checkPacFunc rmlint NOMES)" "List All Open Files" "DMI table decoder"\
+		"Return")
 while true; do # loop until exit
 	local choiceSMVar=""
 	#change dir for log files
@@ -164,26 +164,18 @@ while true; do # loop until exit
 			SystemCleanFunc "FOLDERS"
 		;;
 		
-		"${optionsSMArr[15]}")
-			#check if inxi package  installed
-			if ! checkPacFunc inxi
-			then
-				msgFunc anykey 
-				clear
-			break
-			fi
-			# inxi  - Command line system information script for console and IRC
-			msgFunc green "get output of inxi -Fixz"
-			inxi -Fixz | tee inxioutput
-		;;
-		"${optionsSMArr[16]}") #system clean with bleachbit
+		"${optionsSMArr[15]}") #system clean with bleachbit
 			SystemCleanFunc
 		;;
-		"${optionsSMArr[17]}") #rmlint 
+		"${optionsSMArr[16]}") #rmlint 
 			RmLintFunc
 		;;
-		"${optionsSMArr[18]}")  #  List All Open Files
+		"${optionsSMArr[17]}")  #  List All Open Files
 			find /proc/*/fd -xtype f -printf "%l\n" 2>/dev/null |grep -v " (deleted)$"| sort -u 
+		;;
+		
+		"${optionsSMArr[18]}")  #   DMI table decoder
+			sudo dmidecode  | tee demidecodeoutput
 		;;
 		
 		*)#quit

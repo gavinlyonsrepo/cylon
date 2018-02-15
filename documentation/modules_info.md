@@ -1,6 +1,6 @@
 Modules files overview
 ------------------
-There are twelve module library files containing 31 functions.
+There are twelve module library files containing 32 functions.
 installed to 
 ```sh
 /usr/lib/cylon/modules/
@@ -11,13 +11,13 @@ Function headers in the files contain more information.
 | File name | Functions |
 | ------ | ------ |
 | Gdrive_module | gdriveFunc |
-| Pacaur_module | pacaurFunc notifyFunc |
+| trizen_module | trizenFunc DelQmeFunc |
 | System_back_module | SystemBackFunc |
 | Ccrypt_module | ccryptFunc |
 | Misc_module | checkinputFunc AsciiArtFunc DisplayFunc exitHandlerFunc HelpFunc msgFunc readconfigFunc weatherFunc makeDirFunc |
-| Pacman_module | pacmanFunc pkglistFunc updateFunc checkPacFunc rssFunc DelQmeFunc |
+| Pacman_module | pacmanFunc pkglistFunc updateFunc checkPacFunc rssFunc  |
 | System_clean_module | SystemCleanFunc |
-| Auracle_module | auraFunc |
+| Auracle_module | auraFunc aurupdateFunc notifyFunc |
 | Network_module | networkFunc checknetFunc |
 | Rmlint_module | RmLintFunc |
 | Security_module | SystemSecFunc AntiMalwareFunc intchkFunc |
@@ -29,7 +29,7 @@ Function headers in the files contain more information.
 | AntiMalwareFunc | Handles rkhunter, clamscan and lynis applications|
 | intchkFunc | Checks if string input is an integer |
 | gdriveFunc | gdrive wrapper |
-| pacaurFunc | pacaur wrapper |
+| trizenFunc | trizen wrapper |
 | SystemBackFunc | System backup options |
 | ccryptFunc | ccrypt wrapper |
 | checkinputFunc| Check options from command line passed to program on start |
@@ -48,6 +48,7 @@ Function headers in the files contain more information.
 | SystemCleanFunc | bleachbit wrapper |
 | DelQmeFunc | Delete foreign packages display menu |
 | auraFunc | auracle wrapper + extended functionality |
+| aurupdateFunc | update installed packages AUR |
 | networkFunc | Handles the network options |
 | checknetFunc | Checks if network has connectivity with netcat |
 | RmLintFunc | rmlint wrapper |

@@ -1,4 +1,5 @@
 #!/bin/bash
+#shellcheck disable=SC1117
 #=========================HEADER==========================================
 #name:cylon
 #Title : Arch Linux distro maintenance bash script. 
@@ -66,6 +67,7 @@ fi
 
 DEST6="/usr/share/doc/cylon"
 DEST7="/usr/lib/cylon/modules/"
+#DEST7="../modules/" #DEVELOPMENT PATH
 mkdir -p "$DEST3"
 mkdir -p "$DEST5"
 

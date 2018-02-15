@@ -266,11 +266,11 @@ function RssFunc
 }
 
 #FUNCTION HEADER
-# NAME :            pkglistFunc
+# NAME :   pkglistFunc
 #INPUT $1 Backup if called from backup do not create directory
 # DESCRIPTION :creates a copy of packages list see below.
 #OUTPUT mutliple files see below
-#NOTE called from pacman pacaur auracle and backup functions 
+#NOTE called from pacman trizen auracle and backup functions 
  # shellcheck disable=SC2120
 function pkglistFunc
 {
@@ -381,6 +381,8 @@ function pkglistFunc
 			fi
 		done
 		echo " "
+	else
+		msgFunc norm "Skipping list number 24 as auracle not installed"
 	fi
 	
 	msgFunc norm "System packages list information summary : pkginfo.txt"  #25
@@ -404,8 +406,15 @@ function updateFunc
 			clear
 		return
 		fi
-		#check if pacaur package  installed
-		if ! checkPacFunc pacaur
+		#check if auracle package  installed
+		if ! checkPacFunc auracle
+		then
+			msgFunc anykey 
+			clear
+		return
+		fi
+		#check if trizen package  installed
+		if ! checkPacFunc trizen
 		then
 			msgFunc anykey 
 			clear
@@ -436,8 +445,8 @@ function updateFunc
 		#display update options
 		local choiceUfVar=""
 		msgFunc blue "Update options:-"
-		local optionsPArr=("pacman -Syu Update Main only" \
-"pacaur -Syu Update  All" "pacaur -u Update AUR only " "No Update exit")
+		local optionsPArr=(" Update Arch Main Repos only" \
+" Update All repos " "Update AUR only " "No Update and exit")
 		select choiceUfVar in "${optionsPArr[@]}"
 		do
 		case "$choiceUfVar" in  
@@ -446,14 +455,15 @@ function updateFunc
 		;;
 		
 		"${optionsPArr[1]}")
-			pacaur -Syu
+			sudo pacman -Syu
+			aurupdateFunc
 		;;
 		
 		"${optionsPArr[2]}")
-			pacaur -u
+			aurupdateFunc
 		;;
 		
-		*)msgFunc norm " "
+		*)echo " "
 		;;
 		esac
 		break
@@ -496,44 +506,3 @@ function checkPacFunc
 	fi 
 }
 
-#FUNCTION HEADER
-# NAME :  DelQmFunc
-# DESCRIPTION:Delete  foreign packages 
-# PROCESS : pacman -Qm pacman -Rs
-#Note called from auracleFunc and pacaurFunc
-function DelQmFunc
-{
-	local DelQmArr
-	DelQmArr=$(pacman -Qmq)
-	IFS=$'\n' DelQmArr=($(sort <<<"${DelQmArr[*]}"))
-	unset IFS
-	dialog --title "Output of pacman -Qmq:" --begin 1 1  --no-items --menu "Select Package to Remove:" 20 40 10 "${DelQmArr[@]}"  2>/tmp/cylontempfile
-		case $? in
-		0)
-			clear
-			msgFunc norm " "
-			local mySelectionVar=""
-			mySelectionVar=$(cat /tmp/cylontempfile)
-			msgFunc yellow "\"$mySelectionVar\" is the chosen package."
-			msgFunc anykey "and uninstall it. pacman -Rs"
-			sudo pacman -Rs "$mySelectionVar"
-			mySelectionVar=""
-			rm /tmp/cylontempfile
-			msgFunc anykey
-			DelQmArr=()
-			clear
-		;;
-		1)
-			clear
-			msgFunc yellow "Cancel pressed."
-			DelQmArr=()
-			return
-		;;
-		255)
-			clear
-			msgFunc yellow "Esc pressed."
-			DelQmArr=()
-			return
-		;;
-	esac
-}

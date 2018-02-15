@@ -1,4 +1,5 @@
 #!/bin/bash
+#shellcheck disable=SC1117
 #Module containing functions called from cylon package
 #
 #Functions: checkinputFunc, DisplayFunc. AsciiArtFunc
@@ -96,7 +97,7 @@ function exitHandlerFunc
 		#non-error exit
 		exit 0
 	fi 
-	exit 1
+	exit 2
 }
 
 #FUNCTION HEADER
@@ -107,8 +108,8 @@ function DisplayFunc
 msgFunc blue "Main Menu:"
 	local choiceMainVar
 	local optionsMArr=(
-	"pacman" "$(checkPacFunc auracle-git NOMES)" \
-	"$(checkPacFunc pacaur NOMES)" "System Update" "System Maintenance" \
+	"pacman" "$(checkPacFunc auracle NOMES)" \
+	"$(checkPacFunc trizen NOMES)" "System Update" "System Maintenance" \
 	"System backup" "System Security" "Network Maintenance" \
 	"xterm terminal" "View/Edit config file"\
 	  "System information" "Cylon information" "Weather" "Exit"\
@@ -122,8 +123,8 @@ msgFunc blue "Main Menu:"
 			"${optionsMArr[1]}") #auracle AUR helper
 				AuraFunc
 			;;
-			"${optionsMArr[2]}") #pacaur AUR helper
-				pacaurFunc
+			"${optionsMArr[2]}") #trizen AUR helper
+				trizenFunc
 			;;
 			"${optionsMArr[3]}") #full system update.
 				updateFunc
@@ -221,10 +222,10 @@ clear
 		msgFunc norm " "
 		msgFunc green "Dependencies"
 		#create array to hold Dependencies
-		local DependenciesArr=("dialog:NOTE non-optional" "expac:NOTE non-optional" "auracle-git:NOTE AUR package" \
-"gdrive:NOTE AUR package" "lostfiles:NOTE AUR package" "pacaur:NOTE AUR package" "arch-audit" "rmlint" "rkhunter" \
+		local DependenciesArr=("dialog:NOTE non-optional" "expac:NOTE non-optional" "auracle:NOTE AUR package" \
+"gdrive:NOTE AUR package" "lostfiles:NOTE AUR package" "trizen:NOTE AUR package" "arch-audit" "rmlint" "rkhunter" \
 "gnu-netcat:NOTE No need if using openbsd-netcat" "openbsd-netcat:NOTE No need if using gnu-netcat" \
-"clamav" "bleachbit" "ccrypt" "rsync" "lynis" "inxi" "libnotify" "wavemon" "speedtest-cli")
+"clamav" "bleachbit" "ccrypt" "rsync" "lynis" "libnotify" "speedtest-cli")
 		#loop thru and display the array
 		local tLenVar=""
 		local packageVar=""
@@ -334,7 +335,10 @@ then
 	msgFunc norm "Core: $(pacman -Qi  $(paclist core | awk '{print $1}' ) | awk '/Installed Size/ {if ($5=="MiB") {sum+=$4} else if ($5=="KiB") {sum+=($4/1024)}} END {print sum " MiB"}')"
 	msgFunc norm "Extra: $(pacman -Qi $(paclist extra | awk '{print $1}' ) | awk '/Installed Size/ {if ($5=="MiB") {sum+=$4} else if ($5=="KiB") {sum+=($4/1024)}} END {print sum " MiB"}')"
 	msgFunc norm "Community: $(pacman -Qi $(paclist community | awk '{print $1}' ) | awk '/Installed Size/ {if ($5=="MiB") {sum+=$4} else if ($5=="KiB") {sum+=($4/1024)}} END {print sum " MiB"}')"
-	msgFunc norm "Multilib: $(pacman -Qi $(paclist multilib | awk '{print $1}' ) | awk '/Installed Size/ {if ($5=="MiB") {sum+=$4} else if ($5=="KiB") {sum+=($4/1024)}} END {print sum " MiB"}')"
+	if [ -z "$paclist multilib" ]
+	then
+		msgFunc norm "Multilib: $(pacman -Qi $(paclist multilib | awk '{print $1}' ) | awk '/Installed Size/ {if ($5=="MiB") {sum+=$4} else if ($5=="KiB") {sum+=($4/1024)}} END {print sum " MiB"}')"
+	fi
 	msgFunc norm "Foreign: $(pacman -Qi $(pacman -Qmq ) | awk '/Installed Size/ {if ($5=="MiB") {sum+=$4} else if ($5=="KiB") {sum+=($4/1024)}} END {print sum " MiB"}')"
 	msgFunc norm "Total: $(pacman -Qi  | awk '/Installed Size/ {if ($5=="MiB") {sum+=$4} else if ($5=="KiB") {sum+=($4/1024)}} END {print sum " MiB"}')"
 	msgFunc anykey

@@ -194,27 +194,34 @@ The optional dependencies are left to user discretion.
 Software will check for missing dependencies and report if user 
 tries to use a function which requires a missing one.
 Software will display installed dependencies packages on cylon info page.
-also "n/a" is displayed besides uninstalled options in menus.
+also "n/a" is usually displayed besides uninstalled options in menus.
 
 gnu-netcat and openbsd-netcat peform same function, 
 only 1 can be or needs to be installed, both included because of conflicts.
 There are used to check that network is "up" at various points in program.
 
-Auracle and pacaur are both AUR helpers you can install 
-one or both depending on preference. Auracle is a minimalist helper. 
-Pacaur is more fully featured but is no longer maintained upstream and will 
-probably be replaced in Cylon in near future.
+Auracle and trizen are both AUR helpers you can install 
+one or both depending on preference. Auracle is a more minimalist helper. 
+trizen is more fully featured. 
+Auracle is recommended as in addition to menu options
+it is used for -u and -n functions, plus step 24 of the package list maker(REF1)
 Auracle is new and still in development hence the -git extension,
 it replaced cower in version 5.1-3, as cower is obsolete. 
-The original cower code module is still available in documentation folder TWIC.
+Trizen replaced pacaur in version 5.2-4 as pacaur is no longer maintained and is 
+a wrapper of cower. 
+The original pacaur and cower code modules are 
+still available in documentation folder for reference.
 
 libnotify should be installed on the vast majority of Arch systems already.
+
 gdrive readme for config https://github.com/prasmussen/gdrive ,
 gdrive option syncs will Delete extraneous remote files as of V3.4-5.
+
 dialog should already be installed in an arch linux system installed by
 the arch linux installation guide on wiki. If you install Arch some other way
-It may not be there, so included as depends. expac is used a lot and will 
-be already installed on many systems. 
+It may not be there, so included as depends. 
+
+expac is used a lot and will be already installed on many systems. 
 
 | Dependencies| Usage |
 | ------ | ------ |
@@ -230,12 +237,10 @@ be already installed on many systems.
 | rmlint | to check for lint and duplicates | 
 | rsync | for rsync backup function |
 | lynis | system audit |
-| inxi  | CLI system information script |
-| wavemon  | wireless network monitor |
 | speedtest-cli  | testing internet bandwidth |
 | Arch-audit | Uses data collected by the Arch CVE team |
-| pacaur(AUR)  | for AUR helper functions |
-| auracle-git(AUR) | for AUR helper functions |
+| trizen(AUR)  |  AUR helper  |
+| auracle-git(AUR) |  AUR helper  |
 | gdrive(AUR) | to sync to google drive |
 | lostfiles(AUR) | to scan for lostfiles |
 
@@ -244,19 +249,23 @@ Features
 
 The program functions are divided into 6 sections:
 update, maintenance, backup, security, network and miscellaneous.
+
 The update section is the core of the program and provides a wrapper for 
-pacman, pacaur and auracle. It provides an extension to auracle
+pacman, trizen and auracle. It provides an extension to auracle
 to allow it to install and update packages. It also provides 
 a full system update report function and various other options. 
 
-
 The maintenance section provides a variety of scans and checks, it also 
 a provides command line wrapper for rmlint and bleach-bit. 
+
 The backup section provides a wrapper for gdrive program. as well as ability
 to backup system using various tools.
+
 The security section provides a wrapper for ccrypt and an extended launcher 
 for various security tools as well as a password generator.
+
 The network section provides various tools to check network and configuration.
+
 Other misc functions include an option to edit config file, information menus for
 system and cylon. Weather forecast and terminal launcher. 
 
@@ -289,7 +298,7 @@ folder, see "see also" section.
 	* optimise pacman 
 	
 * AUR helper auracle options 
-	* Check for updates sync ( NO downloads)
+	* Check arch url and for AUR updates  ( NO downloads)
 	* Get Information for AUR package 
 	* Search for AUR package
 	* Download AUR package and install
@@ -299,25 +308,28 @@ folder, see "see also" section.
 	* Display Foreign packages not in AUR
 	* Write installed package lists to files (REF1)
 	* Read AUR Package comments
+	* Desktop and terminal notifications same as cylon -n option
 	* Remove foreign packages menu
 	
-* AUR helper pacaur options
-	* Check for updates ( NO downloads)
-	* Get Information for AUR package 
+* AUR helper trizen options
+	* Check arch url and for AUR updates ( NO downloads)
 	* Search for AUR package
+	* Get Information for AUR package 
 	* Update AUR packages
 	* Download build and install AUR package
 	* Download and build only
 	* Download only
-	* Delete Pacaur cache files.
-	* Edit pacaur config file
-	* Update all packages in all repositories, pacaur -Syu
+	* Delete trizen clone dir files. default = /tmp/trizen-$USER
+	* Edit trizen config file $HOME/.config/trizen/trizen.conf
+	* Update all packages in all repositories, trizen -Syu
 	* Write installed package lists to files (REF1)
+	* trizen statistics display page
 	* Remove foreign packages menu
-	* Desktop and terminal notifications same as cylon -n option
+	* Read AUR Package comments
+
 	
 * Full System update 
-	* Runs the same report that is called by cylon -u , see usage section
+	* Runs the same report that is called by cylon -u, see usage section, uses auracle
 	
 **2: System maintenance section**
 * System maintenance menu
@@ -341,7 +353,7 @@ folder, see "see also" section.
 	* Delete Trash 
 	* Delete Download directory
 	* Delete Cylon output folder $HOME/Documents/Cylon/ or $CYLONDEST
-	* inxi - system information display with logging of results
+	* Display hardware information
 	* Clean system with bleachbit
 		* Preset option based on the same options as in the GUI 
 		* Custom options involved for user to pick cleaners and options
@@ -402,7 +414,7 @@ folder, see "see also" section.
 	
 **5: Network section**
 * Network options
-	* launch wavemon network monitor
+	* Display real-time wifi information
 	* Run speedtest-cli to measure bandwidth 
 	with options for server list and file save
 	* various miscellaneous networking commands
@@ -427,14 +439,14 @@ folder, see "see also" section.
 Return codes
 ---------------------
 * 0 - Normal non-error controlled exit.
-* 1 - Error occurred and was handled by exithandlerFunc function.
+* 2 - Error occurred and was handled by exithandlerFunc function. 
 
 
 See Also
 -----------
 (REF1): Packages files list referenced above at marker REF1 can be viewed 
 in package_lists.md, which is in the sub-folder documentation of repository. 
-The package files list is a collection of 24 lists describing the system.
+The package files list is a collection of 25 lists describing the system.
 
 There are 6 screenshots in the repository screenshot folder 
 
@@ -458,15 +470,14 @@ If you should find a bug or you have any other query,
 please send a report.
 Pull requests, suggestions for improvements
 and new features welcome.
-* Contact: Upstream repo at github site below or glyons66@hotmail.com
+* Contact: Upstream repo at github URL below or email at glyons66@hotmail.com
 * Upstream repository: https://github.com/gavinlyonsrepo/cylon
 
 History
 ------------------
 * First Commit to AUR: version 1.3-1 08-09-16
-* Latest Version release : version 5.1-3 10-02-18 
 * See changelog.md in documentation section for version control history
-* Contributors: "binaryplease"  "uros-stegic" 
+* Github Contributors: "binaryplease"  "uros-stegic" 
  
 Copyright
 ---------

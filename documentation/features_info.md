@@ -45,8 +45,28 @@ for some reason you can manually delete their folder from output folder at this 
 	is not maintained in the AUR system.
 	* 11 The dialog package is used to create a GUI menu containing all foreign 
 packages on system , output of pacman -Qmq , If ok pressed pacman -Rs is used to remove package.
+	* 12 This option is the same as running cylon -n. 
+Desktop notifications are small, passive popup dialogs 
+that notify the user of particular events in an asynchronous manner
+cylon uses the command notify-send from libnotify to achive this. 
+There is parallel output in the terminal. 
+cylon -n can be used with a scheduling service like cron. If there is nothing to update
+no desktop notification is displayed. If running in a crontab. Cron does not run under the X.org server therefore 
+it cannot know the environmental variable necessary to be able to start an X.org server application so they will have to be defined.
+otify-send is just passing values to dbus. So, first of all, you need to tell dbus to connect to the right bus. 
+You can find its address by examining DBUS_SESSION_BUS_ADDRESS environment variable and setting it to the same value. 
+In this case to run cylon -n every half hour.
 
-	
+```sh
+DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
+*/30 * * * * cylon -n
+
+```
+see:
+
+https://wiki.archlinux.org/index.php/Cron
+
+
 * pacaur options
 	* see "man pacaur" for more details
 	* 8 Delete pacaur cache
@@ -63,27 +83,6 @@ and falling back to /etc/xdg/pacaur/config
 user config $XDG_CONFIG_HOME/pacaur/config
 and falling back to $HOME/.config/pacaur/config
 	* 12 see auracle 11 above.
-	* 13 This option is the same as running cylon -n. 
-Desktop notifications are small, passive popup dialogs 
-that notify the user of particular events in an asynchronous manner
-cylon uses the command notify-send from libnotify to achive this. 
-There is parallel output in the terminal. 
-cylon -n can be used with a scheduling service like cron. If there is nothing to update
-no desktop notification is displayed. If running in a crontab. Cron does not run under the X.org server therefore 
-it cannot know the environmental variable necessary to be able to start an X.org server application so they will have to be defined.
-otify-send is just passing values to dbus. So, first of all, you need to tell dbus to connect to the right bus. 
-You can find its address by examining DBUS_SESSION_BUS_ADDRESS environment variable and setting it to the same value. 
-In my case to run cylon -n every half hour.
-```sh
-DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
-*/30 * * * * cylon -n
-
-```
-see:
-
-https://wiki.archlinux.org/index.php/Cron
-
-
 
 **2: System maintenance section**
 

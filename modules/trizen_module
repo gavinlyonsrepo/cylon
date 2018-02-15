@@ -1,0 +1,195 @@
+#!/bin/bash
+#Module containing function called from cylon package
+#
+#Functions: trizenFunc DelQmFunc
+
+#FUNCTION HEADER
+# NAME : trizenFunc
+# DESCRIPTION:use trizen utility to mange AUR packages
+# downloads, updates and searches
+# PROCESS :  see options array 
+#NOTES : needs trizen(AUR) installed  gnu-netcat is needed 1 option
+function trizenFunc
+{
+#check if installed
+if ! checkPacFunc trizen
+	then
+	msgFunc anykey 
+	return
+fi
+clear
+while true; do # loop until exit
+	local choicePVar=""
+	local trizenPVar=""
+	msgFunc line
+	msgFunc green "AUR packages management by $(trizen --version)."  
+	msgFunc norm "Number of foreign packages installed = $(pacman -Qm | wc -l)"
+	msgFunc line
+	msgFunc blue "Trizen options:-"
+	local optionsPArr=("Check Network and number of updates, trizen -Qua "\
+		"Search for package, trizen -Ssa " "Display information for package, trizen -Sia" \
+		"Get updates for AUR installed packages, trizen -Syua" "Download, build and install the package, trizen -S"\
+		"Download and build the package, trizen -S --noinstall  " "Download the package, trizen -S --noinstall --nobuild"\
+		"Delete trizen clone dir" "Edit trizen config file" "Update all packages in all repositories, trizen -Syu"\
+		"Make a copy of package lists" \
+		"Trizen Stats" \
+		"Remove foreign packages explicitly installed menu"  \
+		"AUR comments, trizen -C" "Return")
+		select choicePVar in "${optionsPArr[@]}"
+		do
+		case "$choicePVar" in  
+			"${optionsPArr[0]}")    #check network
+				msgFunc green  "Check network and number of updates"
+				#check network connectivity
+				checkNetFunc "aur.archlinux.org"
+				trizen -Qua
+				msgFunc anykey
+			;;
+			"${optionsPArr[1]}") #search
+				msgFunc green "Search for package in AUR trizen -Ssa "
+				msgFunc norm "Type a AUR package name:-"
+				read -r trizenPVar
+				trizen -Qs "$trizenPVar" || return
+				msgFunc anykey
+			;;
+			"${optionsPArr[2]}") #info
+				msgFunc green "Display information for package in AUR. trizen -Sia"
+				msgFunc norm "Type a AUR package name:-"
+				read -r trizenPVar		
+				trizen -Qi "$trizenPVar" || return
+				msgFunc anykey
+			;;
+
+			"${optionsPArr[3]}")  #get updates
+				msgFunc green "Update AUR packages. trizen -Syua "	
+				trizen -Syua
+				msgFunc anykey
+			;;
+			"${optionsPArr[4]}")  #download build and install from AUR by trizen
+				msgFunc green "Download build and install AUR package. trizen -S"
+				msgFunc norm "Type a AUR package name:-"
+				read -r trizenPVar		
+				trizen -S "$trizenPVar" || return
+				msgFunc anykey
+			;;
+			"${optionsPArr[5]}") #download and build
+				msgFunc green "Download and build  AUR package. trizen -S --noinstall"
+				msgFunc norm "Type a AUR package name:-"
+				read -r trizenPVar		
+				trizen -S --noinstall  "$trizenPVar" || return
+				msgFunc anykey
+			;;
+			"${optionsPArr[6]}") #download
+				msgFunc green "Clone the package build files  in AUR. trizen -S --noinstall --nobuild"
+				msgFunc norm "Type a AUR package name:-"
+				read -r trizenPVar		
+				trizen -S --noinstall --nobuild "$trizenPVar" || return
+				msgFunc anykey
+			;;
+			"${optionsPArr[7]}")  #delete trizen clone dir
+				msgFunc green "Deleting the trizen clone dir"
+				local trizenCache=""
+				#get clone_dir from the config  with awk sed
+				trizenCache=$(awk '/clone_dir/ {print $3}' "$HOME/.config/trizen/trizen.conf" | sed 's/.$//' | sed -e 's/^"//' -e 's/"$//')
+				msgFunc norm "The clone dir is the clone_dir setting from config file."
+				msgFunc norm "The clone dir is the absolute path to the directory "
+				msgFunc norm "where trizen clones and builds packages."
+				msgFunc norm "The clone_dir setting read from the config file is below:-"
+				msgFunc yellow "$trizenCache"
+				msgFunc norm "Remove contents of this directory path ? "$trizenCache" ? [y/n/q]"
+				if msgFunc yesno
+				then
+					#change to clone_dir as double safety check before rm
+					cd "$trizenCache" || exitHandlerFunc DEST4
+					#yes
+					rm -rvf "$trizenCache"
+					cd ~ || exitHandlerFunc DEST4
+					msgFunc anykey
+				fi
+			;;
+			"${optionsPArr[8]}") #edit the config file 
+				msgFunc green "Edit the config file"
+				$EDITOR "$HOME/.config/trizen/trizen.conf" || exitHandlerFunc fileerror "$HOME/.config/trizen/trizen.conf"
+				msgFunc anykey
+			;;
+			"${optionsPArr[9]}") #update all repos
+				msgFunc green "Update all packages in all repositories, trizen -Syu"
+				trizen -Syu
+				msgFunc anykey
+				;;
+				"${optionsPArr[10]}") #Make copy of package lists
+				msgFunc green "Make copy of package lists"
+				pkglistFunc
+				msgFunc anykey
+				;;
+				"${optionsPArr[11]}") #stats 
+					clear
+					trizen --stats
+					msgFunc anykey
+				;;
+				"${optionsPArr[12]}") #Delete foreign packages 
+					DelQmFunc
+				;;
+
+				"${optionsPArr[13]}") #Aur comments
+					msgFunc green "Display AUR comments for a package, trizen -C "
+					msgFunc norm "Type a AUR package name:-"
+					read -r trizenPVar		
+					trizen -C "$trizenPVar" || return
+					msgFunc anykey
+				;;
+				
+				*)#exit
+					msgFunc green "Done!"	
+				clear
+				return
+				;;
+		esac
+		break
+		done
+msgFunc green "Done!"	
+done
+}
+
+
+#FUNCTION HEADER
+# NAME :  DelQmFunc
+# DESCRIPTION:Delete  foreign packages 
+# PROCESS : pacman -Qm pacman -Rs
+#Note called from auracleFunc and trizenFunc
+function DelQmFunc
+{
+	local DelQmArr
+	DelQmArr=$(pacman -Qmq)
+	IFS=$'\n' DelQmArr=($(sort <<<"${DelQmArr[*]}"))
+	unset IFS
+	dialog --title "Output of pacman -Qmq:" --begin 1 1  --no-items --menu "Select Package to Remove:" 20 40 10 "${DelQmArr[@]}"  2>/tmp/cylontempfile
+		case $? in
+		0)
+			clear
+			msgFunc norm " "
+			local mySelectionVar=""
+			mySelectionVar=$(cat /tmp/cylontempfile)
+			msgFunc yellow "\"$mySelectionVar\" is the chosen package."
+			msgFunc anykey "and uninstall it. pacman -Rs"
+			sudo pacman -Rs "$mySelectionVar"
+			mySelectionVar=""
+			rm /tmp/cylontempfile
+			msgFunc anykey
+			DelQmArr=()
+			clear
+		;;
+		1)
+			clear
+			msgFunc yellow "Cancel pressed."
+			DelQmArr=()
+			return
+		;;
+		255)
+			clear
+			msgFunc yellow "Esc pressed."
+			DelQmArr=()
+			return
+		;;
+	esac
+}
