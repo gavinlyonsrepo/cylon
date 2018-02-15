@@ -62,19 +62,17 @@ DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
 */30 * * * * cylon -n
 
 ```
-see:
-
-https://wiki.archlinux.org/index.php/Cron
+see: https://wiki.archlinux.org/index.php/Cron
 
 
 * trizen options
-	* 8 Delete trizen clone dir
+	* 8 Delete trizen clone dir. 
 Delete trizen clone dir files. default = /tmp/trizen-$USER
 The clone dir is the clone_dir setting from config file.
 The clone dir is the absolute path to the directory
 where trizen clones and builds packages. The setting is parsed from config file
 
-	* 9 trizen config file
+	* 9 trizen config file. 
 Edit trizen config file $HOME/.config/trizen/trizen.conf
 
 	* 12 see auracle 11 above.

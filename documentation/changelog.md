@@ -135,5 +135,5 @@
 	* package list generator size increased from 24 to 25.
 	
 ### Version 5.2-4 170218
-	* Optdepends AUR helper "pacaur" replaced by "trizen", as pacaur is now unmaintained see here.
+	* Optdepends AUR helper "pacaur" replaced by "trizen", as pacaur is now unmaintained.
 
