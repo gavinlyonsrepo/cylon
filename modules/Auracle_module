@@ -7,7 +7,7 @@
 # DESCRIPTION:use auracle utility to manage AUR packages
 # downloads, updates and searches
 # PROCESS : see options array 
-#NOTES : Needs auracle(AUR) installed  gnu-netcat is needed for option 5     
+#NOTES : Needs auracle(AUR) installed  gnu-netcat is needed for option 0     
 function AuraFunc
 {
 #check auracle is installed

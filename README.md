@@ -1,4 +1,7 @@
-﻿
+﻿![title](https://raw.githubusercontent.com/gavinlyonsrepo/cylon/master/screenshots/cylon_ascii.png)
+
+
+
 Overview
 --------------------------------------------
 * Name: cylon 
@@ -45,6 +48,9 @@ The program will work on any arch based system. Arch, manjaro, antergos etc.
 Usage
 -------------------------------------------
 The program installs an icon in system application menus under system.
+
+![icon](https://raw.githubusercontent.com/gavinlyonsrepo/cylon/master/desktop/cylonicon.png)
+
 It can be also run in a terminal by typing cylon: 
 
 cylon -[options]
