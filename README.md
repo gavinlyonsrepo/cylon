@@ -1,7 +1,6 @@
 ﻿![title](https://raw.githubusercontent.com/gavinlyonsrepo/cylon/master/screenshots/cylon_ascii.png)
 
 
-
 Overview
 --------------------------------------------
 * Name: cylon 
@@ -195,7 +194,7 @@ $EDITOR
 Dependencies
 -------------------------------------
 Some functions require dependencies packages to be installed.
-There are two dependencies and the rest are optional dependencies.
+There are three dependencies and the rest are optional dependencies.
 The optional dependencies are left to user discretion.
 Software will check for missing dependencies and report if user 
 tries to use a function which requires a missing one.
@@ -229,10 +228,14 @@ It may not be there, so included as depends.
 
 expac is used a lot and will be already installed on many systems. 
 
+pacman_contrib contains numerous tools(checkupdates pacache etc)related to pacman , used to be part 
+of pacman before version 5.0. In cylon 5.3 added as a dependency.
+
 | Dependencies| Usage |
 | ------ | ------ |
 | dialog |  used to make GUIs menus (Non-optional) |
 | expac |   used to create package lists (Non-optional) |
+| pacman-contrib | Misc pacman related tools (Non-optional) |
 | libnotify | used for desktop notifications | 
 | ccrypt |  used for encrypting |
 | bleachbit | for system clean and shredding |
@@ -252,6 +255,8 @@ expac is used a lot and will be already installed on many systems.
 
 Features
 ----------------------
+
+![main menu](https://raw.githubusercontent.com/gavinlyonsrepo/cylon/master/screenshots/main_menu.png)
 
 The program functions are divided into 6 sections:
 update, maintenance, backup, security, network and miscellaneous.
@@ -482,7 +487,7 @@ and new features welcome.
 History
 ------------------
 * First Commit to AUR: version 1.3-1 08-09-16
-* See changelog.md in documentation section for version control history
+* See [changelog.md](documentation/changelog.md) in documentation section for version control history
 * Github Contributors: "binaryplease"  "uros-stegic" 
  
 Copyright
@@ -490,5 +495,5 @@ Copyright
 Copyright (C) 2016 Gavin Lyons 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public license published by
-the Free Software Foundation, see LICENSE.md in documentation section 
+the Free Software Foundation, see [LICENSE.md](documentation/LICENSE.md) in documentation section 
 for more details

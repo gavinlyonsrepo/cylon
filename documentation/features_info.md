@@ -10,18 +10,14 @@ NOTE: Some sections are not complete (WIP).
 **1: System update section**
 * pacman options
 	* see "man pacman" for more details
-	* 11 12 The paccache script, is provided by the pacman package itself.
+	* 11 12 The paccache script, is provided by the pacman-contrib package.
 	* 13 The command to delete orphans is sudo pacman -Rns $(pacman -Qtdq)
 	* 15 The pacman database is located at path /var/lib/pacman/local
 	* 16 The Arch linux news feed is fetched from this url https://www.archlinux.org/feeds/news/ 
 by a Curl command and parsed using awk and sed.
-	* 18 pactree - package dependency tree viewer, A tool installed as part of pacman
+	* 18 pactree - package dependency tree viewer, A tool installed as part of pacman-contrb
 	* 19 pacman config file is located at etc/pacman.conf
 	* 20 pacman log is located at /var/log/pacman.log
-	* 21 pacman-optimize is another tool included with pacman for 
-improving database access speeds. pacman stores all package information in a collection of small files, 
-one for each package. Improving database access speeds reduces the time taken in database-related tasks, 
-e.g. searching packages and resolving package dependencies.  See pacman tips/tricks in Arch wiki for more information.
 
 * Auracle options 
 	* Auracle replaced cower in version 5.1 the original cower module file 

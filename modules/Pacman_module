@@ -23,7 +23,7 @@ while true; do # loop until user exit
 	"paccache -ruk0 To remove all cached versions of UNinstalled packages"\
 	"Remove all packages not required as dependencies (orphans)" "Make a copy of package lists"  \
 	"Back-up the local pacman database" "Arch Linux News Rss feed" "$(checkPacFunc arch-audit  NOMES)" \
-	"pactree options" "Edit pacman config file" "View pacman log" "pacman optimize" "Return to main menu")
+	"pactree options" "Edit pacman config file" "View pacman log" "Return to main menu")
 	select choicePMVar in "${optionsPMArr[@]}"
 	do
 	case "$choicePMVar" in
@@ -182,25 +182,6 @@ while true; do # loop until user exit
 			"${optionsPMArr[19]}") #view pacman log
 				msgFunc green "View pacman log /var/log/pacman.log"
 				sudo less /var/log/pacman.log
-			;;
-			"${optionsPMArr[20]}") #pacman-optimize
-				msgFunc green "pacman optimize"
-				cat <<-EOF
-				Pacman stores all package information in a collection of small files, 
-				one for each package. Improving database access speeds reduces the time 
-				taken in database-related tasks. 
-				pacman-optimize will attempt to put all the small files together in one 
-				(physical) location on the hard disk so that the 
-				hard disk head does not have to move so much when accessing all the data. 
-				This method is safe, but is not foolproof: 
-				it depends on your filesystem, disk usage and empty space fragmentation.
-				EOF
-				
-				msgFunc green "Continue? [y/n] "
-				if msgFunc yesno
-				then
-					sudo pacman-optimize
-				fi
 			;;
 			
 			*)  #exit  

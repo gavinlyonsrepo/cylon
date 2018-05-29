@@ -67,7 +67,7 @@ fi
 
 DEST6="/usr/share/doc/cylon"
 DEST7="/usr/lib/cylon/modules/"
-#DEST7="../modules/" #DEVELOPMENT PATH
+# DEST7="../modules/" # DEVELOPMENT PATH
 mkdir -p "$DEST3"
 mkdir -p "$DEST5"
 
