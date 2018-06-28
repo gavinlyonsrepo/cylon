@@ -142,3 +142,7 @@
 	* pacman 5.1 has split misc tools into an own contrib repository, called pacman-contrib. see [Reddit notice](https://www.reddit.com/r/archlinux/comments/8mu6de/notice_pacman_and_pacmancontrib_split/)
 	* Added pacman-contribs as a dependency to cylon
 	* Also pacman-optimise option now obsolete, so removed from pacman menu.
+	
+### Version 5.4-6 
+	* Minor Mini update
+	* optdepends lostfiles moved from AUR to community , changing documentation and SW to reflect.

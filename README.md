@@ -248,10 +248,11 @@ of pacman before version 5.0. In cylon 5.3 added as a dependency.
 | lynis | system audit |
 | speedtest-cli  | testing internet bandwidth |
 | Arch-audit | Uses data collected by the Arch CVE team |
+| lostfiles | to scan for lostfiles |
 | trizen(AUR)  |  AUR helper  |
 | auracle-git(AUR) |  AUR helper  |
 | gdrive(AUR) | to sync to google drive |
-| lostfiles(AUR) | to scan for lostfiles |
+
 
 Features
 ----------------------

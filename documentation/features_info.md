@@ -82,7 +82,7 @@ only report.
 * 3 Checks if disk is SSD and then checks the Journal if fstrim is active.
 see : https://wiki.archlinux.org/index.php/Solid_State_Drives#Periodic_TRIM 
 
-* 7 This option runs a simple script(lostfiles) that identifies files not owned 
+* 7 This option runs a package (lostfiles) that identifies files not owned 
 and not created by any Arch Linux package. The script is run as root with both the strict and relaxed setting. 
  In strict mode, every file not owned by a package is listed; in relaxed mode, common required 
 or present files are omitted from the output. Care should be taken in deciding which files might be extraneous, 

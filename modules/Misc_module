@@ -223,7 +223,7 @@ clear
 		msgFunc green "Dependencies"
 		#create array to hold Dependencies
 		local DependenciesArr=("dialog:NOTE non-optional" "expac:NOTE non-optional" "auracle:NOTE AUR package" \
-"gdrive:NOTE AUR package" "lostfiles:NOTE AUR package" "trizen:NOTE AUR package" "arch-audit" "rmlint" "rkhunter" \
+"gdrive:NOTE AUR package" "trizen:NOTE AUR package" "lostfiles" "arch-audit" "rmlint" "rkhunter" \
 "gnu-netcat:NOTE No need if using openbsd-netcat" "openbsd-netcat:NOTE No need if using gnu-netcat" \
 "clamav" "bleachbit" "ccrypt" "rsync" "lynis" "libnotify" "speedtest-cli")
 		#loop thru and display the array

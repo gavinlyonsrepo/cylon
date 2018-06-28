@@ -8,7 +8,7 @@
 # OUTPUTS : various output files 
 # PROCESS : systemd , SSD trim , broken syslinks ,journalcontrol errors
 #lostfiles check with lostfiles package, systemdanalysis boot, 
-#NOTES :    needs lostfiles (AUR)  installed       
+#NOTES :    needs lostfiles   installed       
 
 function SystemMaintFunc
 {
@@ -100,7 +100,7 @@ while true; do # loop until exit
 		;;
 		
 		"${optionsSMArr[6]}")
-		#check if lostfiles package (AUR) installed
+		#check if lostfiles package  installed
 			if ! checkPacFunc lostfiles
 			then
 				msgFunc anykey 
@@ -201,7 +201,7 @@ done
 # OUTPUTS : various output files 
 # PROCESS : systemd , SSD trim , broken syslinks ,journalcontrol errors
 #lostfiles check with lostfiles package, systemdanalysis boot, 
-#NOTES :    needs lostfiles (AUR)  installed       
+#NOTES :    needs lostfiles   installed       
 function SystemMaintAutoFunc
 {
 clear 
@@ -274,7 +274,7 @@ clear
 			find / -nogroup > filenogrouplog 2> /dev/null
 			find / -nouser  > filenouserlog  2> /dev/null
 			
-			#check if lostfiles package (AUR) installed
+			#check if lostfiles package installed
 			if ! checkPacFunc lostfiles
 			then
 				msgFunc anykey 
