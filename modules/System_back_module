@@ -81,12 +81,18 @@ function SystemBackFunc
 					fi
 					msgFunc norm "Source: $rsyncsource"
 					msgFunc norm "Destination: $rsyncDest"
-					msgFunc anykey
-					sudo rsync -aAXv --delete \
-					--exclude={"/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","/mnt/*","/media/*","/lost+found"} \
-					"$rsyncsource" "$rsyncDest"
-					msgFunc green "Done!"
-					msgFunc anykey
+					msgFunc green "Do you want to run rsync now? [y/n]"
+					if msgFunc yesno
+					then
+						sudo rsync -aAXv --delete \
+						--exclude={"/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","/mnt/*","/media/*","/lost+found"} \
+						"$rsyncsource" "$rsyncDest"
+						msgFunc green "Done!"
+						msgFunc anykey
+					else
+						msgFunc green "Done!"
+						msgFunc anykey
+					fi
 					return ;;	
 			*) return ;;
 			esac
@@ -138,8 +144,7 @@ function SystemBackFunc
 				msgFunc green "Done!"
 				sync
 			;;&
-			"${optionsBu2Arr[3]}"|"${optionsBu2Arr[5]}")#packages
-				#pass Backup to pkglistFunc to not create the directory in the function
+			"${optionsBu2Arr[3]}"|"${optionsBu2Arr[5]}") # packages
 				mkdir "PKGLISTFILES" || exitHandlerFunc DEST4
 				cd "PKGLISTFILES" || exitHandlerFunc DEST4
 				pkglistFunc "Backup"

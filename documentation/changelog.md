@@ -146,3 +146,11 @@
 ### Version 5.4-6 280618
 	* Minor Mini update
 	* optdepends lostfiles moved from AUR to community , changing documentation and SW to reflect.
+
+###  Version 5.5-7 031218
+	* package list generator size increased from 25 to 26 
+	* added package list help file to install and added it to help display.
+	* Two new trizen options added
+	* Multilib repo size calculation bug corrected on system help page
+	(only appeared if mutlilib was both enabled and empty)
+	* Various minor optimisations.

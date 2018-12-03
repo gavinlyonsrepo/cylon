@@ -34,7 +34,10 @@ while true; do # loop until exit
 		"Make a copy of package lists" \
 		"Trizen Stats" \
 		"Remove foreign packages explicitly installed menu"  \
-		"AUR comments, trizen -C" "Return")
+		"Display AUR comments for a package, trizen -C" \
+		"Display AUR packages by maintainer name, trizen -Sma" \
+		"Display AUR package PKGBUILD file, trizen -Spa" \
+		"Return")
 		select choicePVar in "${optionsPArr[@]}"
 		do
 		case "$choicePVar" in  
@@ -96,7 +99,7 @@ while true; do # loop until exit
 				msgFunc norm "where trizen clones and builds packages."
 				msgFunc norm "The clone_dir setting read from the config file is below:-"
 				msgFunc yellow "$trizenCache"
-				msgFunc norm "Remove contents of this directory path ? "$trizenCache" ? [y/n/q]"
+				msgFunc norm "Remove contents of this directory path ? $trizenCache ? [y/n/q]"
 				if msgFunc yesno
 				then
 					#change to clone_dir as double safety check before rm
@@ -136,6 +139,22 @@ while true; do # loop until exit
 					msgFunc norm "Type a AUR package name:-"
 					read -r trizenPVar		
 					trizen -C "$trizenPVar" || return
+					msgFunc anykey
+				;;
+				
+				"${optionsPArr[14]}") # Aur maintainer
+					msgFunc green "Display the AUR packages maintained by a user, trizen -Sma"
+					msgFunc norm "Type a AUR maintainer user name:-"
+					read -r trizenPVar
+					trizen -Sma "$trizenPVar" || return
+					msgFunc anykey
+				;;
+				
+				"${optionsPArr[15]}") # Aur PKGBuild
+					msgFunc green "Display the PKGBUILD of a given AUR package, trizen -Spa "
+					msgFunc norm "Type a AUR package name:-"
+					read -r trizenPVar
+					trizen -Spa "$trizenPVar" || return
 					msgFunc anykey
 				;;
 				

@@ -84,7 +84,7 @@ local optionsCArr=("Check network and check for AUR updates (no download), aurac
 			if msgFunc yesno
 				then #yes
 					msgFunc norm  "Installing package $auraclePacVar"
-					makepkg -si		
+					makepkg -si
 			fi
 		;;
 			
@@ -93,8 +93,8 @@ local optionsCArr=("Check network and check for AUR updates (no download), aurac
 			makeDirFunc "-AURDOWNLOAD"
 			#build and install packages
 			msgFunc norm "Type a AUR package name:-"
-			read -r auraclePacVar		
-			auracle -r download	"$auraclePacVar" || return
+			read -r auraclePacVar
+			auracle -r download  "$auraclePacVar" || return
 			msgFunc anykey
 		;;
 		
@@ -175,7 +175,7 @@ function aurupdateFunc
 		msgFunc green "Update AUR packages  auracle sync and download "
 		#make auracle update directory
 		makeDirFunc "-AURUPDATES" 
-		auracle sync | awk  '{ print $1 }' | xargs auracle download
+		auracle sync | awk  '{ print $1 }' | xargs auracle -r download
 		
 		# look for empty dir (i.e. if no updates) 
 		#check  directory has child directories?

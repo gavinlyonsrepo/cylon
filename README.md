@@ -133,7 +133,7 @@ of the repository.
 >
 > gdriveDest1="foo123456789"
 >
-> gdriveDest2="foo125656789"
+> gdriveDest2="foo129656789"
 >
 > gdriveDest3="foo123666689"
 >
@@ -338,6 +338,8 @@ folder, see "see also" section.
 	* trizen statistics display page
 	* Remove foreign packages menu
 	* Read AUR Package comments
+	* Display the AUR packages maintained by a given user
+	* Display the PKGBUILD of a given AUR package
 
 	
 * Full System update 
@@ -458,12 +460,12 @@ See Also
 -----------
 (REF1): Packages files list referenced above at marker REF1 can be viewed 
 in package_lists.md, which is in the sub-folder documentation of repository. 
-The package files list is a collection of 25 lists describing the system.
+The package files list is a collection of 26 lists describing the system.
 
 There are 6 screenshots in the repository screenshot folder 
 
 
-In the repository documentation folder, there are various support documents.
+In the repository [documentation](documentation) folder, there are various support documents.
 
 | File Name | description |
 | ------ | ------ |

@@ -6,7 +6,7 @@
 #Description: Updates, maintenance, backups and system checks in 
 #single menu driven optional script Command line program for Arch linx users. 
 #see readme.md(access thru cylon info page) or manpage "man cylon" for info.
-#See changelog.md at repo for version control v5.1-3
+#See changelog.md at repo for version control 
 #License: see license.md 
 #Written by Gavin lyons 
 #Software repo: https://github.com/gavinlyonsrepo/cylon
@@ -67,7 +67,7 @@ fi
 
 DEST6="/usr/share/doc/cylon"
 DEST7="/usr/lib/cylon/modules/"
-#DEST7="../modules/" # DEVELOPMENT PATH
+#DEST7="../modules/" # DEVELOPMENT TESTING PATH ONLY
 mkdir -p "$DEST3"
 mkdir -p "$DEST5"
 

@@ -84,9 +84,14 @@ function exitHandlerFunc
 			Badinput)
 				msgFunc red "$2 is an INVALID USER OPTION!"
 				msgFunc yellow "Usage: -b -c -d -h -l -m -n -p -r -s -u -v -z"
-				msgFunc yellow "type cylon -h for readme or man cylon for manpage at terminal"
-				msgFunc anykey "to view option details"
-				man cylon | grep -A39 OPTIONS 
+				msgFunc yellow "Type cylon -h for display readme.md or" 
+				msgFunc yellow "Type man cylon for manpage"
+				msgFunc norm " "
+				msgFunc norm  "Do you wish to view man page section for user options now? [y/n]"
+				if msgFunc yesno 
+				then  # yes
+					man cylon | grep -A39 OPTIONS 
+				fi
 				;;
 			*) msgFunc yellow "Unknown input to error handler";;
 	 esac
@@ -244,13 +249,26 @@ clear
 			fi
 		done
 		
-		msgFunc green "Do you want to view readme [y/n] ?"
+		msgFunc green "Do you want to view readme file [y/n] ?"
 		if msgFunc yesno
 			then #yes
 				msgFunc line
-				msgFunc green "Displaying cylonReadme.md file at $DEST6"
+				msgFunc green "Displaying cylon Readme.md file at $DEST6"
 				cd "$DEST6"  || exitHandlerFunc DEST6
 				less Readme.md 
+				msgFunc green "Done!" 
+				msgFunc line
+				msgFunc anykey
+		fi
+		msgFunc norm " "
+		
+		msgFunc green "Do you want to view Packages files list generator help file [y/n] ?"
+		if msgFunc yesno
+			then #yes
+				msgFunc line
+				msgFunc green "Displaying package_lists.md file at $DEST6"
+				cd "$DEST6"  || exitHandlerFunc DEST6
+				less package_lists.md
 				msgFunc green "Done!" 
 				msgFunc line
 				msgFunc anykey
@@ -335,7 +353,7 @@ then
 	msgFunc norm "Core: $(pacman -Qi  $(paclist core | awk '{print $1}' ) | awk '/Installed Size/ {if ($5=="MiB") {sum+=$4} else if ($5=="KiB") {sum+=($4/1024)}} END {print sum " MiB"}')"
 	msgFunc norm "Extra: $(pacman -Qi $(paclist extra | awk '{print $1}' ) | awk '/Installed Size/ {if ($5=="MiB") {sum+=$4} else if ($5=="KiB") {sum+=($4/1024)}} END {print sum " MiB"}')"
 	msgFunc norm "Community: $(pacman -Qi $(paclist community | awk '{print $1}' ) | awk '/Installed Size/ {if ($5=="MiB") {sum+=$4} else if ($5=="KiB") {sum+=($4/1024)}} END {print sum " MiB"}')"
-	if [ -z "$paclist multilib" ]
+	if [ "$(paclist multilib | wc -l)" != "0" ]
 	then
 		msgFunc norm "Multilib: $(pacman -Qi $(paclist multilib | awk '{print $1}' ) | awk '/Installed Size/ {if ($5=="MiB") {sum+=$4} else if ($5=="KiB") {sum+=($4/1024)}} END {print sum " MiB"}')"
 	fi
