@@ -143,7 +143,7 @@ is prompted if they wish to run the rmlint.sh file.
 
 **3: System backup section**
 
-* There is a main backup menu plus a gdrive and rsync option.
+* There is a main backup menu plus a rsync option.
 * The main backup menu first allows users to pick a backup destination
 This can be custom, from config file or the program output folder.
 Next it offers 5 options as outlined in readme. The first backs up the MBR or GPT
@@ -155,20 +155,6 @@ make a tarball of entire system excluding certain directories.
 sudo rsync -aAXv --delete  --exclude={"/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","/mnt/*","/media/*","/lost+found"} 
 see man rsync for more information.
 
-* gdrive options
-gdrive is a backup client that connects to google drive.
-gdrive readme for initial config https://github.com/prasmussen/gdrive ,
-gdrive option syncs will Delete extraneous remote files.
-There are nine gdrive options, see gdrive_module and the link above for detailed info
-	* 1 uses the "gdrive sync list" command
-	* 2-5 use the "gdrive sync upload --delete-extraneous" command
-	* 6 uses "gdrive sync content" command
-	* 7 uses the "gdrive about" command
-	* 8 uses the "gdrive list" command after querying user for number of files, order and query
-see these links for more information on queries and ordering 
-https://developers.google.com/drive/search-parameters)
-https://godoc.org/google.golang.org/api/drive/v3#FilesListCall.OrderBy
-	* 9 uses command "gdrive info" to get file info.
 
 **4: System security section**
 

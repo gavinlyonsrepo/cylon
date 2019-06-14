@@ -228,7 +228,7 @@ clear
 		msgFunc green "Dependencies"
 		#create array to hold Dependencies
 		local DependenciesArr=("dialog:NOTE non-optional" "expac:NOTE non-optional" "auracle:NOTE AUR package" \
-"gdrive:NOTE AUR package" "trizen:NOTE AUR package" "lostfiles" "arch-audit" "rmlint" "rkhunter" \
+"trizen:NOTE AUR package" "lostfiles" "arch-audit" "rmlint" "rkhunter" \
 "gnu-netcat:NOTE No need if using openbsd-netcat" "openbsd-netcat:NOTE No need if using gnu-netcat" \
 "clamav" "bleachbit" "ccrypt" "rsync" "lynis" "libnotify" "speedtest-cli")
 		#loop thru and display the array
@@ -416,15 +416,6 @@ function readconfigFunc
 		Destination1="/run/media/$USER/Linux_backup/foo"
 		#path for an external hard drive backup
 		Destination2="/run/media/$USER/iomega_320/foo"
-		#default paths for gdrive sync uploads 
-		gdriveSource1="$HOME/Documents"
-		gdriveDest1="0B3_YYYfoo"
-		gdriveSource2="$HOME/Pictures"
-		gdriveDest2="0B3_XXXXfoo"
-		gdriveSource3="$HOME/Videos"
-		gdriveDest3="0B7_XXXXYYYfoo"
-		gdriveSource4="$HOME/.config"
-		gdriveDest4="0B1_XXXYYYfoo"
 		#paths for rsync option
 		rsyncsource="$HOME/"
 		rsyncDest="/run/media/$USER/Linux_backup/foo"

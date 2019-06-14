@@ -1,6 +1,6 @@
 Modules files overview
 ------------------
-There are twelve module library files containing 32 functions.
+There are 11 module library files containing 30+ functions.
 installed to 
 ```sh
 /usr/lib/cylon/modules/
@@ -10,7 +10,6 @@ Function headers in the files contain more information.
 
 | File name | Functions |
 | ------ | ------ |
-| Gdrive_module | gdriveFunc |
 | trizen_module | trizenFunc DelQmeFunc |
 | System_back_module | SystemBackFunc |
 | Ccrypt_module | ccryptFunc |
@@ -28,7 +27,6 @@ Function headers in the files contain more information.
 | SystemSecFunc | Display security options menu |
 | AntiMalwareFunc | Handles rkhunter, clamscan and lynis applications|
 | intchkFunc | Checks if string input is an integer |
-| gdriveFunc | gdrive wrapper |
 | trizenFunc | trizen wrapper |
 | SystemBackFunc | System backup options |
 | ccryptFunc | ccrypt wrapper |

@@ -104,9 +104,6 @@ the user does not need config file.
 This Path can be overwritten by environmental variable see next section.
 * SETTINGS:
 "DestinationX" is the path for backups.
-"gdrivedestX" is remote google drive directory file ID
-(see gdrive readme for setup and how to get file id numbers)
-and "gdriveSourceX" is the local directory source.
 "rsyncsource" and "rsyncdest" provide the source and destination paths 
 for rsync option in backup menu.
 "myccfile" is a setting for ccrypt utility, 
@@ -122,22 +119,6 @@ of the repository.
 > Destination1="/run/media/$USER/Linux_backup"
 >
 > Destination2="/run/media/$USER/iomega_320"
->
-> gdriveSource1="$HOME/Documents"
->
-> gdriveSource2="$HOME/Pictures"
->
-> gdriveSource3="$HOME/Videos"
->
-> gdriveSource4="$HOME/.config"
->
-> gdriveDest1="foo123456789"
->
-> gdriveDest2="foo129656789"
->
-> gdriveDest3="foo123666689"
->
-> gdriveDest4="foo123662222"
 >
 > rsyncsource="$HOME/"
 >
@@ -219,9 +200,6 @@ still available in documentation folder for reference.
 
 libnotify should be installed on the vast majority of Arch systems already.
 
-gdrive readme for config https://github.com/prasmussen/gdrive ,
-gdrive option syncs will Delete extraneous remote files as of V3.4-5.
-
 dialog should already be installed in an arch linux system installed by
 the arch linux installation guide on wiki. If you install Arch some other way
 It may not be there, so included as depends. 
@@ -251,7 +229,6 @@ of pacman before version 5.0. In cylon 5.3 added as a dependency.
 | lostfiles | to scan for lostfiles |
 | trizen(AUR)  |  AUR helper  |
 | auracle-git(AUR) |  AUR helper  |
-| gdrive(AUR) | to sync to google drive |
 
 
 Features
@@ -270,8 +247,7 @@ a full system update report function and various other options.
 The maintenance section provides a variety of scans and checks, it also 
 a provides command line wrapper for rmlint and bleach-bit. 
 
-The backup section provides a wrapper for gdrive program. as well as ability
-to backup system using various tools.
+The backup section provides ability to backup system using various tools.
 
 The security section provides a wrapper for ccrypt and an extended launcher 
 for various security tools as well as a password generator.
@@ -395,17 +371,7 @@ folder, see "see also" section.
 	* Make tarball of all except tmp dev proc sys run
 	* Make copy of package lists (REF1)
 	* Rsync backup option 
-	* gdrive options
-		* List all syncable directories on drive
-		* Sync local directory to google drive (path 1 config file)
-		* Sync local directory to google drive (path 2 config file )
-		* Sync local directory to google drive (path 3 config file)
-		* Sync local directory to google drive (path 4 config file)
-		* List content of syncable directory
-		* Google drive metadata, quota usage
-		* List files
-		* Get file info
-		
+	
 **4: System security section**
 * System security menu
 	* Lynis system audit (summary of logfiles feature)

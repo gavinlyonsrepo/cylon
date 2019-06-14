@@ -154,3 +154,6 @@
 	* Multilib repo size calculation bug corrected on system help page
 	(only appeared if mutlilib was both enabled and empty)
 	* Various minor optimisations.
+
+### Version 5.6-8 130619
+	* gdrive removed as optional dependency.
