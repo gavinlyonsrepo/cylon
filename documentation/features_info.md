@@ -27,8 +27,8 @@ is still present in documentation directory TWIC.
 "Output and environment variables" section of readme.md. 
 	* 4 The optional install after download consists of a display of the PKGBUILD
 and prompt to install or not. 
-	* 6 After a combined sync and download command, 
-auracle sync | awk  '{ print $1 }' | xargs auracle download
+	* 6 After a combined outdated and download command, 
+auracle outdated | awk  '{ print $1 }' | xargs auracle download
 Cylon checks if output directory has child directories.
 to see if there is an update downloaded, Next it offers to view PKGBUILD of any updates
 and finally asks do you want to install them. If you do not want to install some of the updates

@@ -228,9 +228,9 @@ clear
 		msgFunc green "Dependencies"
 		#create array to hold Dependencies
 		local DependenciesArr=("dialog:NOTE non-optional" "expac:NOTE non-optional" "auracle:NOTE AUR package" \
-"trizen:NOTE AUR package" "lostfiles" "arch-audit" "rmlint" "rkhunter" \
+"trizen:NOTE AUR package" "lostfiles" "arch-audit" "rmlint" \
 "gnu-netcat:NOTE No need if using openbsd-netcat" "openbsd-netcat:NOTE No need if using gnu-netcat" \
-"clamav" "bleachbit" "ccrypt" "rsync" "lynis" "libnotify" "speedtest-cli")
+"clamav" "bleachbit" "ccrypt:NOTE AUR package" "rsync" "libnotify" "speedtest-cli")
 		#loop thru and display the array
 		local tLenVar=""
 		local packageVar=""
@@ -323,8 +323,8 @@ if msgFunc yesno
 	msgFunc norm "All explicitly installed packages: $(pacman -Qe | wc -l)" 
 	msgFunc norm "All explicitly installed native packages that are"
 	msgFunc norm "not direct or optional dependencies: $(pacman -Qqent | wc -l)"
-	msgFunc norm "All explicitely installed pkgs not base/base-devel grps: \
-$(comm -23 <(pacman -Qeq | sort) <(pacman -Qgq base base-devel | sort) | wc -l ) "
+	msgFunc norm "All explicitely installed pkgs not in base-devel grps: \
+$(comm -23 <(pacman -Qeq | sort) <(pacman -Qgq base-devel | sort) | wc -l ) "
 	msgFunc norm "All foreign installed packages: $(pacman -Qm | wc -l)"
 	msgFunc norm "All foreign explicitly installed packages: $(pacman -Qme | wc -l)"
 	msgFunc norm "All packages installed as dependencies: $(pacman -Qd | wc -l) "

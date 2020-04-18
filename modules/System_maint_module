@@ -108,10 +108,10 @@ while true; do # loop until exit
 			fi
 			msgFunc green "Lostfiles :-Search for files which are not part of installed Arch Linux packages"
 			msgFunc norm  "Lostfiles strict scan running, outputing to file"
-			sudo bash -c "lostfiles strict  > lostfilesStrictlist.txt" 
+			sudo bash -c "lostfiles -sz  > lostfilesStrictlist.txt" 
 			msgFunc green "Done!"
 			msgFunc norm  "Lostfiles relaxed scan running, outputing to file"
-			sudo bash -c  "lostfiles relaxed > lostfilesRelaxedlist.txt" 
+			sudo bash -c  "lostfiles -z > lostfilesRelaxedlist.txt" 
 		;;
 	
 		"${optionsSMArr[7]}")

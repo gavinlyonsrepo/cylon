@@ -25,7 +25,7 @@ Function headers in the files contain more information.
 | Function name | Description |
 | ------ | ------ |
 | SystemSecFunc | Display security options menu |
-| AntiMalwareFunc | Handles rkhunter, clamscan and lynis applications|
+| AntiMalwareFunc | Handles clamscan applications|
 | intchkFunc | Checks if string input is an integer |
 | trizenFunc | trizen wrapper |
 | SystemBackFunc | System backup options |

@@ -1,13 +1,13 @@
 #!/bin/bash
 #Module containing functions called from cylon package
-#Functions: auracleFunc aurupdateFunc
+#Functions: auracleFunc aurupdateFunc notifyFunc
 
 #FUNCTION HEADER
 # NAME : auracleFunc
 # DESCRIPTION:use auracle utility to manage AUR packages
 # downloads, updates and searches
 # PROCESS : see options array 
-#NOTES : Needs auracle(AUR) installed  gnu-netcat is needed for option 0     
+#NOTES : Needs auracle(AUR) installed  netcat is needed for option 0     
 function AuraFunc
 {
 #check auracle is installed
@@ -30,11 +30,11 @@ local choiceCmVar=""
 
 #Display auracle menu options
 msgFunc blue "AUR package install and updates by auracle, options:-"
-local optionsCArr=("Check network and check for AUR updates (no download), auracle sync" \
+local optionsCArr=("Check network and check for AUR updates (no download), auracle outdated" \
 "Information for package, auracle info" "Search for package, auracle search" \
 "Download package, auracle -r download + Install" \
 "Download package, auracle -r download" \
-"Update all installed AUR packages, auracle sync + download" \
+"Update all installed AUR packages, auracle outdated + download" \
 "Display AUR packages with no Maintainer" \
 "Display Foreign packages not in AUR" \
 "Make copy of package lists" "Read AUR Package comments" \
@@ -48,7 +48,7 @@ local optionsCArr=("Check network and check for AUR updates (no download), aurac
 			#check network connectivity if good get updates numbers from arch
 			checkNetFunc "aur.archlinux.org"
 			msgFunc norm "Number of updates available for installed AUR packages :-"
-			auracle sync | tee /dev/tty  | wc -l
+			auracle outdated | tee /dev/tty  | wc -l
 			msgFunc anykey
 		;;
 		# information for package AUR with auracle 
@@ -172,10 +172,10 @@ done
 # PROCESS : called from pacman-module and auracle module
 function aurupdateFunc
 {
-		msgFunc green "Update AUR packages  auracle sync and download "
+		msgFunc green "Update AUR packages  auracle outdated and download "
 		#make auracle update directory
 		makeDirFunc "-AURUPDATES" 
-		auracle sync | awk  '{ print $1 }' | xargs auracle -r download
+		auracle outdated | awk  '{ print $1 }' | xargs auracle -r download
 		
 		# look for empty dir (i.e. if no updates) 
 		#check  directory has child directories?
@@ -232,7 +232,7 @@ function notifyFunc
 	
 	checkNetFunc "archlinux.org"
 	chkupVar="$(checkupdates| wc -l)"
-	aurVar="$(auracle sync | wc -l)"
+	aurVar="$(auracle outdated | wc -l)"
 	
 	if [ "$chkupVar" != 0 ] || [ "$aurVar" != 0 ]
 	then

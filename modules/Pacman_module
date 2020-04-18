@@ -305,14 +305,14 @@ function pkglistFunc
 	comm -13 <(pacman -Qdtq | sort) <(pacman -Qdttq | sort) > pkgOptdep.txt #12
 
 	#expac
-	msgFunc norm "13: All explicitly installed packages not in base nor base-devel with size"
+	msgFunc norm "13: All explicitly installed packages not in base-devel with size"
 	msgFunc norm "and description: pkgNonBase.txt"
-	expac -H M "%011m\t%-20n\t%10d" $(comm -23 <(pacman -Qqen | sort) <(pacman -Qqg base base-devel | sort))\
+	expac -H M "%011m\t%-20n\t%10d" $(comm -23 <(pacman -Qqen | sort) <(pacman -Qqg base-devel | sort))\
 	| sort -hr > pkgNonBase.txt #13
 	
 	msgFunc norm "14: All explicitly installed packages that are not direct or optional dependencies" 
-	msgFunc norm "and not in base nor base-devel with size and description: pkgexpNonBase.txt"
-	expac -H M "%011m\t%-20n\t%10d" $(comm -23 <(pacman -Qqent | sort) <(pacman -Qqg base base-devel | sort))\
+	msgFunc norm "and not in base-devel with size and description: pkgexpNonBase.txt"
+	expac -H M "%011m\t%-20n\t%10d" $(comm -23 <(pacman -Qqent | sort) <(pacman -Qqg base-devel | sort))\
 	| sort -hr > pkgexpNonBase.txt #14
 	
 	msgFunc norm "15: All installed packages sorted by size: pkgSize.txt"
@@ -427,7 +427,7 @@ function updateFunc
 		checkupdates | tee /dev/tty | wc -l
 		msgFunc line
 		msgFunc green "Number of updates available for installed AUR packages ..> "
-		auracle sync | tee /dev/tty  | wc -l
+		auracle outdated | tee /dev/tty  | wc -l
 		msgFunc line
 		#display update options
 		local choiceUfVar=""

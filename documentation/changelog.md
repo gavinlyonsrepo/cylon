@@ -1,6 +1,6 @@
 # Version control:
 
-### Version 1  010916  (first commit to AUR)
+### Version 1.0 010916  (first commit to AUR)
 
 	* google drive function added 
 	* Extra cower and pacman options added 
@@ -10,8 +10,8 @@
 	* rootkithunter option 
 	* Rmlint option.
 
-### Version 2  021016 
-	*.Added option for lostfiles, system info page.
+### Version 2.0  021016 
+	* Added option for lostfiles, system info page.
 	* Added cylon info page with check for optdepends
 	* Added error handling for missing optdepends in the functions 
 	* Changed menus from cat displays to select arrays with prompt. 
@@ -157,3 +157,10 @@
 
 ### Version 5.6-8 130619
 	* gdrive removed as optional dependency.
+
+### Version 5.7-9 200420
+	* Lynis and rkhunter removed.
+	* Updates due to upstream changes to lostfiles and auracle.
+	* optdepends ccrypt moved from community to AUR, changing documentation and SW to reflect.
+	* Update to package list generator as "base" is now a package as opposed to a group of packages.
+	
