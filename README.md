@@ -1,19 +1,22 @@
-﻿![title](https://raw.githubusercontent.com/gavinlyonsrepo/cylon/master/screenshots/cylon_ascii.png)
-
+﻿
+![title](https://raw.githubusercontent.com/gavinlyonsrepo/cylon/master/screenshots/cylon_ascii.png)
 
 Overview
 --------------------------------------------
 * Name: cylon 
 * Title : Arch Linux distribution maintenance program.
-* Description: A TUI(terminal user interface) which provides updates, maintenance, 
-backups and system checks for an Arch based linux distribution.
-This program provides numerous tools 
-to Arch Linux users. The program is menu-based and written in bash.
-The program is mainly text based  but also uses dialog GUI's 
+
+* Description: 
+A TUI(terminal user interface) which provides updates, maintenance, 
+and backups for an Arch based linux distribution.
+This program provides numerous tools to Arch Linux users. 
+The program is menu-based and written in bash.
+It is mainly text based  but also uses dialog GUI's 
 at a few points mainly for directory and file selection.
 It can also display desktop notifications. 
-A detailed list of the over 100 options and features is 
+A detailed list of the dozens of options is 
 provided below in features section.
+
 * Main Author: Gavin Lyons
 * Communication: [Upstream repository](https://github.com/gavinlyonsrepo/cylon) or email at glyons66@hotmail.com
 * History: See [changelog.md](documentation/changelog.md) in documentation section for version control history
@@ -24,23 +27,21 @@ Table of contents
 ---------------------------
 
   * [Overview](#overview)
-  * [Table of contents](#table-of-contents)
   * [Installation](#installation)
   * [Usage](#usage)
   * [Files and setup](#files-and-setup)
   * [Output and environment variables](#output-and-environment-variables)
   * [Dependencies](#dependencies)
   * [Features](#features)
-  * [Return codes](#return-codes)
-  * [See Also](#see-also)
-
+  * [Screen Shots](#screenshots)
+ 
 Installation
 -----------------------------------------------
 cylon is installed by PKGBUILD on a Arch based Linux system.
 The PKGBUILD file is available in the AUR - Arch user repository.
 Install it using an AUR helper program  or installations instructions 
 on Arch user repository page of Arch linux wiki.
-The program will work on any arch based system. Arch, manjaro, antergos etc.
+The program will work on any arch based system. Arch, manjaro, endeavourOS etc.
 * AUR package name : cylon
 * AUR maintainer : glyons
 * AUR location: https://aur.archlinux.org/packages/cylon/
@@ -75,7 +76,7 @@ Options list (standalone cannot be combined):
 
 Files and setup
 -----------------------------------------
-Cylon files installed by package 
+Cylon files installed by the package 
 build are listed below:
 
 | File Path | Description |
@@ -88,7 +89,7 @@ build are listed below:
 | /usr/share/pixmaps/cylonicon.png | cylon icon |
 | /usr/share/applications/cylon.desktop | desktop entry file |
 | /usr/share/man/man7/cylon.7 | manpage |
-| $HOME/.config/cylon/cylonCfg.conf | config file, optional, user made, not installed |
+| $HOME/.config/cylon/cylonCfg.conf | config file, optional, user made, NOT installed |
 
 README.md is displayed to screen by a menu option on cylon info page.
 Type "man cylon" to display manpage. 
@@ -96,10 +97,10 @@ The manpage is a truncated version of the readme file.
 More information on the modules files can be found in modules_info.md
 in documentation folder.
 
-Config file: The user can create an optional config file, used mainly 
+Config file: The user can create an optional config file, used  
 for custom system backup. If the user is not using the system backup option 
-or ccrypt menu function or custom clamav scan option,
-the user does not need config file.
+the user does NOT need config file.
+
 * NAME: cylonCfg.conf 
 * PATH: $HOME/.config/cylon/cylonCfg.conf
 This Path can be overwritten by environmental variable see next section.
@@ -107,8 +108,7 @@ This Path can be overwritten by environmental variable see next section.
 "DestinationX" is the path for backups.
 "rsyncsource" and "rsyncdest" provide the source and destination paths 
 for rsync option in backup menu.
-"myccfile" is a setting for ccrypt utility, 
-a path to a default file for ease of use.
+ 
 If config file missing the System uses hard-coded dummy defaults.
 The config file can be edited from a main menu option or by option -c
 
@@ -125,9 +125,22 @@ of the repository.
 >
 > rsyncDest="/run/media/$USER/Linux_backup/foo"
 >
-> myccfile="$HOME/TEST/test.cpt"
->
-> clamav_customdir="$HOME/Downloads/foo"
+
+Packages files list can be viewed in package_lists.md, which is in the sub-folder documentation of repository. 
+The package files list is a collection of 26 lists describing the system.
+
+In the repository [documentation](documentation) folder, there are various support documents.
+
+| File Name | description |
+| ------ | ------ |
+| changelog.md | version control history file |
+| license.md | copyright details file |
+| cylon.7 | man page which is truncated version of readme.md |
+| cylonCfg.conf | A dummy copy of config file for user setup convenience |
+| modules_info.md | An overview of the modular library files and the functions |
+| package_lists.md | An overview of the packages files list generated by program |
+| features_info.md | More detailed information for some features |
+
 
 Output and environment variables
 -------------------------------------
@@ -144,7 +157,7 @@ is placed at below path, unless otherwise specified on screen.
 Output folders are created with following time/date stamp syntax HHMM-DDMONYY-X 
 where X is output type i.e download, update etc. The default path is:
 ```sh
-$HOME/Documents/Cylon
+$HOME/.cache/cylon
 ```
 
 This optional Environment variable is provided for users
@@ -167,6 +180,7 @@ This optional Environment variable is provided for users
 who wish to see no colour in terminal. Set it equal to "on"
 
 EDITOR
+
 "nano" is used as default text editor for editing config files 
 IF $EDITOR user environment variable is not set. 
 ```sh
@@ -190,8 +204,7 @@ There are used to check that network is "up" at various points in program.
 Auracle and trizen are both AUR helpers you can install 
 one or both depending on preference. Auracle is a more minimalist helper. 
 trizen is more fully featured. 
-Auracle is recommended as in addition to menu options
-it is used for -u and -n functions, plus step 24 of the package list maker(REF1)
+Auracle is used for -u and -n functions, plus step 24 of the package list maker
 Auracle is new and still in development hence the -git extension.
 
 libnotify should be installed on the vast majority of Arch systems already.
@@ -205,30 +218,26 @@ expac is used a lot and will be already installed on many systems.
 pacman_contrib contains numerous tools(checkupdates pacache etc)related to pacman , used to be part 
 of pacman before version 5.0. In cylon 5.3 added as a dependency.
 
-| Dependencies| Usage |
+| Non-Optional Dependencies | Usage |
 | ------ | ------ |
-| dialog |  used to make GUIs menus (Non-optional) |
-| expac |   used to create package lists (Non-optional) |
-| pacman-contrib | Misc pacman related tools (Non-optional) |
+| dialog | used to make file select menus  |
+| expac |  used to create package lists |
+| pacman-contrib | Misc pacman related tools |
+
+| Optional Dependencies | Usage |
+| ------ | ------ |
 | libnotify | used for desktop notifications | 
-| ccrypt(AUR) |  used for encrypting |
 | bleachbit | for system clean and shredding |
-| clamav |  for malware check |
-| gnu-netcat | to check for internet connection | 
-| openbsd-netcat | to check for internet connection |
+| netcat | to check for internet connection (either gnu or openbsd) | 
 | rmlint | to check for lint and duplicates | 
 | rsync | for rsync backup function |
-| speedtest-cli  | testing internet bandwidth |
 | Arch-audit | Uses data collected by the Arch CVE team |
 | lostfiles | to scan for lostfiles |
 | trizen(AUR)  |  AUR helper  |
 | auracle-git(AUR) |  AUR helper  |
 
-
 Features
 ----------------------
-
-![main menu](https://raw.githubusercontent.com/gavinlyonsrepo/cylon/master/screenshots/main_menu.png)
 
 The program functions are divided into 6 sections:
 update, maintenance, backup, security, network and miscellaneous.
@@ -243,13 +252,8 @@ a provides command line wrapper for rmlint and bleach-bit.
 
 The backup section provides ability to backup system using various tools.
 
-The security section provides a wrapper for ccrypt and an extended launcher 
-for various security tools as well as a password generator.
-
-The network section provides various tools to check network and configuration.
-
 Other misc functions include an option to edit config file, information menus for
-system and cylon. Weather forecast and terminal launcher. 
+system and cylon. Terminal launcher at path of cache output. 
 
 There is more detailed information in documentation 
 folder, see "see also" section.
@@ -268,7 +272,7 @@ folder, see "see also" section.
 	* Verify packages(option for one or all)
 	* Prune older packages from cache with paccache 
 	* Prune all uninstalled packages from cache with paccache
-	* Write installed package lists to files (REF1)
+	* Write installed package lists to files 
 	* Remove all packages not required as dependencies 
 	* Back-up the local pacman database  
 	* Arch news rss reader 
@@ -288,7 +292,7 @@ folder, see "see also" section.
 	* Sync and download AUR packages, i.e. update AUR packages on system. 
 	* Display AUR packages with no Maintainer
 	* Display Foreign packages not in AUR
-	* Write installed package lists to files (REF1)
+	* Write installed package lists to files 
 	* Read AUR Package comments
 	* Desktop and terminal notifications same as cylon -n option
 	* Remove foreign packages menu
@@ -304,7 +308,7 @@ folder, see "see also" section.
 	* Delete trizen clone dir files. default = /tmp/trizen-$USER
 	* Edit trizen config file $HOME/.config/trizen/trizen.conf
 	* Update all packages in all repositories, trizen -Syu
-	* Write installed package lists to files (REF1)
+	* Write installed package lists to files 
 	* trizen statistics display page
 	* Remove foreign packages menu
 	* Read AUR Package comments
@@ -363,41 +367,27 @@ folder, see "see also" section.
 	* Make a copy of etc dir
 	* Make a copy of home dir
 	* Make tarball of all except tmp dev proc sys run
-	* Make copy of package lists (REF1)
+	* Make copy of package lists 
 	* Rsync backup option 
 	
 **4: System security section**
-* System security menu
-	* ClamAv anti-malware scan 
-		*malware testfile fetch and scan function
-		*Check for updates and logging feature
-		*Various options for scan location and type.
-	* ccrypt - encrypt and decrypt files:
-		* config file path option for ease of use.
-		* Encrypt a file 		     
-		* Decrypt a file
-		* Edit decrypted file
-		* Change the key of encrypted file
-		* View encrypted file	
+* System security menu	
 	* password generator
 	* Audit SUID/SGID Files in system 
 	* check user password expiry information
 
-	
-**5: Network section**
+**5: Network options section**
 * Network options
 	* Display real-time wifi information
-	* Run speedtest-cli to measure bandwidth 
-	with options for server list and file save
 	* various miscellaneous networking commands
 	* firewall status and details check
 	
 **6: Miscellaneous section**
-* Option to open xterm terminal at output folder path in new window
+* Option to open terminal at output folder path in new window
 
 * Config file view/edit option.
 
-* Computer information display
+* System information display
 	* Displays detailed information on system and package setup
 	* Function also run by -s standalone option.
 
@@ -405,32 +395,36 @@ folder, see "see also" section.
 	* Dependencies installation check, info and display readme file to screen 
 	* Function can also run by option -h 
 
-* 3 day weather forecast by wttr.in
-
 
 Return codes
----------------------
+
 * 0 - Normal non-error controlled exit.
 * 2 - Error occurred and was handled by exithandlerFunc function. 
 
 
-See Also
------------
-(REF1): Packages files list referenced above at marker REF1 can be viewed 
-in package_lists.md, which is in the sub-folder documentation of repository. 
-The package files list is a collection of 26 lists describing the system.
+Screen Shots
+-------------------------
 
-There are 6 screenshots in the repository screenshot folder 
+Main Menu
 
+![main menu](https://raw.githubusercontent.com/gavinlyonsrepo/cylon/master/screenshots/main_menu.png)
 
-In the repository [documentation](documentation) folder, there are various support documents.
+Arch News
 
-| File Name | description |
-| ------ | ------ |
-| changelog.md | version control history file |
-| license.md | copyright details file |
-| cylon.7 | manpage which is truncated version of readme.md |
-| cylonCfg.conf | A dummy copy of config file for user setup convenience |
-| modules_info.md | An overview of the modular library files and the functions |
-| package_lists.md | An overview of the packages files list generated by program|
-| features_info.md | Extra information for some features |
+![Arch News](https://raw.githubusercontent.com/gavinlyonsrepo/cylon/master/screenshots/arch_news_RSS.png)
+
+Bleach bit CLI
+
+![BB](https://raw.githubusercontent.com/gavinlyonsrepo/cylon/master/screenshots/bleachbit_CLI_wrapper.png)
+
+Desktop notification
+
+![Desktop](https://raw.githubusercontent.com/gavinlyonsrepo/cylon/master/screenshots/desktop_notification.jpg)
+
+Pacman options menu
+
+![Pacman](https://raw.githubusercontent.com/gavinlyonsrepo/cylon/master/screenshots/pacman_utilities_menu.jpg)
+
+Remove foreign packages menu 
+
+![f menu](https://raw.githubusercontent.com/gavinlyonsrepo/cylon/master/screenshots/remove_foreign_pkgs_menu.png)

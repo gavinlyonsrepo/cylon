@@ -31,7 +31,7 @@ else #color on
 	GREEN=$(printf "\033[32;1m")
 	YELLOW=$(printf "\033[33;1m")
 	BLUE=$(printf "\033[36;1m")
-	HL=$(printf "\033[42;1m")
+	HL=$(printf "\033[41;1m")
 	NORMAL=$(printf "\033[0m")
 fi
 
@@ -41,10 +41,7 @@ PS3="${BLUE}By your command:${NORMAL}"
 
 #check if $EDITOR Environmental variable is set if not set it to nano
 #used for modifying config files
-if [ -z "${EDITOR}" ]
-then 
-	export EDITOR="nano"
-fi
+[ -z "${EDITOR}" ] && export EDITOR="nano"
 
 #Setup the Program Paths aka DESTx where x = 1-7,
 #1 and 2 are backups path from config file, 3 = program output, 4 = general use
@@ -52,7 +49,7 @@ fi
 if [ -z "${CYLONDEST}" ] #if environmental variable CYLONDEST not set
 then 
 	#default path for program output
-	DEST3="$HOME/Documents/Cylon/"
+	DEST3="$HOME/.cache/cylon/"
 else #yes it is set
 	DEST3="$CYLONDEST"
 fi
@@ -66,7 +63,7 @@ else #yes its set
 fi
 
 DEST6="/usr/share/doc/cylon"
-DEST7="/usr/lib/cylon/modules/"
+DEST7="/usr/lib/cylon/modules/" # PRODUCTION
 #DEST7="../modules/" # DEVELOPMENT TESTING PATH ONLY
 mkdir -p "$DEST3"
 mkdir -p "$DEST5"
@@ -81,19 +78,16 @@ done
 
 #==================MAIN CODE====================================
 #if a user input then call checkinput function for user input options
-if [ -n "$1" ] 
-then
-	checkinputFunc "$1"
-fi
+[ -n "$1" ] && checkinputFunc "$1"
 
 #Display opening screen title 
 clear
 msgFunc line
 AsciiArtFunc "ARCH"
 msgFunc line
-msgFunc highlight "$(pacman -Qs cylon | head -1 | cut -c 7-20) -- Arch Linux Maintenance Program"
-msgFunc norm "$(date +%T-%d-%a-Week%U-%b-%Y)"
-msgFunc norm "Unix epoch time $(date +%s)     "
+msgFunc norm "$(pacman -Qs cylon | head -1 | cut -c 7-20): Arch Linux Maintenance Program"
+msgFunc norm "Date Time:   $(date +%T" "%d-%a-Week%U-%b-%Y)"
+msgFunc norm "Unix epoch:  $(date +%s)     "
 msgFunc line
 
 #Loop the display main menu function until user exit

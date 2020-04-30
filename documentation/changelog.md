@@ -2,14 +2,6 @@
 
 ### Version 1.0 010916  (first commit to AUR)
 
-	* google drive function added 
-	* Extra cower and pacman options added 
-	* Options added for system backup function(dd and gdrive)
-	* PKGBUILD display and readme install added
-	* Config file added for custom backup paths
-	* rootkithunter option 
-	* Rmlint option.
-
 ### Version 2.0  021016 
 	* Added option for lostfiles, system info page.
 	* Added cylon info page with check for optdepends
@@ -67,7 +59,7 @@
 	* Arch-Audit in cylon -u option now consists of two options -q & -u.
 	* Arch-Audit was moved from AUR to main repos SW changed to reflect this.
 
-### Version 3.6-7 + 3.6.1-8 200417 
+### Version 3.6-7  200417 
 	* packages dialog and expac added as depends
 	* new file misc_module added (coding optimisation)
 	* cower -dc download only option added + AUR comment reader
@@ -75,8 +67,6 @@
 	* warning check added for setting of TargetDir in cower config
 	* new options added and others moved to System maintenance menu
 	* Added environmental variable user can now set output directory path.
-	
-### Version 3.7-9 050517
 	* corrected minor issue of no pause at end after system update run 
 	* Changed menu layout added system security option etc
 	* added extra drive option to config file now 4 syncs options.
@@ -115,8 +105,6 @@
 	* prompt and information display for orphan delete option added
 	* CowerFunc new option to search AUR packages by orphan maintainer.
 	* Ascii art placed in function AsciiArtFunc.
-
-### Version 4.3-4 / 4-3-1-5 : 031017
 	* Added optional environmental variable for config file location CYLON_CONFIG.
 	* changed 6 menus so they loop until user return.
 	* return codes added
@@ -156,11 +144,16 @@
 	* Various minor optimisations.
 
 ### Version 5.6-8 130619
-	* gdrive removed as optional dependency.
-
+	* gdrive removed as optional dependency, due to it being obsolete.
+	
 ### Version 5.7-9 200420
-	* Lynis and rkhunter removed.
+	* Lynis and rkhunter removed as optional dependency, to remove bloat and streamline program.
 	* Updates due to upstream changes to lostfiles and auracle.
 	* optdepends ccrypt moved from community to AUR, changing documentation and SW to reflect.
 	* Update to package list generator as "base" is now a package as opposed to a group of packages.
 	
+### Version 6.0-1
+	* clamav removed as optional dependency, to remove bloat and streamline program.
+	* ccrypt removed as optional dependency, The functionity provided by this module can be found
+	in [ccryptmenu](https://github.com/gavinlyonsrepo/ccryptmenu) standalone program.
+

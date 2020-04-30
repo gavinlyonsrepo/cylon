@@ -1,6 +1,6 @@
 Modules files overview
 ------------------
-There are 11 module library files containing 30+ functions.
+There are 10 module library files containing 30+ functions.
 installed to 
 ```sh
 /usr/lib/cylon/modules/
@@ -12,31 +12,27 @@ Function headers in the files contain more information.
 | ------ | ------ |
 | trizen_module | trizenFunc DelQmeFunc |
 | System_back_module | SystemBackFunc |
-| Ccrypt_module | ccryptFunc |
-| Misc_module | checkinputFunc AsciiArtFunc DisplayFunc exitHandlerFunc HelpFunc msgFunc readconfigFunc weatherFunc makeDirFunc |
+| Misc_module | checkinputFunc AsciiArtFunc DisplayFunc exitHandlerFunc HelpFunc msgFunc readconfigFunc makeDirFunc |
 | Pacman_module | pacmanFunc pkglistFunc updateFunc checkPacFunc rssFunc  |
 | System_clean_module | SystemCleanFunc |
 | Auracle_module | auraFunc aurupdateFunc notifyFunc |
 | Network_module | networkFunc checknetFunc |
 | Rmlint_module | RmLintFunc |
-| Security_module | SystemSecFunc AntiMalwareFunc intchkFunc |
+| Security_module | SystemSecFunc intchkFunc |
 | System_maint_module | SystemMaintFunc SystemMaintAutoFunc configFileScanFunc |
 
 | Function name | Description |
 | ------ | ------ |
 | SystemSecFunc | Display security options menu |
-| AntiMalwareFunc | Handles clamscan applications|
 | intchkFunc | Checks if string input is an integer |
 | trizenFunc | trizen wrapper |
 | SystemBackFunc | System backup options |
-| ccryptFunc | ccrypt wrapper |
 | checkinputFunc| Check options from command line passed to program on start |
 | DisplayFunc | Displays main menu options |
 | exitHandlerFunc | Error handler to with deal with user errors and exits |
 | HelpFunc | Displays cylon and system information pages |
 | msgFunc  | Prints to screen: lines, text, 'anykey' prompt and 'yes or no' prompt |
 | readconfigFunc | Deals with viewing and editing of cylonCfg.conf config file |
-| weatherFunc | Displays weather forecast |
 | makeDirFunc | Creates the directories for program output folder |
 | pacmanFunc | pacman wrapper + various utilities |
 | pkglistFunc | Creates a list of files containing package information |

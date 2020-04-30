@@ -20,7 +20,7 @@ example= export CYLONDEST="$HOME/.cache/cylon"  ,
 Optional destination for program output.
 Sets the output folder for downloads updates etc
 if variable is not set or does not exist,, cylon uses default path at 
-$HOME/Documents/Cylon
+$HOME/.cache/Cylon
 
 .TP
 .B \ CYLON_CONFIG
@@ -114,12 +114,6 @@ rsync backup source option
 .TP
 .B \ rsyncDest="/run/media/$USER/foo1/foo"
 Backup path for rsync destination
-.TP
-.B \ myccfile="$HOME/"
-default file path option for ccrypt
-.TP
-.B \ clamav_customdir="$HOME/.config/cylon/foo"
-Custom path for clamavscan
 
 
 .SH RETURN CODES
@@ -135,7 +129,7 @@ output folders are created with following syntax HHMM-DDMONYY-X where X
 is output type i.e backup, update etc. 
 This setting can be overwritten by environmental variable see above
 .TP
-.B $HOME/Documents/Cylon
+.B $HOME/.cache/Cylon
 
 .SH AUTHOR
 Created by Gavin Lyons. glyons66@hotmail.com

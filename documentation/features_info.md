@@ -5,8 +5,6 @@ This file provides extra information for some features
 that are not fully explained on screen or in the readme/man page.
 The numbers in sub-menus below represent the numbered menu options on screen.
 
-NOTE: Some sections are not complete (WIP). 
-
 **1: System update section**
 * pacman options
 	* see "man pacman" for more details
@@ -158,11 +156,11 @@ see man rsync for more information.
 
 **4: System security section**
 
-WIP TODO
+N/A
 
 **5: Network section**
 
-WIP TODO
+N/A
 
 **6: Miscellaneous section**
 
@@ -175,12 +173,3 @@ The first page displays some general information on cylon as well as
 a the status of environment variables used by program. The second page 
 checks the dependencies installation status. Dependencies not installed are 
 displayed in red. The third option is yes or no prompt to display the programs readme.
-
-* 13 The 3 day weather forecast by wttr.in. 
-see: https://github.com/chubin/wttr.in 
-The command is: curl wttr.in/"$mX" 
-where X is City name, airport code, domain name or area code:- provided by user 
-at prompt.
-
-
-

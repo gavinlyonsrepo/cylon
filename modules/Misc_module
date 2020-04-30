@@ -3,7 +3,7 @@
 #Module containing functions called from cylon package
 #
 #Functions: checkinputFunc, DisplayFunc. AsciiArtFunc
-# exitHandlerFunc, HelpFunc, msgFunc, readconfigFunc, weatherFunc, makeDirFunc
+# exitHandlerFunc, HelpFunc, msgFunc, readconfigFunc, makeDirFunc
 
 #FUNCTION HEADER
 # NAME : msgFunc
@@ -115,9 +115,9 @@ msgFunc blue "Main Menu:"
 	local optionsMArr=(
 	"pacman" "$(checkPacFunc auracle NOMES)" \
 	"$(checkPacFunc trizen NOMES)" "System Update" "System Maintenance" \
-	"System backup" "System Security" "Network Maintenance" \
+	"System backup" "Security Options" "Network Options" \
 	"xterm terminal" "View/Edit config file"\
-	  "System information" "Cylon information" "Weather" "Exit"\
+	  "System information" "Cylon information" "Exit"\
 	)
 	select choiceMainVar in "${optionsMArr[@]}"
 	do
@@ -147,6 +147,7 @@ msgFunc blue "Main Menu:"
 				networkFunc
 			;;
 			"${optionsMArr[8]}")  # open a terminal
+				echo  "$DEST3"
 				xterm -e "cd $DEST3  && /bin/bash"
 				msgFunc anykey
 			;;
@@ -158,9 +159,6 @@ msgFunc blue "Main Menu:"
 			;;
 			"${optionsMArr[11]}")  # cylon info and cat readme file to screen 
 				HelpFunc "HELP"
-			;;
-			"${optionsMArr[12]}")  # 3 day forecast weather
-				WeatherFunc
 			;;
 			*)#exit
 				exitHandlerFunc exitout 
@@ -230,7 +228,7 @@ clear
 		local DependenciesArr=("dialog:NOTE non-optional" "expac:NOTE non-optional" "auracle:NOTE AUR package" \
 "trizen:NOTE AUR package" "lostfiles" "arch-audit" "rmlint" \
 "gnu-netcat:NOTE No need if using openbsd-netcat" "openbsd-netcat:NOTE No need if using gnu-netcat" \
-"clamav" "bleachbit" "ccrypt:NOTE AUR package" "rsync" "libnotify" "speedtest-cli")
+ "bleachbit" "rsync" "libnotify" )
 		#loop thru and display the array
 		local tLenVar=""
 		local packageVar=""
@@ -419,10 +417,6 @@ function readconfigFunc
 		#paths for rsync option
 		rsyncsource="$HOME/"
 		rsyncDest="/run/media/$USER/Linux_backup/foo"
-		#ccyptfile
-		myccfile="/foo/foo/XXXX"
-		#clamavscan
-		clamav_customdir="$HOME/foo/foo"
 		msgFunc green "Done!"
 		return
 	fi
@@ -524,21 +518,6 @@ function makeDirFunc
 	cd "$dirVar" || exitHandlerFunc DEST4
 	msgFunc norm "Directory for output made at:-"
 	pwd	 
-}
-
-#FUNCTION HEADER
-# NAME :  WeatherFunc
-# DESCRIPTION:3 day weather forecast
-function WeatherFunc
-{
-	msgFunc norm "3 day weather forecast by WTTR.IN"
-	msgFunc norm "Type a City name, airport code, domain name or area code:-"
-	local mycityVar=""
-	read -r mycityVar		
-	clear
-	curl wttr.in/"$mycityVar"
-	msgFunc anykey 
-	clear
 }
 
 #FUNCTION HEADER

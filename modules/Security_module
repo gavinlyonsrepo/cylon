@@ -1,6 +1,6 @@
 #!/bin/bash
 #Module containing functions called from cylon package
-#Functions : SystemSecFunc , AntiMalwareFunc intchkFunc
+#Functions : SystemSecFunc , intchkFunc
 
 #FUNCTION HEADER
 # NAME :  SystemSecFunc
@@ -13,21 +13,15 @@ function SystemSecFunc
 	
 	while true; do
 	msgFunc blue "System Security Menu options:-"
-	local optionsSecArr=("$(checkPacFunc ccrypt NOMES)" "$(checkPacFunc clamav NOMES)" 
-	"Password generator" "List the password aging info of a user" "Audit SUID/SGID Files" "Return")
+	local optionsSecArr=("Password generator" "List the password aging info of a user" "Audit SUID/SGID Files" "Return")
 			select choiceSecVar in "${optionsSecArr[@]}"
 			do
 			case "$choiceSecVar" in 
-			 "${optionsSecArr[0]}") # ccrypt - encrypt and decrypt files 
-				ccryptFunc
-			 ;;
-			 "${optionsSecArr[1]}") #Anti-virus clamav
-				AntiMalwareFunc "CLAMAV"			
-			 ;;
 			 
-			 "${optionsSecArr[2]}") #Password generator
+			 "${optionsSecArr[0]}") #Password generator
 				#password section
 				makeDirFunc "-SYSSECURITY"
+				msgFunc norm "Files report will be written to path above -"
 				msgFunc green "Random Password generator"
 				msgFunc norm "Enter length:-"
 				read -r mylengthVar
@@ -42,7 +36,7 @@ function SystemSecFunc
 				msgFunc green "Done!"
 			;;
 			
-			"${optionsSecArr[3]}") # chage cmd list the passwd aging info
+			"${optionsSecArr[1]}") # chage cmd list the passwd aging info
 				local usrVar=""
 				msgFunc green "chage command to list the password aging information of a user."
 				msgFunc norm "Please enter user name"
@@ -51,8 +45,9 @@ function SystemSecFunc
 				msgFunc green "Done!"
 				msgFunc anykey
 			;;
-			"${optionsSecArr[4]}") #Auditing SUID/SGID Files
+			"${optionsSecArr[2]}") #Auditing SUID/SGID Files
 				makeDirFunc "-SYSSECURITY"
+				msgFunc norm "Files report will be written to path above -"
 				cat <<-EOF
 				Since SUID/SGID files potentially make a system vulnerable, 
 				the system administrator needs to keep track of these files
@@ -68,7 +63,6 @@ function SystemSecFunc
 				msgFunc anykey
 			;;
 			
-
 			 *)  #exit  
 				clear
 				return
@@ -77,93 +71,6 @@ function SystemSecFunc
 			break
 			done
 done
-}
-
-# FUNCTION HEADER# NAME :  AntiMalwareFunc 
-# DESCRIPTION: Function for anti virus with clamscan 
-# INPUTS:  $1  CLAMAV 
-function AntiMalwareFunc
-{
-#clamav section
-	if [ "$1" = "CLAMAV" ]
-			then
-			#check clamav is installed
-			if ! checkPacFunc clamav
-				then
-				msgFunc anykey 
-				return
-			fi
-			clear
-			local optionsAVArr=("Update clamavscan Database" "Get the Anti-Malware Testfile " \
-			"Scan the Anti-Malware Testfile " "Scan $HOME" "Scan /" \
-			"Scan $HOME with remove the infected file option ON" \
-			"Scan / with remove the infected file option ON" "Scan Custom folder from config file, remove option ON" "Return")
-			local choiceAVVar=""
-			msgFunc blue "clamavscan options"
-			select  choiceAVVar in "${optionsAVArr[@]}"
-			do
-			case "$choiceAVVar" in
-			
-			"${optionsAVArr[0]}") # update clamscan virus definitions:
-				msgFunc green "Updating clamavscan Databases"
-				sudo freshclam
-			;;
-			"${optionsAVArr[1]}") #Get the Anti-Malware Testfile 
-				cd "$DEST5" || exitHandlerFunc DEST5
-				msgFunc green "Fetching eigar.com.txt malware testfile from internet"
-				curl -O http://www.eicar.org/download/eicar.com.txt 
-				msgFunc norm " "
-				cd ~ || exitHandlerFunc DEST4
-			;;
-			"${optionsAVArr[2]}") #Scan the Anti-Malware Testfile 
-				cd "$DEST5" || exitHandlerFunc DEST5
-				clamscan -v eicar.com.txt
-				msgFunc norm " "
-				cd ~ || exitHandlerFunc DEST4
-			;;
-			"${optionsAVArr[3]}")#scan home 
-				msgFunc green "Scanning with Clamav"
-				makeDirFunc "-CLAMAVINFO"
-				clamscan -l clamavLogFile -v --recursive --infected "$HOME"
-			;;
-			"${optionsAVArr[4]}") #scan entire system
-				msgFunc green "Scanning with Clamav"
-				makeDirFunc "-CLAMAVINFO"
-				sudo clamscan -l clamavLogFile -v --recursive --infected --exclude-dir='^/sys|^/proc|^/dev|^/lib|^/bin|^/sbin' /
-			;;
-			"${optionsAVArr[5]}") #scan home with delete
-				msgFunc green "Scanning with Clamav"
-				makeDirFunc "-CLAMAVINFO"
-				clamscan -l clamavLogFile -v --recursive --infected --remove=yes "$HOME"
-			;;
-			"${optionsAVArr[6]}") #scan entire system with delete
-				msgFunc green "Scanning with Clamav"
-				makeDirFunc "-CLAMAVINFO"
-				sudo clamscan -l clamavLogFile -v --recursive --infected --remove=yes --exclude-dir='^/sys|^/proc|^/dev|^/lib|^/bin|^/sbin' /
-			;;
-			"${optionsAVArr[7]}")#scan custom
-				msgFunc green "Scanning with Clamav$"
-				readconfigFunc
-				makeDirFunc "-CLAMAVINFO"
-				msgFunc norm " "
-				if [ ! -d "$clamav_customdir" ]; then
-					# Control will enter here if dir doesn't exist.
-					msgFunc red "$clamav_customdir"
-					exitHandlerFunc DEST4
-				fi
-				clamscan -l clamavLogFile -v --recursive --infected --remove=yes "$clamav_customdir"
-			;;
-			*) #exit
-			clear
-			return 
-			;;
-			esac
-			break
-			done
-			msgFunc green "Done!"
-			msgFunc anykey
-			return
-	fi
 }
 
 

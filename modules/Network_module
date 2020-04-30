@@ -10,9 +10,6 @@ function networkFunc
 {
 	clear
 	local choiceNVar=""
-	#change dir for log files
-	makeDirFunc "-NETINFO"
-	msgFunc norm "Files report will be written to path above -"
 	while true; do
 	msgFunc blue "Network options :-"
 	local optionsNArr=("See wifi link quality continuously on screen" "$(checkPacFunc speedtest-cli  NOMES) -testing internet bandwidth"\
@@ -30,14 +27,18 @@ function networkFunc
 			;;
 					
 			"${optionsNArr[1]}")  #speedtest-cli testing internet bandwidth
-			#check speedtest-cli  is installed
+
+			local ServerIDVar=""			#check speedtest-cli  is installed
 			if ! checkPacFunc speedtest-cli
 			then
 				msgFunc anykey 
 			return
 			fi
-			local ServerIDVar=""
+			
 			msgFunc green "Speedtest-cli"
+			#change dir for log files
+			makeDirFunc "-NETINFO"
+			msgFunc norm "Files report will be written to path above -"
 			msgFunc norm "Do you want to generate server list [y/n] ?"
 			if msgFunc yesno
 			then # yes
@@ -74,6 +75,9 @@ function networkFunc
 			;;
 			"${optionsNArr[3]}")  #ifconfig
 				msgFunc green "ifconfig short list: Kernel Interface table:"
+				#change dir for log files
+				makeDirFunc "-NETINFO"
+				msgFunc norm "Files report will be written to path above -"
 				ifconfig -s
 				msgFunc anykey
 				msgFunc norm " "
@@ -89,6 +93,11 @@ function networkFunc
 				msgFunc anykey
 			;;
 			"${optionsNArr[5]}") #check firewall status
+			if ! checkPacFunc ufw
+			then
+				msgFunc anykey 
+			return
+			fi
 			sudo ufw status verbose
 			;;
 			"${optionsNArr[6]}") #Network Time Synchronization status check
