@@ -157,7 +157,7 @@
 	* ccrypt removed as optional dependency, The functionity provided by this module can be found
 	in [ccryptmenu](https://github.com/gavinlyonsrepo/ccryptmenu) standalone program.
 
-### Version 6.0-2
+### Version 6.1-2
 	* Minor update, https://www.archlinux.org/feeds/news/ changed to https://archlinux.org/feeds/news/ 
 	in rss arch news function as it had changed upstream recently and was no longer working.
 	
