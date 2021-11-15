@@ -38,7 +38,7 @@ Function headers in the files contain more information.
 | pkglistFunc | Creates a list of files containing package information |
 | updateFunc | Handles the full system update routine |
 | checkPacFunc | Checks if package installed  |
-| rssFunc | Arch Linux News reader of the Rss feed https://www.archlinux.org/feeds/news/ |
+| rssFunc | Arch Linux News reader of the Rss feed https://archlinux.org/feeds/news/ |
 | SystemCleanFunc | bleachbit wrapper |
 | DelQmeFunc | Delete foreign packages display menu |
 | auraFunc | auracle wrapper + extended functionality |

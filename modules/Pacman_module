@@ -215,7 +215,9 @@ function RssFunc
 	#integer check function call
 	intchkFunc "$numitemsVar"
 	# Set numitemsVar to N in awk  to be the number of latest news to fetch
-	newsVar=$(echo -e $(curl --silent https://www.archlinux.org/feeds/news/  | awk -v N="$numitemsVar" ' NR == 1 {countVar = N; while (countVar) {print;getline; if($0 ~ /<\/item>/) countVar=countVar-1} ; sub(/<\/item>.*/,"</item>") ;print}'))
+	# https://www.archlinux.org/feeds/news/  URL pre 6.0.2
+	# https://archlinux.org/feeds/news/ URL post 6.0.1
+	newsVar=$(echo -e $(curl --silent https://archlinux.org/feeds/news/  | awk -v N="$numitemsVar" ' NR == 1 {countVar = N; while (countVar) {print;getline; if($0 ~ /<\/item>/) countVar=countVar-1} ; sub(/<\/item>.*/,"</item>") ;print}'))
 	#  THE RSS PARSER Remove some tags 
 	newsVar=$(echo -e "$newsVar" | \
 	awk '{

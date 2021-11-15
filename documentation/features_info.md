@@ -11,7 +11,7 @@ The numbers in sub-menus below represent the numbered menu options on screen.
 	* 11 12 The paccache script, is provided by the pacman-contrib package.
 	* 13 The command to delete orphans is sudo pacman -Rns $(pacman -Qtdq)
 	* 15 The pacman database is located at path /var/lib/pacman/local
-	* 16 The Arch linux news feed is fetched from this url https://www.archlinux.org/feeds/news/ 
+	* 16 The Arch linux news feed is fetched from this url https://archlinux.org/feeds/news/ 
 by a Curl command and parsed using awk and sed.
 	* 18 pactree - package dependency tree viewer, A tool installed as part of pacman-contrb
 	* 19 pacman config file is located at etc/pacman.conf
