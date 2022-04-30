@@ -11,7 +11,7 @@
 #prints line, text and anykey prompts, yesno prompt
 # INPUTS : $1 process name $2 text input
 # PROCESS :[1]  print line [2] anykey prompt
-# [3] print text  "green , red ,blue , norm yellow and highlight" [4] yn prompt, 
+# [3] print text  "green , red ,blue , norm yellow" [4] yn prompt, 
 # OUTPUT yesno prompt return 1 or 0
 function msgFunc
 {
@@ -33,7 +33,6 @@ function msgFunc
 		red) printf '%s\n' "${RED}$2${NORMAL}" ;;
 		blue) printf '%s\n' "${BLUE}$2${NORMAL}" ;;
 		yellow)printf '%s\n' "${YELLOW}$2${NORMAL}" ;;
-		highlight)printf '%s\n' "${HL}$2${NORMAL}" ;;
 		norm) printf '%s\n' "${NORMAL}$2" ;;
 			
 		yesno) #print yes no quit prompt

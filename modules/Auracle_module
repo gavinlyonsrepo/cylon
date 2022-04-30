@@ -52,7 +52,8 @@ local optionsCArr=("Check network and check for AUR updates (no download), aurac
 			msgFunc anykey
 		;;
 		# information for package AUR with auracle 
-		"${optionsCArr[1]}")msgFunc green "${GREEN}Information for AUR package , auracle info"
+		"${optionsCArr[1]}")
+			msgFunc green "Information for AUR package , auracle info"
 			msgFunc norm "Type a AUR package name:-"
 			read -r auraclePacVar
 			msgFunc norm " " 
@@ -61,7 +62,7 @@ local optionsCArr=("Check network and check for AUR updates (no download), aurac
 		;;
 	
 		"${optionsCArr[2]}") 	#auracle search
-			msgFunc green "${GREEN}Search for AUR package, auracle search"
+			msgFunc green "Search for AUR package, auracle search"
 			msgFunc norm "Type a AUR package name:-"
 			read -r auraclePacVar		
 			msgFunc norm " " 
@@ -70,7 +71,7 @@ local optionsCArr=("Check network and check for AUR updates (no download), aurac
 		;;
 	
 		"${optionsCArr[3]}")#auracle download Download AUR package with an optional install
-			msgFunc green "${GREEN}Download AUR package auracle download with install"
+			msgFunc green "Download AUR package auracle download with install"
 			makeDirFunc "-AURDOWNLOAD"
 			#build and install packages
 			msgFunc norm "Type a AUR package name:-"
@@ -89,7 +90,7 @@ local optionsCArr=("Check network and check for AUR updates (no download), aurac
 		;;
 			
 		"${optionsCArr[4]}") #auracle  Download AUR package with NO Install.
-			msgFunc green "${GREEN}Download AUR package auracle "
+			msgFunc green "$Download AUR package auracle "
 			makeDirFunc "-AURDOWNLOAD"
 			#build and install packages
 			msgFunc norm "Type a AUR package name:-"
