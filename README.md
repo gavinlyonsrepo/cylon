@@ -30,7 +30,7 @@ Table of contents
   * [Environment variables](#environment-variables)
   * [Dependencies](#dependencies)
   * [Features](#features)
-  * [Screen Shots](#screenshots)
+  * [Screen Shots](#screen-shots)
  
 Installation
 -----------------------------------------------
@@ -316,7 +316,7 @@ Main Menu
 
 Arch News
 
-![Arch News](https://raw.githubusercontent.com/gavinlyonsrepo/cylon/master/documentation/documentation/screenshots/arch_news_RSS.png)
+![Arch News](https://raw.githubusercontent.com/gavinlyonsrepo/cylon/master/documentation/screenshots/arch_news_RSS.png)
 
 Bleach bit CLI
 

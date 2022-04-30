@@ -17,14 +17,12 @@ then #color off
 	GREEN=$(printf "\033[0m")
 	YELLOW=$(printf "\033[0m")
 	BLUE=$(printf "\033[0m")
-	HL=$(printf "\033[0m")
 	NORMAL=$(printf "\033[0m")
 else #color on
 	RED=$(printf "\033[31;1m")
 	GREEN=$(printf "\033[32;1m")
 	YELLOW=$(printf "\033[33;1m")
 	BLUE=$(printf "\033[36;1m")
-	HL=$(printf "\033[41;1m")
 	NORMAL=$(printf "\033[0m")
 fi
 
