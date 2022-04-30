@@ -42,8 +42,7 @@ EOF
 					return
 				;;
 			esac
-			#read -r rmlintPath	
-			cd "$rmlintPathVar" || exitHandlerFunc DEST4
+			cd "$rmlintPathVar" || exitHandlerFunc UnknownPath
 			msgFunc norm " "
 			msgFunc norm "\"$rmlintPathVar\" chosen directory."
 			msgFunc line

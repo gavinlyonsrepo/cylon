@@ -1,24 +1,17 @@
 #!/bin/bash 
 #shellcheck disable=SC1117
-#=========================HEADER==========================================
+#========================= HEADER ==========================
 #name:cylon
 #Title : Arch Linux distro maintenance bash script. 
-#Description: Updates, maintenance, backups and system checks in 
-#single menu driven optional script Command line program for Arch linx users. 
-#see readme.md(access thru cylon info page) or manpage "man cylon" for info.
-#See changelog.md at repo for version control 
-#License: see license.md 
 #Written by Gavin lyons 
 #Software repo: https://github.com/gavinlyonsrepo/cylon
 #AUR package name : cylon , at aur.archlinux.org by glyons
 
-#=======================GLOBAL VARIABLES SETUP=============================
-#Syntax: Global: UPPERCASE  , local: xxxVar. local Array: xxxArr
-#Custom Environmental variables : CYLONDEST  CYLON_CONFIG CYLON_COLOR_OFF
-#Variables also read in from config file
+#======= ENVIRONMENT & GLOBAL VARIABLES + PATHS =========
+#Custom Environmental variables : $CYLONDEST  CYLON_CONFIG CYLON_COLOR_OFF
 
-#colours for printf, check if color output setting is off
-if  [ -n "${CYLON_COLOR_OFF}" ] #has a length of more than zero, set
+# Colours for printf, check if color output setting is off
+if  [ -n "${CYLON_COLOR_OFF}" ] 
 then #color off
 	RED=$(printf "\033[0m")
 	GREEN=$(printf "\033[0m")
@@ -35,64 +28,52 @@ else #color on
 	NORMAL=$(printf "\033[0m")
 fi
 
-
 #prompt for select menus
 PS3="${BLUE}By your command:${NORMAL}"
 
 #check if $EDITOR Environmental variable is set if not set it to nano
-#used for modifying config files
 [ -z "${EDITOR}" ] && export EDITOR="nano"
 
-#Setup the Program Paths aka DESTx where x = 1-7,
-#1 and 2 are backups path from config file, 3 = program output, 4 = general use
-#5 = config file,  6 = Documentation, 7 = Module library location
-if [ -z "${CYLONDEST}" ] #if environmental variable CYLONDEST not set
-then 
-	#default path for program output
-	DEST3="$HOME/.cache/cylon/"
-else #yes it is set
-	DEST3="$CYLONDEST"
-fi
+#Setup the Program Paths
+# CYLONDEST = cache
+# CYLON_CONFIG = config file
+# CYLON_DOCUMENTS = help
+# CYLON_MODULES = modules location
+[ -z "${CYLONDEST}" ] && CYLONDEST="$HOME/.cache/cylon/"
+mkdir -p "$CYLONDEST"
+[ -z "${CYLON_CONFIG}" ] && CYLON_CONFIG="$HOME/.config/cylon"
+mkdir -p "$CYLON_CONFIG"
 
-if [ -z "${CYLON_CONFIG}" ] #if environmental variable CYLON_CONFIG not set
-then 
-	#default path for config file
-	DEST5="$HOME/.config/cylon"
-else #yes its set
-	DEST5="$CYLON_CONFIG"
-fi
+CYLON_DOCUMENTS="/usr/share/doc/cylon"
 
-DEST6="/usr/share/doc/cylon"
-DEST7="/usr/lib/cylon/modules/" # PRODUCTION
-#DEST7="../modules/" # DEVELOPMENT TESTING PATH ONLY
-mkdir -p "$DEST3"
-mkdir -p "$DEST5"
+# Prodution PATH
+CYLON_MODULES="/usr/lib/cylon/modules/" 
+# NB ** DEVELOPMENT TESTING PATH ONLY , COMMENT OUT ** NB
+#CYLON_MODULES="../modules/" 
 
-#====================FUNCTIONS===============================
-#Source the module files for the functions from the cylon library folder
-#at /usr/lib/cylon/modules/* , Function syntax: nameFunc.
-for MYFILE in "$DEST7"*;
+#=================== FUNCTIONS =============================
+#Source the module files for the functions from the cylon lib folder
+for CYLON_FILE in "$CYLON_MODULES"*;
 do
-	source "$MYFILE"
+	source "$CYLON_FILE"
 done
 
-#==================MAIN CODE====================================
-#if a user input then call checkinput function for user input options
-[ -n "$1" ] && checkinputFunc "$1"
+#================= MAIN CODE ============================
+
+readconfigFunc # Variables also read in from config file
+[ -n "$1" ] && checkinputFunc "$1" 
 
 #Display opening screen title 
 clear
 msgFunc line
 AsciiArtFunc "ARCH"
 msgFunc line
-msgFunc norm "$(pacman -Qs cylon | head -1 | cut -c 7-20): Arch Linux Maintenance Program"
-msgFunc norm "Date Time:   $(date +%T" "%d-%a-Week%U-%b-%Y)"
-msgFunc norm "Unix epoch:  $(date +%s)     "
-msgFunc line
+drawBoxFunc "$(pacman -Qs cylon | head -1 | cut -c 7-20): Arch Linux Maintenance Program" \
+"Date Time:   $(date +%T" "%d-%a-Week%U-%b-%Y)" "Unix epoch:  $(date +%s)"
 
 #Loop the display main menu function until user exit
 while true; do
-	cd ~ || exitHandlerFunc DEST4
+	cd ~ || exitHandlerFunc UnknownPath
 	DisplayFunc
 done
-#======================END==============================
+#====================== EOF =============================

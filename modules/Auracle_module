@@ -108,15 +108,15 @@ local optionsCArr=("Check network and check for AUR updates (no download), aurac
 			local statusVar=""
 			for i in $(pacman -Qmq); 
 			do
-					statusVar=$(auracle info "$i" | awk '/Maintainer/ {print $3}' )
-					if [ "$statusVar" == "(orphan)" ]; then
-						msgFunc norm "$i"
-						orphansVar=1
-					fi
+				statusVar=$(auracle info "$i" | awk '/Maintainer/ {print $3}' )
+				if [ "$statusVar" == "(orphan)" ]; then
+					msgFunc norm "$i"
+					orphansVar=1
+				fi
 			done
 			
 			if [ $orphansVar -eq 0 ]; then
-					msgFunc yellow "No AUR packages with no Maintainer found!"
+				msgFunc yellow "No AUR packages with no Maintainer found!"
 			fi
 			msgFunc anykey
 		;;
@@ -144,7 +144,8 @@ local optionsCArr=("Check network and check for AUR updates (no download), aurac
 			msgFunc norm "Type a AUR package name:-"
 			read -r auraclePacVar
 			local aururl="aur.archlinux.org"
-			curl -s "https://${aururl}/packages/$auraclePacVar/?comments=all" | sed -r -n -e "/<div id=\"news\">/,/<!-- End of main content -->/p" | sed -e 's/<[^>]*>//g' > AURcommentfile.
+			curl -s "https://${aururl}/packages/$auraclePacVar?comments=all" | sed -r -n -e "/<div id=\"comment-.*\">/,/<!\/div>/p" | sed -e 's/<[^>]*>//g' > AURcommentfile
+			sed -i '/^[[:space:]]*$/d' AURcommentfile  
 			msgFunc green "Done!"
 			msgFunc anykey
 		;;
@@ -172,41 +173,41 @@ done
 # PROCESS : called from pacman-module and auracle module
 function aurupdateFunc
 {
-		msgFunc green "Update AUR packages  auracle outdated and download "
-		#make auracle update directory
-		makeDirFunc "-AURUPDATES" 
-		auracle outdated | awk  '{ print $1 }' | xargs auracle -r download
-		
-		# look for empty dir (i.e. if no updates) 
-		#check  directory has child directories?
-		local subdircountVar=""
-		subdircountVar=$(find ./* -type d 2</dev/null | wc -l)
-		if [  "$subdircountVar" -gt 0 ] 
-		then
-			msgFunc norm  "Package builds available"
-			ls 
-			msgFunc norm " "
-			msgFunc green "View package builds [y/n] ?"
-			if msgFunc yesno
-				then #yes
-				msgFunc green " Viewing  PKGBUILDS of updates :-" 
-				#cat PKGBUILDs to screen
-				find . -name PKGBUILD -exec cat {} \; | more
-				msgFunc green "PKGBUILDS displayed above."
-				msgFunc anykey
-				msgFunc line
-			fi
-			msgFunc green "Install all updates [y/n] ?"
-			if msgFunc yesno
-				then #yes
-					#build and install all donwloaded PKGBUILD files 
-					msgFunc norm  "Installing packages"
-					find . -name PKGBUILD -execdir makepkg -si \;
-			fi
-		else
-			msgFunc norm "No updates found for installed AUR packages by auracle."
+	msgFunc green "Update AUR packages  auracle outdated and download "
+	#make auracle update directory
+	makeDirFunc "-AURUPDATES" 
+	auracle outdated | awk  '{ print $1 }' | xargs auracle -r download
+	
+	# look for empty dir (i.e. if no updates) 
+	#check  directory has child directories?
+	local subdircountVar=""
+	subdircountVar=$(find ./* -type d 2</dev/null | wc -l)
+	if [  "$subdircountVar" -gt 0 ] 
+	then
+		msgFunc norm  "Package builds available"
+		ls 
+		msgFunc norm " "
+		msgFunc green "View package builds [y/n] ?"
+		if msgFunc yesno
+			then #yes
+			msgFunc green " Viewing  PKGBUILDS of updates :-" 
+			#cat PKGBUILDs to screen
+			find . -name PKGBUILD -exec cat {} \; | more
+			msgFunc green "PKGBUILDS displayed above."
 			msgFunc anykey
-		fi	
+			msgFunc line
+		fi
+		msgFunc green "Install all updates [y/n] ?"
+		if msgFunc yesno
+			then #yes
+				#build and install all donwloaded PKGBUILD files 
+				msgFunc norm  "Installing packages"
+				find . -name PKGBUILD -execdir makepkg -si \;
+		fi
+	else
+		msgFunc norm "No updates found for installed AUR packages by auracle."
+		msgFunc anykey
+	fi	
 }
 
 #FUNCTION HEADER

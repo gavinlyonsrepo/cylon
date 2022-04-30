@@ -103,10 +103,10 @@ while true; do # loop until exit
 				if msgFunc yesno
 				then
 					#change to clone_dir as double safety check before rm
-					cd "$trizenCache" || exitHandlerFunc DEST4
+					cd "$trizenCache" || exitHandlerFunc UnknownPath
 					#yes
 					rm -rvf "$trizenCache"
-					cd ~ || exitHandlerFunc DEST4
+					cd ~ || exitHandlerFunc UnknownPath
 					msgFunc anykey
 				fi
 			;;

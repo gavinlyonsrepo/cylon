@@ -3,7 +3,7 @@
 #Module containing functions called from cylon package
 #
 #Functions: checkinputFunc, DisplayFunc. AsciiArtFunc
-# exitHandlerFunc, HelpFunc, msgFunc, readconfigFunc, makeDirFunc
+# exitHandlerFunc, HelpFunc, msgFunc, readconfigFunc, makeDirFunc drawBox
 
 #FUNCTION HEADER
 # NAME : msgFunc
@@ -60,49 +60,50 @@ function msgFunc
 # DESCRIPTION: error handler deal with user 
 #exits and path not found errors and internet failure 
 # INPUTS:  $2 text of internet site down or filename 
-# PROCESS : exitout DEST 1-6 netdown or file error or non-integer user input.
+# PROCESS : exitout paths netdown or file error or non-integer user input.
 # or bad argument option input
 function exitHandlerFunc
 {
-	#double square brackets without use of quotes on matching pattern 
-	#for glob support
-	if [[ "$1" = DEST* ]]
-	then
+case "$1" in
+	"$CYLONDEST") 
 		msgFunc red "Path not found to Destination directory"
-	fi
-	case "$1" in
-			exitout) msgFunc norm "";;
-			DEST1) msgFunc norm "$Destination1" ;;
-			DEST2) msgFunc norm "$Destination2" ;;
-			DEST3) msgFunc norm "$DEST3" ;;
-			DEST4) msgFunc red "Path not found to directory" ;;
-			DEST5) msgFunc norm "$DEST5" ;;
-			DEST6) msgFunc norm "$DEST6" ;;
-			netdown) msgFunc red "Internet connectivity test to $2 failed" ;;
-			fileerror) msgFunc red "File error $2"  ;;
-			nonint) msgFunc red "Integer expected, user entered non-integer, program exiting";;
-			Badinput)
-				msgFunc red "$2 is an INVALID USER OPTION!"
-				msgFunc yellow "Usage: -b -c -d -h -l -m -n -p -r -s -u -v -z"
-				msgFunc yellow "Type cylon -h for display readme.md or" 
-				msgFunc yellow "Type man cylon for manpage"
-				msgFunc norm " "
-				msgFunc norm  "Do you wish to view man page section for user options now? [y/n]"
-				if msgFunc yesno 
-				then  # yes
-					man cylon | grep -A39 OPTIONS 
-				fi
-				;;
-			*) msgFunc yellow "Unknown input to error handler";;
-	 esac
-	msgFunc yellow "Goodbye $USER!"
-	msgFunc anykey "and exit."
-	if [ "$1" = "exitout" ]
-	then
-		#non-error exit
-		exit 0
-	fi 
-	exit 2
+		msgFunc norm "$CYLONDEST" 
+	;;
+	"$CYLON_CONFIG") 
+		msgFunc red "Path not found to Destination directory"
+		msgFunc norm "$CYLON_CONFIG" 
+	;;
+	"$CYLON_DOCUMENTS") 
+		msgFunc red "Path not found to Destination directory"
+		msgFunc norm "$CYLON_DOCUMENTS" 
+	;;
+	UnknownPath) msgFunc red "Path not found to directory" ;;
+	netdown) msgFunc red "Internet connectivity test to $2 failed" ;;
+	fileerror) msgFunc red "File error $2"  ;;
+	nonint) msgFunc red "Integer expected, user entered non-integer, program exiting";;
+	Badinput)
+		msgFunc red "$2 is an INVALID USER OPTION!"
+		msgFunc yellow "Usage: -b -c -d -h -l -m -n -p -r -s -u -v -z"
+		msgFunc yellow "Type cylon -h for display readme.md or" 
+		msgFunc yellow "Type man cylon for manpage"
+		msgFunc norm " "
+		msgFunc norm  "Do you wish to view man page section for user options now? [y/n]"
+		if msgFunc yesno 
+		then  # yes
+			man cylon | grep -A39 OPTIONS 
+		fi
+		;;
+	exitout) msgFunc norm "";;
+	*) msgFunc yellow "Error Unknown input to error handler";;
+esac
+msgFunc yellow "Goodbye $USER!"
+msgFunc anykey "and exit."
+if [ "$1" = "exitout" ]
+then
+	#non-error exit
+	exit 0
+fi 
+exit 2
 }
 
 #FUNCTION HEADER
@@ -114,9 +115,9 @@ msgFunc blue "Main Menu:"
 	local choiceMainVar
 	local optionsMArr=(
 	"pacman" "$(checkPacFunc auracle NOMES)" \
-	"$(checkPacFunc trizen NOMES)" "System Update" "System Maintenance" \
-	"System backup" "Security Options" "Network Options" \
-	"xterm terminal" "View/Edit config file"\
+	"$(checkPacFunc trizen NOMES)" "System Update"  \
+	"System Maintenance" "System Maintenance Two" \
+	"View/Edit config file"\
 	  "System information" "Cylon information" "Exit"\
 	)
 	select choiceMainVar in "${optionsMArr[@]}"
@@ -137,27 +138,16 @@ msgFunc blue "Main Menu:"
 			"${optionsMArr[4]}") #system maintenance
 				SystemMaintFunc 
 			;;
-			"${optionsMArr[5]}")  #Full system backup
-				SystemBackFunc 
+			"${optionsMArr[5]}")  # system maintenance two
+				SystemMaintTwoFunc 
 			;;
-			"${optionsMArr[6]}")  #System security
-				SystemSecFunc "$@"
-			;;
-			"${optionsMArr[7]}")  # network utiltes
-				networkFunc
-			;;
-			"${optionsMArr[8]}")  # open a terminal
-				echo  "$DEST3"
-				xterm -e "cd $DEST3  && /bin/bash"
-				msgFunc anykey
-			;;
-			"${optionsMArr[9]}")   #config file edit or view
+			"${optionsMArr[6]}")   #config file edit or view
 				readconfigFunc "USERCALL"
 			;;
-			"${optionsMArr[10]}") #system info
+			"${optionsMArr[7]}") #system info
 				HelpFunc "SYS"
 			;;
-			"${optionsMArr[11]}")  # cylon info and cat readme file to screen 
+			"${optionsMArr[8]}")  # cylon info and cat readme file to screen 
 				HelpFunc "HELP"
 			;;
 			*)#exit
@@ -188,30 +178,30 @@ clear
 		cat <<-EOF
 		Cylon is an Arch Linux maintenance CLI program written in Bash script.
 		This program provides numerous tools to Arch Linux users to carry 
-		out updates, maintenance, system checks, backups and more. 
+		out updates, maintenance, system checks and more. 
 		EOF
 		msgFunc norm "Written by G.Lyons, Reports to  <glyons66@hotmail.com>"
 		msgFunc norm "AUR package name = cylon, at aur.archlinux.org by glyons."
 		msgFunc norm "Version=$(pacman -Qs cylon | head -1 | cut -c 7-20)"
 		msgFunc norm "Cylon program location = $(which cylon)"
 		msgFunc norm "Cylon modules for functions = /usr/lib/cylon/modules/*"
-		msgFunc norm "Folder for Cylon output data = $DEST3"
-		msgFunc norm "Location of cylonCfg.conf = $DEST5"
-		msgFunc norm "Location of readme.md changlog.md = $DEST6"
+		msgFunc norm "Folder for Cylon output data = $CYLONDEST"
+		msgFunc norm "Location of cylonCfg.conf = $CYLON_CONFIG"
+		msgFunc norm "Location of readme.md changlog.md = $CYLON_DOCUMENTS"
 		msgFunc norm "Location of License.md = /usr/share/licenses/cylon"
 		msgFunc norm "Man page, Desktop entry and icon also installed"
 		if [ -z "${CYLONDEST}" ]
 		then 
-			msgFunc norm "Environment variable CYLONDEST is not Set"
+			msgFunc red "No Cache file path found"
 		else 
-			msgFunc norm "Environment variable CYLONDEST is set to $CYLONDEST"
+			msgFunc norm "Cache file path is set to $CYLONDEST"
 		fi
 		
 		if [ -z "${CYLON_CONFIG}" ]
 		then 
-			msgFunc norm "Environment variable CYLON_CONFIG is not Set"
+			msgFunc red "No Config file path found"
 		else 
-			msgFunc norm "Environment variable CYLON_CONFIG is set to $CYLON_CONFIG"
+			msgFunc norm "Config path is set to $CYLON_CONFIG"
 		fi
 		
 			if [ -z "${CYLON_COLOR_OFF}" ]
@@ -228,7 +218,7 @@ clear
 		local DependenciesArr=("dialog:NOTE non-optional" "expac:NOTE non-optional" "auracle:NOTE AUR package" \
 "trizen:NOTE AUR package" "lostfiles" "arch-audit" "rmlint" \
 "gnu-netcat:NOTE No need if using openbsd-netcat" "openbsd-netcat:NOTE No need if using gnu-netcat" \
- "bleachbit" "rsync" "libnotify" )
+ "bleachbit" "libnotify" )
 		#loop thru and display the array
 		local tLenVar=""
 		local packageVar=""
@@ -251,8 +241,8 @@ clear
 		if msgFunc yesno
 			then #yes
 				msgFunc line
-				msgFunc green "Displaying cylon Readme.md file at $DEST6"
-				cd "$DEST6"  || exitHandlerFunc DEST6
+				msgFunc green "Displaying cylon Readme.md file at $CYLON_DOCUMENTS"
+				cd "$CYLON_DOCUMENTS"  || exitHandlerFunc CYLON_DOCUMENTS
 				less Readme.md 
 				msgFunc green "Done!" 
 				msgFunc line
@@ -264,8 +254,8 @@ clear
 		if msgFunc yesno
 			then #yes
 				msgFunc line
-				msgFunc green "Displaying package_lists.md file at $DEST6"
-				cd "$DEST6"  || exitHandlerFunc DEST6
+				msgFunc green "Displaying package_lists.md file at $CYLON_DOCUMENTS"
+				cd "$CYLON_DOCUMENTS"  || exitHandlerFunc CYLON_DOCUMENTS
 				less package_lists.md
 				msgFunc green "Done!" 
 				msgFunc line
@@ -366,66 +356,56 @@ clear
 #FUNCTION HEADER
 # NAME :           readconfigFunc
 # DESCRIPTION:read the config file into program if not there   
-#use hardcoded defaults config file is for paths for backup function
+#use hardcoded defaults
 #Called when needed by program also can be called by user option or main menu
 # passed USERCALL
 # INPUTS $1 USERCALL when called by user
-# OUTPUTS : sets paths for backup function 
-# PROCESS : read $DEST5/cylonCfg.conf
-#NOTES :   file is optional       
+# PROCESS : read $CYLON_CONFIG/cylonCfg.conf
 function readconfigFunc
 {
-	#check input if called by user from menu or option
-	if [ "$1" = "USERCALL" ]
+#check input if called by user from menu or option
+if [ "$1" = "USERCALL" ]
+	then
+	cd "$CYLON_CONFIG"  || exitHandlerFunc "$CYLON_CONFIG"
+	if [ -f "$CYLON_CONFIG/cylonCfg.conf" ] 
 		then
-		cd "$DEST5"  || exitHandlerFunc DEST5
-		if [ -f "$DEST5/cylonCfg.conf" ] 
-			then
-				local choiceCCVar
-				msgFunc green "Do you want to edit or view? [e/V]"
-				read -r choiceCCVar
-				if [ "$choiceCCVar" = "e" ]
-					then
-						$EDITOR "$DEST5/cylonCfg.conf" || exitHandlerFunc fileerror "$DEST5/cylonCfg.conf"
-						clear
-						msgFunc green "Exiting config file edit option"
-						msgFunc anykey "and exit cylon."
-						exit 0
-					else
-					msgFunc green  "Custom paths read from file"
-					cat "$DEST5/cylonCfg.conf" || exitHandlerFunc fileerror "$DEST5/cylonCfg.conf"
-					msgFunc green "Done!"
-					msgFunc anykey
-					return
-				fi
-			else
-				exitHandlerFunc fileerror "$DEST5/cylonCfg.conf"
-		fi
+			local choiceCCVar
+			msgFunc green "Do you want to edit or view? [e/V]"
+			read -r choiceCCVar
+			if [ "$choiceCCVar" = "e" ]
+				then
+					$EDITOR "$CYLON_CONFIG/cylonCfg.conf" || exitHandlerFunc fileerror "$CYLON_CONFIG/cylonCfg.conf"
+					clear
+					msgFunc green "Exiting config file edit option"
+					msgFunc anykey "and exit cylon."
+					exit 0
+				else
+				msgFunc green  "Custom paths read from file"
+				cat "$CYLON_CONFIG/cylonCfg.conf" || exitHandlerFunc fileerror "$CYLON_CONFIG/cylonCfg.conf"
+				msgFunc green "Done!"
+				msgFunc anykey
+				return
+			fi
+		else
+			exitHandlerFunc fileerror "$CYLON_CONFIG/cylonCfg.conf"
 	fi
-	
-	#read cylon.conf for system back up paths 
-	msgFunc green "Reading config file cylonCfg.conf at:-"
-	msgFunc norm "$DEST5"
-	#check if file there if not use defaults.
-	if [ ! -f "$DEST5/cylonCfg.conf" ]
-		then
-		msgFunc red "No config found: Use the default hardcoded paths"
-		#path for an internal hard drive backup
-		Destination1="/run/media/$USER/Linux_backup/foo"
-		#path for an external hard drive backup
-		Destination2="/run/media/$USER/iomega_320/foo"
-		#paths for rsync option
-		rsyncsource="$HOME/"
-		rsyncDest="/run/media/$USER/Linux_backup/foo"
-		msgFunc green "Done!"
-		return
-	fi
-	cd "$DEST5"  || exitHandlerFunc DEST5
-	# shellcheck disable=SC1091
-	source ./cylonCfg.conf || exitHandlerFunc fileerror "$DEST5/cylonCfg.conf"
-	msgFunc green  "Custom paths read from file"
-	cat ./cylonCfg.conf || exitHandlerFunc fileerror "$DEST5/cylonCfg.conf"
-	msgFunc green "Done!"
+fi
+
+# Read config file at start-up 
+cd "$CYLON_CONFIG"  || exitHandlerFunc "$CYLON_CONFIG"
+
+if [ ! -f "$CYLON_CONFIG/cylonCfg.conf" ];then
+	msgFunc yellow "No config file found: ..."
+	msgFunc norm "$CYLON_CONFIG"
+	touch "$CYLON_CONFIG/cylonCfg.conf" && echo "File made"
+	echo "CYLON_RSS_NUM=2" | tee -a "$CYLON_CONFIG/cylonCfg.conf"
+	echo "CYLON_RSS_URL=\"https://archlinux.org/feeds/news/\"" | tee -a "$CYLON_CONFIG/cylonCfg.conf"
+	echo "CYLON_UPDATE_CHOICE=1" | tee -a "$CYLON_CONFIG/cylonCfg.conf"
+	msgFunc anykey 
+fi
+
+# shellcheck disable=SC1091
+source ./cylonCfg.conf || exitHandlerFunc fileerror "$CYLON_CONFIG/cylonCfg.conf"
 }
 
 #FUNCTION HEADER
@@ -466,16 +446,19 @@ case "$1" in
 	-b|--bleachbit)
 		while true; do
 			SystemCleanFunc
+			msgFunc anykey
 		done
 	;;
 	-m|--maint)
 		SystemMaintAutoFunc
+		msgFunc green "DONE!"
+		msgFunc anykey
 	;;
 	-p|--print)
 		pkglistFunc
 	;;
 	-r|--rss)
-		RssFunc "$1"
+		RssFunc 
 	;;
 	-z|--delete)
 		DelQmFunc
@@ -491,7 +474,7 @@ case "$1" in
 		exitHandlerFunc Badinput "$1"
 	;;
 esac
-#was there a input if yes quit?
+# Was there a input if yes quit?
 if [ -n "$1" ] 
 	then
 		exit 0 
@@ -502,20 +485,16 @@ clear
 #FUNCTION HEADER
 # NAME : makeDirFunc
 # DESCRIPTION :  makes a directory with time/date stamp and enters it
-#Directory used for program output and backups. 
+#Directory used for program output. 
 # INPUTS : $1 text is appended to name  $2 bit flag  to change dir or not
 function makeDirFunc
 {
 	local dirVar=""
 	#makes dirs for output appends passed text to name
-	#check if coming from system backup other path 1 yes 0 no.
-	if [ "$2" != 1 ]
-		then 
-		cd "$DEST3" || exitHandlerFunc DEST3
-	fi
-	dirVar=$(date +%H%M-%d%b%y)"$1"
+	cd "$CYLONDEST" || exitHandlerFunc "$CYLONDEST" 
+	dirVar=$(date +%d%b%y-%H%M)"$1"
 	mkdir -p "$dirVar"
-	cd "$dirVar" || exitHandlerFunc DEST4
+	cd "$dirVar" || exitHandlerFunc UnknownPath
 	msgFunc norm "Directory for output made at:-"
 	pwd	 
 }
@@ -528,16 +507,42 @@ function AsciiArtFunc
 {
 if [ "$1" = "ARCH" ]
 then
-	msgFunc blue "                           _         _        _                         "
-	msgFunc blue "     /\                   | |       | |      (_)                        "
-	msgFunc blue "    /  \     _ __    ___  | |__     | |       _   _ __    _   _  __  __ "
-	msgFunc blue "   / /\ \   | '__|  / __| | '_ \    | |      | | | '_ \  | | | | \ \/ / "
-	msgFunc blue "  / ____ \  | |    | (__  | | | |   | |____  | | | | | | | |_| |  >  <  "
-	msgFunc blue " /_/    \_\ |_|     \___| |_| |_|   |______| |_| |_| |_|  \__,_| /_/\_\ "
+	msgFunc green "                           _         _        _                         "
+	msgFunc green "     /\                   | |       | |      (_)                        "
+	msgFunc green "    /  \     _ __    ___  | |__     | |       _   _ __    _   _  __  __ "
+	msgFunc green "   / /\ \   | '__|  / __| | '_ \    | |      | | | '_ \  | | | | \ \/ / "
+	msgFunc green "  / ____ \  | |    | (__  | | | |   | |____  | | | | | | | |_| |  >  <  "
+	msgFunc green " /_/    \_\ |_|     \___| |_| |_|   |______| |_| |_| |_|  \__,_| /_/\_\ "
 elif [ "$1" = "CYLON" ]
 then
 		msgFunc blue "_______ __   __         _____  __   _"
 		msgFunc blue "|         \_/   |      |     | | \  |"
 		msgFunc blue "|_____     |    |_____ |_____| |  \_|"
 fi
+}
+
+# FUNCTION HEADER
+# NAME :  drawBoxFunc
+# DESCRIPTION: draw a box around text , used in title on main menu page
+function drawBoxFunc
+{ 
+		local width
+		local place
+		local textarray=("$@") 
+		
+		#${s[@]} – all elements of array s; ((width<${#l})) – ((..)) shell arithmetic testing 
+		#whether variable width's value is less than variable l value's length, obtained
+		#with parameter expansion (# – string length); ${place//?/-} – parameter expansion  
+		#replacing all occurrences of any character with a “-” (// – replace all; ? – 
+		#wildcard meaning any character). 
+		for word in "${textarray[@]}"; do
+			((width<${#word})) && { place="$word"; width="${#word}"; }
+		done
+		tput setaf 6
+		echo -e " _${place//?/_}_" 
+		for word in "${textarray[@]}"; do
+			printf '| %s%*s%s |\n' "$(tput setaf 2)" "-$width" "$word" "$(tput setaf 6)"
+		done
+		echo -e "|_${place//?/_}_|"
+		tput sgr 0
 }

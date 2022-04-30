@@ -1,21 +1,21 @@
 #!/bin/bash
 #module containing functions called from cylon package
-#Functions networkFunc and checknetFunc
+#Functions networkFunc , checknetFunc intchkFunc
 
 #FUNCTION HEADER
-# NAME :           networkFunc
-# DESCRIPTION: provides network functions
-# PROCESS : See options array
-function networkFunc
+# NAME :   SystemMaintTwoFunc
+# DESCRIPTION: provides network and security functions
+function SystemMaintTwoFunc
 {
 	clear
 	local choiceNVar=""
 	while true; do
-	msgFunc blue "Network options :-"
+	msgFunc blue "System Maintenance options Two:-"
 	local optionsNArr=("See wifi link quality continuously on screen" "$(checkPacFunc speedtest-cli  NOMES) -testing internet bandwidth"\
 	"Check if website up with netcat and ping" "Display all interfaces which are currently available" "Display kernal routing table"\
 	"Check the status of UFW, Uncomplicated Firewall" "Network Time Synchronization status check"\
-	 "traceroute print route packets trace to network host" "tracepath traces path to a network host" "View all open ports " "Return")
+	 "traceroute print route packets trace to network host" "tracepath traces path to a network host" "View all open ports " \
+	 "Password generator" "List the password aging info of a user" "Audit SUID/SGID Files" "Return")
 	select choiceNVar in "${optionsNArr[@]}"
 		do
 		case "$choiceNVar" in
@@ -123,6 +123,52 @@ function networkFunc
 					netstat -lunpt
 					msgFunc anykey
 			;;
+			
+			"${optionsNArr[10]}") #Password generator
+				#password section
+				makeDirFunc "-SYSSECURITY"
+				msgFunc norm "Files report will be written to path above -"
+				msgFunc green "Random Password generator"
+				msgFunc norm "Enter length:-"
+				read -r mylengthVar
+				#if enter pressed set default 20
+				if [ -z "$mylengthVar" ]; then
+					mylengthVar=20
+				fi
+				#check integer
+				intchkFunc "$mylengthVar"
+				echo -n "$(< /dev/urandom tr -dc "_*?#!A-Z-a-z-0-9" | head -c"${1:-$mylengthVar}";)">pg
+				msgFunc green "Password generated"
+				msgFunc green "Done!"
+			;;
+			
+			"${optionsNArr[11]}") # chage cmd list the passwd aging info
+				local usrVar=""
+				msgFunc green "chage command to list the password aging information of a user."
+				msgFunc norm "Please enter user name"
+				read -r usrVar
+				sudo chage -l "$usrVar"
+				msgFunc green "Done!"
+				msgFunc anykey
+			;;
+			
+			"${optionsNArr[12]}") #Auditing SUID/SGID Files
+				makeDirFunc "-SYSSECURITY"
+				msgFunc norm "Files report will be written to path above -"
+				cat <<-EOF
+				Since SUID/SGID files potentially make a system vulnerable, 
+				the system administrator needs to keep track of these files
+				SUID (Set owner User ID up on execution) = listSUID
+				SGID (Set Group ID up on execution) = listSGID
+				Sticky bit Set = listSBit
+				EOF
+				msgFunc green "Conducting Auditing outputting results to files"
+				find / -perm -4000 -ls 2>/dev/null > listSUID
+				find / -perm -2000 -ls 2>/dev/null >listSGID
+				find / -perm -1000 -ls 2</dev/null > listSBit
+				msgFunc green "Done!"
+				msgFunc anykey
+			;;
 			*)  #exit  
 				msgFunc green "Done!"	
 				clear
@@ -165,4 +211,23 @@ function checkNetFunc
 		exitHandlerFunc netdown "$1"
 	fi
 
+}
+
+#FUNCTION HEADER
+# NAME :  intchkFunc
+# DESCRIPTION: checks string if input integer 
+#inputs integer $1
+#outputs returns 0 if integer 1 if not calls errorhandler 
+#called from rssFunc NetworkFunc and Password generator
+function  intchkFunc
+{
+#source :http://mywiki.wooledge.org/BashFAQ/054
+if [[ "$1" != *[!0-9]* ]]; 
+then
+	#integer
+	return 0
+else
+	#not an integer
+	exitHandlerFunc nonint
+fi
 }

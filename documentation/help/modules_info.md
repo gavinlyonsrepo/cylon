@@ -1,6 +1,6 @@
 Modules files overview
 ------------------
-There are 10 module library files containing 30+ functions.
+There are 8 module library files containing ~30 functions.
 installed to 
 ```sh
 /usr/lib/cylon/modules/
@@ -11,22 +11,19 @@ Function headers in the files contain more information.
 | File name | Functions |
 | ------ | ------ |
 | trizen_module | trizenFunc DelQmeFunc |
-| System_back_module | SystemBackFunc |
-| Misc_module | checkinputFunc AsciiArtFunc DisplayFunc exitHandlerFunc HelpFunc msgFunc readconfigFunc makeDirFunc |
+| Misc_module | checkinputFunc AsciiArtFunc DisplayFunc exitHandlerFunc HelpFunc msgFunc readconfigFunc makeDirFunc drawBoxFunc |
 | Pacman_module | pacmanFunc pkglistFunc updateFunc checkPacFunc rssFunc  |
 | System_clean_module | SystemCleanFunc |
 | Auracle_module | auraFunc aurupdateFunc notifyFunc |
-| Network_module | networkFunc checknetFunc |
 | Rmlint_module | RmLintFunc |
-| Security_module | SystemSecFunc intchkFunc |
 | System_maint_module | SystemMaintFunc SystemMaintAutoFunc configFileScanFunc |
+| System_maint_module_two | SystemMaintFuncTwo checknetFunc intchkFunc |
 
 | Function name | Description |
 | ------ | ------ |
 | SystemSecFunc | Display security options menu |
 | intchkFunc | Checks if string input is an integer |
 | trizenFunc | trizen wrapper |
-| SystemBackFunc | System backup options |
 | checkinputFunc| Check options from command line passed to program on start |
 | DisplayFunc | Displays main menu options |
 | exitHandlerFunc | Error handler to with deal with user errors and exits |
@@ -43,11 +40,12 @@ Function headers in the files contain more information.
 | DelQmeFunc | Delete foreign packages display menu |
 | auraFunc | auracle wrapper + extended functionality |
 | aurupdateFunc | update installed packages AUR |
-| networkFunc | Handles the network options |
 | checknetFunc | Checks if network has connectivity with netcat |
 | RmLintFunc | rmlint wrapper |
 | SystemMaintFunc | Carries out maintenance checks from menu selection |
+| SystemMaintFuncTwo | Carries out maintenance checks from menu selection |
 | SystemMaintAutoFunc | Carries out most maintenance checks in a single pass |
 | configFileScanFunc | Scans home folder for old configuration files |
 | AsciiArtFunc | Display the Ascii art to screen |
 | notifyFunc | Handles display of system updates desktop notifications with libnotify |
+| drawBoxFunc | Draws a box around the title text on main page |

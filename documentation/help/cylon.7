@@ -11,7 +11,7 @@ The goal was to create a script to do as much updates maintenance,
 backups and system checks in a single menu driven optional script 
 Command line program for an Arch linux distro as possible.
 This script provides numerous tools 
-to Arch Linux users for updates, maintenance, system checks and backups.  
+to Arch Linux users for updates, maintenance, system checks.  
 
 .SH ENVIRONMENT VARIABLES 
 .TP
@@ -89,41 +89,36 @@ Desktop notifications with update information.
 /usr/share/doc/cylon/Readme.md
 .TP
 .B \ 
-/usr/share/doc/cylon/changelog.md
-.TP
-.B \ 
 /usr/share/licenses/cylon/License.md
 .TP
 .B \ 
 /usr/share/man/man1/cylon.7
 .TP
 .B \ 
-$HOME/.config/cylon/cylonCfg.conf (optional, user made, not installed)
+$HOME/.config/cylon/cylonCfg.conf
 
 
 .SH CONFIG FILE SETTINGS
 .TP
-.B \ Destination1="/foo/foo/" 
-Backup path 1 destination
+.B \ CYLON_RSS_NUM=1 
+Number or arch news RSS items to fetch
 .TP
-.B \ Destination2="/foo/foo3/" 
-Backup path 2 destination
+.B \ CYLON_RSS_URL="https://archlinux.org/feeds/news/" 
+Arch news URL
 .TP
-.B \ rsyncsource="$HOME/"
-rsync backup source option
-.TP
-.B \ rsyncDest="/run/media/$USER/foo1/foo"
-Backup path for rsync destination
+.B \ CYLON_UPDATE_CHOICE=2
+Auto system update option
+
 
 
 .SH RETURN CODES
 .IP \fB0\fR
 Everything went well
-.IP \fB1\fR
+.IP \fB2\fR
 Error occured and  handled by exithandler function.
 
 .SH OTHER
-Most system output (logsfiles, backups, downloads and updates etc) 
+Most system output (logsfiles, downloads and updates etc) 
 is placed at below path , unless otherwise specified on screen
 output folders are created with following syntax HHMM-DDMONYY-X where X
 is output type i.e backup, update etc. 

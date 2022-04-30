@@ -7,7 +7,7 @@
 # DESCRIPTION: Function for cleaning programs files and system  
 # with bleachbit also deletes trash can and download folder.
 # INPUTS : $1 FOLDERS option 
-#NOTES :    needs bleachit installed
+#NOTES :    needs bleachbit installed
 function SystemCleanFunc
 {
 	clear
@@ -19,7 +19,7 @@ function SystemCleanFunc
 		msgFunc blue "Delete files/folders. options:-"
 		local optionsFsArr=("$(checkPacFunc bleachbit NOMES) shred file function" "$(checkPacFunc bleachbit NOMES) shred folder function" \
 		"Delete Trash folder" \
-		"Delete Download folder" "Delete Cylon output folder $DEST3" "Return")
+		"Delete Download folder" "Delete Cylon output folder $CYLONDEST" "Return")
 		select choiceFsVar in "${optionsFsArr[@]}"
 		do
 		case "$choiceFsVar" in  
@@ -91,13 +91,13 @@ function SystemCleanFunc
 			"${optionsFsArr[3]}")  msgFunc green "Deleting Download folder "
 				 rm -rvf "$HOME"/Downloads/*
 			;;
-			"${optionsFsArr[4]}")  msgFunc green "Deleting Cylon output folder $DEST3"
-				msgFunc norm "Deleting Cylon output folder $DEST3 ?"
+			"${optionsFsArr[4]}")  msgFunc green "Deleting Cylon output folder $CYLONDEST"
+				msgFunc norm "Deleting Cylon output folder $CYLONDEST ?"
 				msgFunc yellow  "Press y or n [y/n] ?"
 				if msgFunc yesno
 				then #yes
-					rm  -rvf "$DEST3"
-					mkdir -p "$DEST3"
+					rm  -rvf "$CYLONDEST"
+					mkdir -p "$CYLONDEST"
 				fi
 			;;
 			*)  #exit  
@@ -110,7 +110,7 @@ function SystemCleanFunc
 	return
 	fi
 	
-	#check bleachbit is installed
+	# Bleachbit Section :: check bleachbit is installed
 	if ! checkPacFunc bleachbit 
 	then
 		msgFunc anykey 

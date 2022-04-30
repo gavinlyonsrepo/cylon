@@ -82,6 +82,7 @@ while true; do # loop until user exit
 				pacman -Ql "$pacStingVar"
 			;;
 			"${optionsPMArr[9]}") #pacman -Qkk  Verify all packages
+				echo " "
 				makeDirFunc "-PKGINFO"
 				msgFunc green "Verify  packages pacman -Qkk"
 				msgFunc norm "Yes for just one package, no for all [y/n] ?"
@@ -110,7 +111,7 @@ while true; do # loop until user exit
 				msgFunc green "Remove orphans!"
 				#Remove all packages not required as dependencies (orphans)
 				msgFunc norm "Number of orphans: $(pacman -Qtdq | wc -l)"
-				if [ $(pacman -Qtdq | wc -l) = "0" ]
+				if [ "$(pacman -Qtdq | wc -l)" = "0" ]
 					then
 					msgFunc yellow  "No orphans to remove."
 				else
@@ -125,7 +126,7 @@ while true; do # loop until user exit
 
 			"${optionsPMArr[13]}")
 				msgFunc green "Make copy of package lists"
-				pkglistFunc "$@"
+				pkglistFunc
 			;;
 			"${optionsPMArr[14]}") #backup the pacman database
 				msgFunc green "Back-up the pacman database to :"
@@ -135,7 +136,7 @@ while true; do # loop until user exit
 			
 			"${optionsPMArr[15]}") #Arch Linux News Rss feed
 				RssFunc
-				;;
+			;;
 				
 			"${optionsPMArr[16]}") #run arch audit
 				msgFunc green "Running arch-audit program :"
@@ -155,7 +156,7 @@ while true; do # loop until user exit
 					 arch-audit "$archauditVar"
 				fi 
 				archauditVar=
-				;;
+			;;
 			
 			"${optionsPMArr[17]}") #pactree
 				local pactreeVar=""
@@ -202,22 +203,15 @@ done
 # DESCRIPTION : Display 4 Arch Linux News Rss feed
 function RssFunc
 {
-	#Display 4 Arch Linux News Rss feed
 	msgFunc green "Arch Linux News Rss feed"
-	msgFunc norm "Enter number of items of news to fetch or press [ENTER] for default of 1"
-	read -r numitemsVar
-	#check if empty
-	if [ -z "${numitemsVar}" ]
-		then 
-			numitemsVar=1 #default if user just pressed enter
-	fi
+	local newsVar countVar
+	[ -z "${CYLON_RSS_NUM}" ] && CYLON_RSS_NUM=1
+	[ -z "$CYLON_RSS_URL" ] && CYLON_RSS_URL="https://archlinux.org/feeds/news/" 
 	
-	#integer check function call
-	intchkFunc "$numitemsVar"
-	# Set numitemsVar to N in awk  to be the number of latest news to fetch
-	# https://www.archlinux.org/feeds/news/  URL pre 6.0.2
-	# https://archlinux.org/feeds/news/ URL post 6.0.1
-	newsVar=$(echo -e $(curl --silent https://archlinux.org/feeds/news/  | awk -v N="$numitemsVar" ' NR == 1 {countVar = N; while (countVar) {print;getline; if($0 ~ /<\/item>/) countVar=countVar-1} ; sub(/<\/item>.*/,"</item>") ;print}'))
+	intchkFunc "$CYLON_RSS_NUM"
+	
+	# Set CYLON_RSS_NUM" to N in awk  to be the number of latest news to fetch
+	newsVar=$(echo -e $(curl --silent "$CYLON_RSS_URL" | awk -v N="$CYLON_RSS_NUM=" ' NR == 1 {countVar = N; while (countVar) {print;getline; if($0 ~ /<\/item>/) countVar=countVar-1} ; sub(/<\/item>.*/,"</item>") ;print}'))
 	#  THE RSS PARSER Remove some tags 
 	newsVar=$(echo -e "$newsVar" | \
 	awk '{
@@ -250,20 +244,15 @@ function RssFunc
 
 #FUNCTION HEADER
 # NAME :   pkglistFunc
-#INPUT $1 Backup if called from backup do not create directory
 # DESCRIPTION :creates a copy of packages list see below.
 #OUTPUT mutliple files see below
-#NOTE called from pacman trizen auracle and backup functions 
+#NOTE called from pacman trizen auracle functions 
  # shellcheck disable=SC2120
 function pkglistFunc
 {
 	clear
 	msgFunc green "Making a copy of package lists"
-	#check for input if Backup called from backup do not create dir
-	if [ "$1" != "Backup" ]
-	then
-		makeDirFunc "-PKGINFO"
-	fi
+	makeDirFunc "-PKGINFO"
 
 	msgFunc norm "1: All .pacnew and .pacsave files : pacNewSaveFiles.txt" #1
 	find / -path /run/media -prune -o -path /mnt -prune -o -regextype posix-extended -regex ".+\.pac(new|save)" \
@@ -393,71 +382,67 @@ function pkglistFunc
 # DESCRIPTION: called from checkinputfunc or main menu.
 function updateFunc
 {
+	clear
+	#check if arch-audit package  installed
+	if ! checkPacFunc arch-audit
+	then
+		msgFunc anykey 
 		clear
-		#check if arch-audit package  installed
-		if ! checkPacFunc arch-audit
-		then
-			msgFunc anykey 
-			clear
-		return
-		fi
-		#check if auracle package  installed
-		if ! checkPacFunc auracle
-		then
-			msgFunc anykey 
-			clear
-		return
-		fi
-		
+	return
+	fi
+	#check if auracle package  installed
+	if ! checkPacFunc auracle
+	then
+		msgFunc anykey 
 		clear
-		msgFunc line
-		AsciiArtFunc "CYLON"
-		msgFunc line
-		msgFunc green "Accessing archlinux.org Network Database...."
-		msgFunc line
-		RssFunc
-		msgFunc anykey
-		msgFunc line
-		msgFunc green "Arch-audit upgradable vulnerable packages"
-		arch-audit -u 
-		if [ -n "${arch-audit -u}" ]; then
-			msgFunc norm "0"
-		fi
-		msgFunc anykey
-		msgFunc line
-		msgFunc green "Number of Pacman updates ready ..> "	
-		checkupdates | tee /dev/tty | wc -l
-		msgFunc line
-		msgFunc green "Number of updates available for installed AUR packages ..> "
-		auracle outdated | tee /dev/tty  | wc -l
-		msgFunc line
-		#display update options
-		local choiceUfVar=""
-		msgFunc blue "Update options:-"
-		local optionsPArr=(" Update Arch Main Repos only" \
-" Update All repos " "Update AUR only " "No Update and exit")
-		select choiceUfVar in "${optionsPArr[@]}"
-		do
-		case "$choiceUfVar" in  
-		"${optionsPArr[0]}")
-			sudo pacman -Syu
-		;;
-		
-		"${optionsPArr[1]}")
+	return
+	fi
+	
+	clear
+	msgFunc line
+	AsciiArtFunc "CYLON"
+	msgFunc line
+	msgFunc green "Accessing archlinux.org Network Database...."
+	msgFunc line
+	RssFunc
+	msgFunc anykey
+	msgFunc line
+	msgFunc green "Arch-audit upgradable vulnerable packages"
+	arch-audit -u 
+	if [ -n "${arch-audit -u}" ]; then
+		msgFunc norm "0"
+	fi
+	msgFunc anykey
+	msgFunc line
+	msgFunc green "Number of Pacman updates ready ..> "	
+	checkupdates | tee /dev/tty | wc -l
+	msgFunc line
+	msgFunc green "Number of updates available for installed AUR packages ..> "
+	auracle outdated | tee /dev/tty  | wc -l
+	msgFunc line
+	
+	[ -z "${CYLON_UPDATE_CHOICE}" ] && CYLON_UPDATE_CHOICE=1
+	case "$CYLON_UPDATE_CHOICE" in  
+		1) 
+			msgFunc norm "Update Arch Main Repos only"
+			sudo pacman -Syu ;;
+		2)
+			msgFunc norm "Update All repos"
 			sudo pacman -Syu
 			aurupdateFunc
 		;;
+		3) 
+			msgFunc norm "Update AUR only"
+			aurupdateFunc 
+			;;
 		
-		"${optionsPArr[2]}")
-			aurupdateFunc
+		*)
+			msgFunc red "Wrong value for CYLON_UPDATE_CHOICE must be 1-3" 
+			msgFunc red "No updates done"
 		;;
-		
-		*)echo " "
-		;;
-		esac
-		break
-		done
-		msgFunc green "Done!"
+	
+	esac
+	msgFunc green "Done!"
 }
 
 #FUNCTION HEADER

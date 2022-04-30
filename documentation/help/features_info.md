@@ -5,7 +5,7 @@ This file provides extra information for some features
 that are not fully explained on screen or in the readme/man page.
 The numbers in sub-menus below represent the numbered menu options on screen.
 
-**1: System update section**
+**System update section**
 * pacman options
 	* see "man pacman" for more details
 	* 11 12 The paccache script, is provided by the pacman-contrib package.
@@ -138,31 +138,7 @@ At this point the user is prompted if they wish to view the report. Next the use
 is prompted if they wish to run the rmlint.sh file. 
 
 
-
-**3: System backup section**
-
-* There is a main backup menu plus a rsync option.
-* The main backup menu first allows users to pick a backup destination
-This can be custom, from config file or the program output folder.
-Next it offers 5 options as outlined in readme. The first backs up the MBR or GPT
-partition table. It can detect which drive the file system is mounted and which type of partition 
-The bash command dd is used for this. It uses cp command for etc and home dir backup.
-It also offers option to run package list generator. and finally it uses tar command to 
-make a tarball of entire system excluding certain directories. 
-* The rsync option takes source and destination from config file and uses following command
-sudo rsync -aAXv --delete  --exclude={"/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","/mnt/*","/media/*","/lost+found"} 
-see man rsync for more information.
-
-
-**4: System security section**
-
-N/A
-
-**5: Network section**
-
-N/A
-
-**6: Miscellaneous section**
+**help section**
 
 * 11 The system information display has two pages of output. The first page
 displays some general information on system, the second displays information on 

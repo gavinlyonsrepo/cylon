@@ -25,13 +25,13 @@ local optionsSMArr=("Failed Systemd Services and status" "Check Journalctl log f
 while true; do # loop until exit
 	local choiceSMVar=""
 	#change dir for log files
-	makeDirFunc "-SYSINFO"
 	msgFunc blue "System Maintenance options"
 	select  choiceSMVar in "${optionsSMArr[@]}"
 	do
 	case  "$choiceSMVar" in
 		"${optionsSMArr[0]}")
-		# -systemd --failed:
+			# -systemd --failed:
+			makeDirFunc "-SYSINFO"
 			msgFunc green "Systemd status"
 			msgFunc green "Done!"
 			systemctl status > Systemdstatus
@@ -46,6 +46,7 @@ while true; do # loop until exit
 		"${optionsSMArr[1]}")
 			# -Logfiles:
 			msgFunc green "Check log Journalctl for Errors"
+			makeDirFunc "-SYSINFO"
 			journalctl -p 3 -xb > Journalctlerrlog
 		;;
 
@@ -58,6 +59,7 @@ while true; do # loop until exit
 		if [ "$sdxVar" = "0" ] 
 			then
 			msgFunc green "Check Journalctl for fstrim SSD trim"
+			makeDirFunc "-SYSINFO"
 			echo "SSD trim" > JournalctlerrSDDlog
 			journalctl -u fstrim > JournalctlerrSDDlog
 			else 
@@ -68,6 +70,7 @@ while true; do # loop until exit
 		"${optionsSMArr[3]}")
 			# systemd-analyze - Analyze system boot-up performance
 			msgFunc green "Analyze system boot-up performance"
+			makeDirFunc "-SYSINFO"
 			{
 			echo "Analyze boot-up performance"  
 			systemd-analyze time 
@@ -80,6 +83,7 @@ while true; do # loop until exit
 		"${optionsSMArr[4]}")
 			#Checking for broken symlinks:
 			msgFunc green "Checking for Broken Symlinks"
+			makeDirFunc "-SYSINFO"
 			#root or home?
 			local choiceSYMVar=""
 			msgFunc norm "Do you want to scan / or $HOME? [R/h]"
@@ -95,6 +99,7 @@ while true; do # loop until exit
 	
 		"${optionsSMArr[5]}")
 			msgFunc green "Find files where no group or User corresponds to file's numeric user/group ID."
+			makeDirFunc "-SYSINFO"
 			find / -nogroup > filenogrouplog 2> /dev/null
 			find / -nouser  > filenouserlog  2> /dev/null
 		;;
@@ -107,6 +112,7 @@ while true; do # loop until exit
 			return
 			fi
 			msgFunc green "Lostfiles :-Search for files which are not part of installed Arch Linux packages"
+			makeDirFunc "-SYSINFO"
 			msgFunc norm  "Lostfiles strict scan running, outputing to file"
 			sudo bash -c "lostfiles -sz  > lostfilesStrictlist.txt" 
 			msgFunc green "Done!"
@@ -116,7 +122,8 @@ while true; do # loop until exit
 	
 		"${optionsSMArr[7]}")
 		msgFunc green "Diskspace usage"
-		# This is GOLD for finding out what is taking so much space on your drives!
+			# This is useful for finding out what is taking so much space on your drives!
+			makeDirFunc "-SYSINFO"
 			msgFunc norm "Do you want to scan / or $HOME? [R/h]"
 			local choiceDUVar=""
 			read -r choiceDUVar
@@ -130,20 +137,24 @@ while true; do # loop until exit
 		;;
 		"${optionsSMArr[8]}") #find files
 			msgFunc green "Find 200 of the biggest files"
+			makeDirFunc "-SYSINFO"
 			find / -type f -exec du -Sh {} + 2>/dev/null | sort -rh | head -n 200 > filesortsize
 		;;
 		"${optionsSMArr[9]}") #inodes
 			msgFunc green "Find inodes usage"
+			makeDirFunc "-SYSINFO"
 			df -ih | grep sd.
 			msgFunc norm "Output list to fileinodescan"
 			du / -Sh --inodes 2>/dev/null | sort -nr | head -2000 >fileinodescan
 		;;
 		"${optionsSMArr[10]}") #old config files
+			msgFunc green "Old configuration files scan"
+			makeDirFunc "-SYSINFO"
 			configFileScanFunc
 		;;
 		"${optionsSMArr[11]}")
-				msgFunc green "Print sensor information"
-				sensors
+			msgFunc green "Print sensor information"
+			sensors
 		;;
 		"${optionsSMArr[12]}")
 			msgFunc green "Clean journalctl files(systemd logging system)"
@@ -175,6 +186,7 @@ while true; do # loop until exit
 		;;
 		
 		"${optionsSMArr[18]}")  #   DMI table decoder
+			makeDirFunc "-SYSINFO"
 			sudo dmidecode  | tee demidecodeoutput
 		;;
 		
@@ -298,6 +310,8 @@ clear
 				du -H / 2> /dev/null | sort -n -r >> diskspace
 			fi
 			msgFunc anykey 
+			
+			msgFunc green "Old configuration files scan"
 			configFileScanFunc
 			
 			msgFunc green "All Done!"	
@@ -310,7 +324,7 @@ clear
 # DESCRIPTION: Old configuration files scan see below text
 function configFileScanFunc
 {
-	msgFunc green "Old configuration files scan"
+
 cat <<-EOF
 Old configuration files may conflict with newer software versions,
 or corrupt over time. Remove unneeded configurations periodically, 
@@ -326,9 +340,9 @@ EOF
 	local cacheArr=()
 	local homeArr=()
 	#populate arrays
-	configArr=($(find "$HOME/.config" -maxdepth 1 -type d  | awk -F"/" '{print $5}'))
-	cacheArr=($(find "$HOME/.cache" -maxdepth 1 -type d  | awk -F"/" '{print $5}'))
-	homeArr=($(find "$HOME/.local/share" -maxdepth 1 -type d  | awk -F"/" '{print $6}'))
+	mapfile -t configArr < <(find "$HOME/.config" -maxdepth 1 -type d  | awk -F"/" '{print $5}')
+	mapfile -t cacheArr < <(find "$HOME/.cache" -maxdepth 1 -type d  | awk -F"/" '{print $5}')
+	mapfile -t homeArr < <(find "$HOME/.local/share" -maxdepth 1 -type d  | awk -F"/" '{print $6}')
 	#sort arrays
 	IFS=$'\n' configArr=($(sort <<<"${configArr[*]}"))
 	unset IFS
