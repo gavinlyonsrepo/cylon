@@ -20,6 +20,8 @@ provided below in features section.
 
 * Main Author: Gavin Lyons
 
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/paypalme/whitelight976)
+
 Table of contents
 ---------------------------
 
