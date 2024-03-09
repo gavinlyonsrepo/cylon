@@ -310,8 +310,6 @@ if msgFunc yesno
 	msgFunc norm "All explicitly installed packages: $(pacman -Qe | wc -l)" 
 	msgFunc norm "All explicitly installed native packages that are"
 	msgFunc norm "not direct or optional dependencies: $(pacman -Qqent | wc -l)"
-	msgFunc norm "All explicitely installed pkgs not in base-devel grps: \
-$(comm -23 <(pacman -Qeq | sort) <(pacman -Qgq base-devel | sort) | wc -l ) "
 	msgFunc norm "All foreign installed packages: $(pacman -Qm | wc -l)"
 	msgFunc norm "All foreign explicitly installed packages: $(pacman -Qme | wc -l)"
 	msgFunc norm "All packages installed as dependencies: $(pacman -Qd | wc -l) "
@@ -331,7 +329,6 @@ then
 	msgFunc norm "Packages Count by repositories:-"
 	msgFunc norm "Core: $(paclist core | wc -l)"
 	msgFunc norm "Extra: $(paclist extra | wc -l)"
-	msgFunc norm "Community: $(paclist community | wc -l)"
 	msgFunc norm "Multilib: $(paclist multilib | wc -l)"
 	msgFunc norm "Foreign: $(pacman -Qm | wc -l)"
 	msgFunc norm "Total: $(pacman -Q | wc -l)"
@@ -339,7 +336,6 @@ then
 	msgFunc norm "Packages Installed size by repositories:-"
 	msgFunc norm "Core: $(pacman -Qi  $(paclist core | awk '{print $1}' ) | awk '/Installed Size/ {if ($5=="MiB") {sum+=$4} else if ($5=="KiB") {sum+=($4/1024)}} END {print sum " MiB"}')"
 	msgFunc norm "Extra: $(pacman -Qi $(paclist extra | awk '{print $1}' ) | awk '/Installed Size/ {if ($5=="MiB") {sum+=$4} else if ($5=="KiB") {sum+=($4/1024)}} END {print sum " MiB"}')"
-	msgFunc norm "Community: $(pacman -Qi $(paclist community | awk '{print $1}' ) | awk '/Installed Size/ {if ($5=="MiB") {sum+=$4} else if ($5=="KiB") {sum+=($4/1024)}} END {print sum " MiB"}')"
 	if [ "$(paclist multilib | wc -l)" != "0" ]
 	then
 		msgFunc norm "Multilib: $(pacman -Qi $(paclist multilib | awk '{print $1}' ) | awk '/Installed Size/ {if ($5=="MiB") {sum+=$4} else if ($5=="KiB") {sum+=($4/1024)}} END {print sum " MiB"}')"

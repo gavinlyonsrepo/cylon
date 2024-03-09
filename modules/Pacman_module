@@ -296,15 +296,15 @@ function pkglistFunc
 	comm -13 <(pacman -Qdtq | sort) <(pacman -Qdttq | sort) > pkgOptdep.txt #12
 
 	#expac
-	msgFunc norm "13: All explicitly installed packages not in base-devel with size"
-	msgFunc norm "and description: pkgNonBase.txt"
-	expac -H M "%011m\t%-20n\t%10d" $(comm -23 <(pacman -Qqen | sort) <(pacman -Qqg base-devel | sort))\
-	| sort -hr > pkgNonBase.txt #13
+	msgFunc norm "13: All explicitly installed packages not in the meta package "
+	msgFunc norm "base nor package group xorg with size and description: pkgNonBase.txt"
+	expac -H M "%011m\t%-20n\t%10d" $(comm -23 <(pacman -Qqen | sort) <({ pacman -Qqg xorg; expac -l '\n' '%E' base; } \
+	| sort -u)) | sort -n > pkgNonBase.txt #13
 	
 	msgFunc norm "14: All explicitly installed packages that are not direct or optional dependencies" 
-	msgFunc norm "and not in base-devel with size and description: pkgexpNonBase.txt"
-	expac -H M "%011m\t%-20n\t%10d" $(comm -23 <(pacman -Qqent | sort) <(pacman -Qqg base-devel | sort))\
-	| sort -hr > pkgexpNonBase.txt #14
+	msgFunc norm "not in the meta package base nor package group xorg with size and description: pkgexpNonBase.txt"
+	expac -H M "%011m\t%-20n\t%10d" $(comm -23 <(pacman -Qqent | sort) <({ pacman -Qqg xorg; expac -l '\n' '%E' base; } \
+	| sort -u)) | sort -n  > pkgexpNonBase.txt #14
 	
 	msgFunc norm "15: All installed packages sorted by size: pkgSize.txt"
 	expac -H M '%m\t%n' | sort -hr > pkgSize.txt #15
@@ -319,9 +319,7 @@ function pkglistFunc
 	msgFunc norm "Packages by repositories:-"
 	msgFunc norm "18: Core: $(paclist core > pkgCore.txt ) : pkgCore.txt" #18
 	msgFunc norm "19: Extra: $(paclist extra > pkgExtra.txt ) : pkgExtra.txt" #19
-	msgFunc norm "20: Community: $(paclist community > pkgComm.txt ) : pkgComm.txt" #20
 	msgFunc norm "21: Multilib: $(paclist multilib > pkgMulib.txt ): pkgMulib.txt" #21
-	
 	msgFunc norm "22: All installed packages sorted by very first install date: pkginstall.txt" #22
 	local pacQArr 
 	pacQArr=$(pacman -Qq)

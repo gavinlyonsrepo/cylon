@@ -15,3 +15,7 @@
 	* 3 new config settings added , If missing from file software will use defaults , see Readme.
 	* Backup section removed , the  package backupmenu still provides all its functionality 
 	* Security and network section's merged into System maintenance 
+
+### Version 6.3-4 05-2024
+	* Github issue 9 related to base-devel package changes
+	* Github issue 10 related to Community repository changes
