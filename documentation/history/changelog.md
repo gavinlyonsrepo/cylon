@@ -19,3 +19,6 @@
 ### Version 6.3-4 05-2024
 	* Github issue 9 related to base-devel package changes
 	* Github issue 10 related to Community repository changes
+
+### Version 6.4-5 01-2025
+	* Update PKGBUILD to spdx license identifier as per Arch Guidelines.
