@@ -1,5 +1,4 @@
-Packages files list generator.
--------------
+# Packages files list generator
 
 The package files list generator provides a snapshot of system by producing a group of 26 files
 which describe the system.
@@ -18,7 +17,7 @@ The "pkglistFunc" is called at various places in program see (REF1) marker in re
 | 5 | All explicitly installed native packages that are not direct or optional dependencies | pkgQent.txt |
 | 6 | All foreign installed packages | pkgQm.txt |
 | 7 | All foreign explicitly installed packages | pkgQme.txt |
-| 8 | All packages not required as dependencies (orphans)| pkgOpn.txt |
+| 8 | All packages not required as dependencies (orphans) | pkgOpn.txt |
 | 9 | All modified by user system backup files | pkgSysBck.txt |
 | 10 | All packages installed as dependencies | pkgQd.txt |
 | 11 | All explicitly installed native packages, quiet output for system restore | pkgQqne.txt |
@@ -30,6 +29,7 @@ The "pkglistFunc" is called at various places in program see (REF1) marker in re
 | 17 | All installed groups | pkgGroups.txt |
 | 18 | All packages in repository core | pkgCore.txt |
 | 19 | All packages in repository extra | pkgExtra.txt |
+| 20 | Note: obsolete removed | n/a |
 | 21 | All packages in repository multilib | pkgMulib.txt |
 | 22 | All installed packages sorted by original install date | pkginstall.txt |
 | 23 | All development/unstable packages(cvs svn git hg bzr darcs) | pkgdevel.txt |
@@ -37,11 +37,10 @@ The "pkglistFunc" is called at various places in program see (REF1) marker in re
 | 25 | All foreign packages not in the AUR | pkgFNotAUR.txt |
 | 26 | System packages information summary | pkginfo.txt |
 
-
-### Commands used by index number in table. 
+## Commands used by index number in table
 
 1. find / -path /run/media -prune -o -path /mnt -prune -o -regextype posix-extended -regex ".+\.pac(new|save)" \
--fprint pacNewSaveFiles.txt -exec echo -n "." \; 2> /dev/null 
+-fprint pacNewSaveFiles.txt -exec echo -n "." \; 2> /dev/null
 2. pacman -Q
 3. pacman -Qn
 4. pacman -Qe
@@ -50,19 +49,20 @@ The "pkglistFunc" is called at various places in program see (REF1) marker in re
 7. pacman -Qme
 8. pacman -Qtdq
 9. pacman -Qii | awk '/^MODIFIED/ {print $2}'
-10. pacman -Qd 
-11. pacman -Qqne 
+10. pacman -Qd
+11. pacman -Qqne
 12. comm -13 <(pacman -Qdtq | sort) <(pacman -Qdttq | sort)
 13. expac -H M "%011m\t%-20n\t%10d" $(comm -23 <(pacman -Qqen | sort) <({ pacman -Qqg xorg; expac -l '\n' '%E' base; } | sort -u))
 14. expac -H M "%011m\t%-20n\t%10d" $(comm -23 <(pacman -Qqent | sort) <({ pacman -Qqg xorg; expac -l '\n' '%E' base; } | sort -u))
 15. expac -H M '%m\t%n' | sort -hr
-16. expac --timefmt='%Y-%m-%d %T' '%l\t%n' | sort -hr 
+16. expac --timefmt='%Y-%m-%d %T' '%l\t%n' | sort -hr
 17. expac -g '%G' | sort -u
-18. paclist core 
-19. paclist extra 
+18. paclist core
+19. paclist extra
+20. note : obsolete removed
 21. paclist multilib
 22. sed -n "/ installed "x" /{s/].*/]/p;q}" /var/log/pacman.log NOTE: "x" = array containing pacman -Qq
 23. pacman -Qq | awk '/^.+(-cvs|-svn|-git|-hg|-bzr|-darcs)$/'
 24. flatpak list
-25. Multiple commands uses Auracle and connects to the internet. 
+25. Multiple commands uses Auracle and connects to the internet.
 26. wc -l ./*.txt | head -n -1 | sort

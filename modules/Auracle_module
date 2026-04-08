@@ -1,13 +1,13 @@
 #!/bin/bash
-#Module containing functions called from cylon package
-#Functions: auracleFunc aurupdateFunc notifyFunc
+# Module containing functions called from cylon package
+# Functions: auracleFunc aurupdateFunc notifyFunc
 
-#FUNCTION HEADER
+# FUNCTION HEADER
 # NAME : auracleFunc
 # DESCRIPTION:use auracle utility to manage AUR packages
 # downloads, updates and searches
 # PROCESS : see options array 
-#NOTES : Needs auracle(AUR) installed  netcat is needed for option 0     
+# NOTES : Needs auracle(AUR) installed  netcat is needed for option 0     
 function AuraFunc
 {
 #check auracle is installed
@@ -90,7 +90,7 @@ local optionsCArr=("Check network and check for AUR updates (no download), aurac
 		;;
 			
 		"${optionsCArr[4]}") #auracle  Download AUR package with NO Install.
-			msgFunc green "$Download AUR package auracle "
+			msgFunc green "Download AUR package auracle "
 			makeDirFunc "-AURDOWNLOAD"
 			#build and install packages
 			msgFunc norm "Type a AUR package name:-"
@@ -168,7 +168,7 @@ msgFunc green "Done!"
 done
 }
 
-#FUNCTION HEADER
+# FUNCTION HEADER
 # NAME : aurupdateFunc
 # DESCRIPTION:use auracle utility to update installed packages
 # PROCESS : called from pacman-module and auracle module
@@ -211,10 +211,10 @@ function aurupdateFunc
 	fi	
 }
 
-#FUNCTION HEADER
+# FUNCTION HEADER
 # NAME : notifyFunc
 # DESCRIPTION: displays desktop notification of updates 
-#NOTES : needs auracle(AUR) and libnotify installed
+# NOTES : needs auracle(AUR) and libnotify installed
 function notifyFunc
 {
 	if ! checkPacFunc auracle

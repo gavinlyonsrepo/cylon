@@ -179,9 +179,7 @@ done
 function DelQmFunc
 {
 	local DelQmArr
-	DelQmArr=$(pacman -Qmq)
-	IFS=$'\n' DelQmArr=($(sort <<<"${DelQmArr[*]}"))
-	unset IFS
+	mapfile -t DelQmArr < <(pacman -Qmq | sort)
 	dialog --title "Output of pacman -Qmq:" --begin 1 1  --no-items --menu "Select Package to Remove:" 20 40 10 "${DelQmArr[@]}"  2>/tmp/cylontempfile
 		case $? in
 		0)

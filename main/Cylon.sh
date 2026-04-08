@@ -1,64 +1,47 @@
 #!/bin/bash 
-#shellcheck disable=SC1117
-#========================= HEADER ==========================
-#name:cylon
-#Title : Arch Linux distro maintenance bash script. 
-#Written by Gavin lyons 
-#Software repo: https://github.com/gavinlyonsrepo/cylon
-#AUR package name : cylon , at aur.archlinux.org by glyons
+# === HEADER ===
+# Name:   cylon
+# Title:  Arch Linux distro maintenance bash script. 
+# Author: Gavin lyons 
+# Software repo: https://github.com/gavinlyonsrepo/cylon
+# AUR package name: cylon , at aur.archlinux.org by glyons
 
-#======= ENVIRONMENT & GLOBAL VARIABLES + PATHS =========
-#Custom Environmental variables : $CYLONDEST  CYLON_CONFIG CYLON_COLOR_OFF
+# === ENVIRONMENT & GLOBAL VARIABLES + PATHS ===
 
-# Colours for printf, check if color output setting is off
+# 1. prompt for select menus
 if  [ -n "${CYLON_COLOR_OFF}" ] 
-then #color off
-	RED=$(printf "\033[0m")
-	GREEN=$(printf "\033[0m")
-	YELLOW=$(printf "\033[0m")
-	BLUE=$(printf "\033[0m")
-	NORMAL=$(printf "\033[0m")
+then #color off	
+	PS3="By your command:"
 else #color on
-	RED=$(printf "\033[31;1m")
-	GREEN=$(printf "\033[32;1m")
-	YELLOW=$(printf "\033[33;1m")
-	BLUE=$(printf "\033[36;1m")
-	NORMAL=$(printf "\033[0m")
+	PS3="$(printf "\033[36;1m")By your command:$(printf "\033[0m")"
 fi
 
-#prompt for select menus
-PS3="${BLUE}By your command:${NORMAL}"
-
-#check if $EDITOR Environmental variable is set if not set it to nano
+# 2. Text editor check if $EDITOR Environmental variable is set if not set it to nano
 [ -z "${EDITOR}" ] && export EDITOR="nano"
 
-#Setup the Program Paths
-# CYLONDEST = cache
-# CYLON_CONFIG = config file
-# CYLON_DOCUMENTS = help
-# CYLON_MODULES = modules location
+# 3. Setup the Program Path for cache, Custom Environmental variable
 [ -z "${CYLONDEST}" ] && CYLONDEST="$HOME/.cache/cylon/"
 mkdir -p "$CYLONDEST"
+
+# 4. Set the program path for config, Custom Environmental variable
 [ -z "${CYLON_CONFIG}" ] && CYLON_CONFIG="$HOME/.config/cylon"
 mkdir -p "$CYLON_CONFIG"
 
-CYLON_DOCUMENTS="/usr/share/doc/cylon"
-
-# Prodution PATH
-CYLON_MODULES="/usr/lib/cylon/modules/" 
-# NB ** DEVELOPMENT TESTING PATH ONLY , COMMENT OUT ** NB
-#CYLON_MODULES="../modules/" 
-
-#=================== FUNCTIONS =============================
+# 5. CYLON_MODULES = modules location
 #Source the module files for the functions from the cylon lib folder
+# 5.A DEVELOPMENT PATH: COMMENT OUT 
+#CYLON_MODULES="../modules/" 
+# 5.B Prodution PATH: COMMENT IN
+CYLON_MODULES="/usr/lib/cylon/modules/" 
 for CYLON_FILE in "$CYLON_MODULES"*;
 do
+	# shellcheck disable=SC1090
 	source "$CYLON_FILE"
 done
 
-#================= MAIN CODE ============================
+# === MAIN CODE ===
 
-readconfigFunc # Variables also read in from config file
+readconfigFunc # Read in config file
 [ -n "$1" ] && checkinputFunc "$1" 
 
 #Display opening screen title 
@@ -74,4 +57,4 @@ while true; do
 	cd ~ || exitHandlerFunc UnknownPath
 	DisplayFunc
 done
-#====================== EOF =============================
+# === EOF ===

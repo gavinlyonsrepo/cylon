@@ -132,10 +132,7 @@ function SystemCleanFunc
 	#get cleaner list and put it in array
 	msgFunc green "Scanning bleachbit cleaners:"
 	local cleanArr
-	cleanArr=$(bleachbit --list | awk -F"." '{ print $1 }' | sort -u)
-	#Sort array
-	IFS=$'\n' cleanArr=($(sort <<<"${cleanArr[*]}"))
-	unset IFS
+	mapfile -t cleanArr < <(bleachbit --list | awk -F"." '{ print $1 }' | sort -u)
 	# get length of an array
 	tLen="${#cleanArr[@]}"
 	# use for loop read all installed packages exception for deepscan
@@ -153,14 +150,14 @@ function SystemCleanFunc
 	msgFunc green "Done!"	
 	clear
 	
-		#get cleaner input from user
-	 msgFunc blue "System clean with Bleachbit, Select Cleaner :-"
+	#get cleaner input from user
+	msgFunc blue "System clean with Bleachbit, Select Cleaner :-"
 	local cleanerVar=""
 	select cleanerVar in "${cleanArr[@]}"
 	do
-			#get list of options for selected cleaner and put in array
-			local optionArr
-			optionArr=$(bleachbit --list | awk -F"."  ''/"${cleanerVar}"/' {print $2}')
+		#get list of options for selected cleaner and put in array
+		local optionArr
+		mapfile -t optionArr < <(bleachbit --list | awk -F"." "/${cleanerVar}/{print \$2}" | sort)
 		break
 	done
 	#check for valid selection
@@ -168,8 +165,6 @@ function SystemCleanFunc
 	then
 		return
 	fi
-	IFS=$'\n' optionArr=($(sort <<<"${optionArr[*]}"))
-	unset IFS
 	#Add a star to end of array
 	optionArr+=('*')
 	#show user options

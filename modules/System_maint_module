@@ -340,16 +340,9 @@ EOF
 	local cacheArr=()
 	local homeArr=()
 	#populate arrays
-	mapfile -t configArr < <(find "$HOME/.config" -maxdepth 1 -type d  | awk -F"/" '{print $5}')
-	mapfile -t cacheArr < <(find "$HOME/.cache" -maxdepth 1 -type d  | awk -F"/" '{print $5}')
-	mapfile -t homeArr < <(find "$HOME/.local/share" -maxdepth 1 -type d  | awk -F"/" '{print $6}')
-	#sort arrays
-	IFS=$'\n' configArr=($(sort <<<"${configArr[*]}"))
-	unset IFS
-	IFS=$'\n' cacheArr=($(sort <<<"${cacheArr[*]}"))
-	unset IFS
-	IFS=$'\n' homeArr=($(sort <<<"${homeArr[*]}"))
-	unset IFS
+	mapfile -t configArr < <(find "$HOME/.config" -maxdepth 1 -type d | awk -F"/" '{print $5}' | sort)
+	mapfile -t cacheArr  < <(find "$HOME/.cache" -maxdepth 1 -type d  | awk -F"/" '{print $5}' | sort)
+	mapfile -t homeArr   < <(find "$HOME/.local/share" -maxdepth 1 -type d | awk -F"/" '{print $6}' | sort)
 	# get length of an array
 	tLen="${#configArr[@]}"
 	tLen1="${#cacheArr[@]}"

@@ -1,21 +1,36 @@
 #!/bin/bash
-#shellcheck disable=SC1117
-#Module containing functions called from cylon package
+# shellcheck disable=SC1117
+# Module containing functions called from cylon package
 #
-#Functions: checkinputFunc, DisplayFunc. AsciiArtFunc
+# Functions: checkinputFunc, DisplayFunc. AsciiArtFunc
 # exitHandlerFunc, HelpFunc, msgFunc, readconfigFunc, makeDirFunc drawBox
 
-#FUNCTION HEADER
+# FUNCTION HEADER
 # NAME : msgFunc
 # DESCRIPTION :   prints to screen
-#prints line, text and anykey prompts, yesno prompt
+# prints line, text and anykey prompts, yesno prompt
 # INPUTS : $1 process name $2 text input
 # PROCESS :[1]  print line [2] anykey prompt
 # [3] print text  "green , red ,blue , norm yellow" [4] yn prompt, 
 # OUTPUT yesno prompt return 1 or 0
 function msgFunc
 {
-	
+	# Colours for printf, check if color output setting is off
+	# Custom Environmental variable
+	if  [ -n "${CYLON_COLOR_OFF}" ] 
+	then #color off
+		RED=$(printf "\033[0m")
+		GREEN=$(printf "\033[0m")
+		YELLOW=$(printf "\033[0m")
+		BLUE=$(printf "\033[0m")
+		NORMAL=$(printf "\033[0m")
+	else #color on
+		RED=$(printf "\033[31;1m")
+		GREEN=$(printf "\033[32;1m")
+		YELLOW=$(printf "\033[33;1m")
+		BLUE=$(printf "\033[36;1m")
+		NORMAL=$(printf "\033[0m")
+	fi
 	case "$1" in 
 	
 		line) #print blue horizontal line of =
@@ -54,10 +69,10 @@ function msgFunc
 }
 
 
-#FUNCTION HEADER
+# FUNCTION HEADER
 # NAME :  exitHandlerFunc 
 # DESCRIPTION: error handler deal with user 
-#exits and path not found errors and internet failure 
+# exits and path not found errors and internet failure 
 # INPUTS:  $2 text of internet site down or filename 
 # PROCESS : exitout paths netdown or file error or non-integer user input.
 # or bad argument option input
@@ -71,10 +86,6 @@ case "$1" in
 	"$CYLON_CONFIG") 
 		msgFunc red "Path not found to Destination directory"
 		msgFunc norm "$CYLON_CONFIG" 
-	;;
-	"$CYLON_DOCUMENTS") 
-		msgFunc red "Path not found to Destination directory"
-		msgFunc norm "$CYLON_DOCUMENTS" 
 	;;
 	UnknownPath) msgFunc red "Path not found to directory" ;;
 	netdown) msgFunc red "Internet connectivity test to $2 failed" ;;
@@ -105,7 +116,7 @@ fi
 exit 2
 }
 
-#FUNCTION HEADER
+# FUNCTION HEADER
 # NAME : DisplayFunc
 # DESCRIPTION : Function to display main menu
 function DisplayFunc
@@ -158,7 +169,7 @@ msgFunc blue "Main Menu:"
 
 }
 
-#FUNCTION HEADER
+# FUNCTION HEADER
 # NAME :            HelpFunc
 # DESCRIPTION :     two sections one prints various system information the
 # other cylon information and the installed readme file
@@ -167,7 +178,8 @@ msgFunc blue "Main Menu:"
 # PROCESS :[1] HELP =cylon info [2] SYS   =system info
 function HelpFunc 
 {
-clear
+	clear
+	local cylon_docs="/usr/share/doc/cylon"
 	if [ "$1" = "HELP" ]
 		then
 		msgFunc line
@@ -186,7 +198,7 @@ clear
 		msgFunc norm "Cylon modules for functions = /usr/lib/cylon/modules/*"
 		msgFunc norm "Folder for Cylon output data = $CYLONDEST"
 		msgFunc norm "Location of cylonCfg.conf = $CYLON_CONFIG"
-		msgFunc norm "Location of readme.md changlog.md = $CYLON_DOCUMENTS"
+		msgFunc norm "Location of readme.md changlog.md = $cylon_docs"
 		msgFunc norm "Location of License.md = /usr/share/licenses/cylon"
 		msgFunc norm "Man page, Desktop entry and icon also installed"
 		if [ -z "${CYLONDEST}" ]
@@ -203,7 +215,7 @@ clear
 			msgFunc norm "Config path is set to $CYLON_CONFIG"
 		fi
 		
-			if [ -z "${CYLON_COLOR_OFF}" ]
+		if [ -z "${CYLON_COLOR_OFF}" ]
 		then 
 			msgFunc norm "Environment variable CYLON_COLOR_OFF is not Set"
 		else 
@@ -240,8 +252,8 @@ clear
 		if msgFunc yesno
 			then #yes
 				msgFunc line
-				msgFunc green "Displaying cylon Readme.md file at $CYLON_DOCUMENTS"
-				cd "$CYLON_DOCUMENTS"  || exitHandlerFunc CYLON_DOCUMENTS
+				msgFunc green "Displaying cylon Readme.md file at $cylon_docs"
+				cd "$cylon_docs"  || exitHandlerFunc UnknownPath
 				less Readme.md 
 				msgFunc green "Done!" 
 				msgFunc line
@@ -253,9 +265,8 @@ clear
 		if msgFunc yesno
 			then #yes
 				msgFunc line
-				msgFunc green "Displaying package_lists.md file at $CYLON_DOCUMENTS"
-				cd "$CYLON_DOCUMENTS"  || exitHandlerFunc CYLON_DOCUMENTS
-				less package_lists.md
+				msgFunc green "Displaying package_lists.md file at $cylon_docs"
+				cd "$cylon_docs"  || exitHandlerFunc UnknownPath
 				msgFunc green "Done!" 
 				msgFunc line
 				msgFunc anykey
@@ -264,95 +275,97 @@ clear
 		return
 	fi
 
-# SYS system information section page 1
-msgFunc green "System Information display Page 1"
-msgFunc norm "Uptime = $(uptime -p)"
-msgFunc norm "Kernel = $(uname -svr)"
-msgFunc norm "Operating System = $(uname -mo)"
-msgFunc norm "Network node name = $(uname -n)"
-msgFunc norm "User name = $USER"
-msgFunc norm "Shell = $SHELL"
-if type -p xrandr >/dev/null; then
-	msgFunc norm "Screen Resolution = $(xrandr |grep "\*" | cut -c 1-15)"  2>/dev/null
-elif type -p xdpyinfo >/dev/null; then
-	msgFunc norm "Screen Resolution = $(xdpyinfo | awk -F '[ x]+' '/dimensions:/{print $3}') x $(xdpyinfo | awk -F '[ x]+' '/dimensions:/{print $4}')"
-fi
-msgFunc norm "CPU = $(grep name /proc/cpuinfo | tail -1| cut -d ":" -f 2)"
-local memArr=($(awk -F ':| kB' '/MemTotal|MemAvail/ {printf $2}' /proc/meminfo))
-local memusedVar="$((memArr[0] - memArr[1]))"
-memusedVar="$((memusedVar / 1024))"
-local memtotalVar="$((memArr[0] / 1024))"
-local memoryVar="${memusedVar}MB / ${memtotalVar}MB"
-msgFunc norm "RAM used/total = ($memoryVar)"
-msgFunc norm "Editor variable = $EDITOR"
-# Get and display cachedir size read cachedir variable from file
-local CacheDirVar=""
-source /etc/pacman.conf 2>/dev/null
-if [ -z "${CacheDirVar}" ]
-then
-	#if not set , set to expected default
-	CacheDirVar=/var/cache/pacman/pkg/
-fi
-msgFunc norm "Pacman cache = $CacheDirVar"
-msgFunc norm "Space used by pkg downloaded in cache: $(du -sh "$CacheDirVar" 2>/dev/null|awk '{print $1}'
-)"
-msgFunc norm "Hold packages: $(grep "HoldPkg" /etc/pacman.conf | cut -d "=" -f 2 )"
-msgFunc norm "Number of orphan packages not required as dependencies: $(pacman -Qtdq | wc -l)"
-
-#system information section page 2
-msgFunc green "Do you want to display System information page 2? [y/n]"
-if msgFunc yesno
-	then #yes 
-	clear
-	msgFunc green "System information page 2"
-	msgFunc norm "All installed packages: $(pacman -Q | wc -l)" 
-	msgFunc norm "All native packages: $(pacman -Qn | wc -l)" 
-	msgFunc norm "All explicitly installed packages: $(pacman -Qe | wc -l)" 
-	msgFunc norm "All explicitly installed native packages that are"
-	msgFunc norm "not direct or optional dependencies: $(pacman -Qqent | wc -l)"
-	msgFunc norm "All foreign installed packages: $(pacman -Qm | wc -l)"
-	msgFunc norm "All foreign explicitly installed packages: $(pacman -Qme | wc -l)"
-	msgFunc norm "All packages installed as dependencies: $(pacman -Qd | wc -l) "
-	msgFunc norm "5 Largest packages :"
-	expac -H M '%m\t%n' | sort -hr |head -5
-	msgFunc norm "5 Newest updated packages :"
-	expac --timefmt='%Y-%m-%d %T' '%l\t%n' | sort -hr |head -5 
-fi
-
-#system information section page 2
-msgFunc green "Do you want to display System information page 3? [y/n]"
-if msgFunc yesno
-then
-	#yes 
-	clear
-	msgFunc green "System information page 3"
-	msgFunc norm "Packages Count by repositories:-"
-	msgFunc norm "Core: $(paclist core | wc -l)"
-	msgFunc norm "Extra: $(paclist extra | wc -l)"
-	msgFunc norm "Multilib: $(paclist multilib | wc -l)"
-	msgFunc norm "Foreign: $(pacman -Qm | wc -l)"
-	msgFunc norm "Total: $(pacman -Q | wc -l)"
-	msgFunc norm " "
-	msgFunc norm "Packages Installed size by repositories:-"
-	msgFunc norm "Core: $(pacman -Qi  $(paclist core | awk '{print $1}' ) | awk '/Installed Size/ {if ($5=="MiB") {sum+=$4} else if ($5=="KiB") {sum+=($4/1024)}} END {print sum " MiB"}')"
-	msgFunc norm "Extra: $(pacman -Qi $(paclist extra | awk '{print $1}' ) | awk '/Installed Size/ {if ($5=="MiB") {sum+=$4} else if ($5=="KiB") {sum+=($4/1024)}} END {print sum " MiB"}')"
-	if [ "$(paclist multilib | wc -l)" != "0" ]
-	then
-		msgFunc norm "Multilib: $(pacman -Qi $(paclist multilib | awk '{print $1}' ) | awk '/Installed Size/ {if ($5=="MiB") {sum+=$4} else if ($5=="KiB") {sum+=($4/1024)}} END {print sum " MiB"}')"
+	# SYS system information section page 1
+	msgFunc green "System Information display Page 1"
+	msgFunc norm "Uptime = $(uptime -p)"
+	msgFunc norm "Kernel = $(uname -svr)"
+	msgFunc norm "Operating System = $(uname -mo)"
+	msgFunc norm "Network node name = $(uname -n)"
+	msgFunc norm "User name = $USER"
+	msgFunc norm "Shell = $SHELL"
+	if type -p xrandr >/dev/null; then
+		msgFunc norm "Screen Resolution = $(xrandr |grep "\*" | cut -c 1-15)"  2>/dev/null
+	elif type -p xdpyinfo >/dev/null; then
+		msgFunc norm "Screen Resolution = $(xdpyinfo | awk -F '[ x]+' '/dimensions:/{print $3}') x $(xdpyinfo | awk -F '[ x]+' '/dimensions:/{print $4}')"
 	fi
-	msgFunc norm "Foreign: $(pacman -Qi $(pacman -Qmq ) | awk '/Installed Size/ {if ($5=="MiB") {sum+=$4} else if ($5=="KiB") {sum+=($4/1024)}} END {print sum " MiB"}')"
-	msgFunc norm "Total: $(pacman -Qi  | awk '/Installed Size/ {if ($5=="MiB") {sum+=$4} else if ($5=="KiB") {sum+=($4/1024)}} END {print sum " MiB"}')"
-	msgFunc anykey
-fi
+	msgFunc norm "CPU = $(grep name /proc/cpuinfo | tail -1| cut -d ":" -f 2)"
+	local memArr
+	mapfile -t memArr < <(awk -F ':| kB' '/MemTotal|MemAvail/ {printf $2"\n"}' /proc/meminfo)
+	local memusedVar="$((memArr[0] - memArr[1]))"
+	memusedVar="$((memusedVar / 1024))"
+	local memtotalVar="$((memArr[0] / 1024))"
+	local memoryVar="${memusedVar}MB / ${memtotalVar}MB"
+	msgFunc norm "RAM used/total = ($memoryVar)"
+	msgFunc norm "Editor variable = $EDITOR"
+	# Get and display cachedir size read cachedir variable from file
+	local CacheDirVar=""
+	# shellcheck disable=SC1091
+	source /etc/pacman.conf 2>/dev/null
+	if [ -z "${CacheDirVar}" ]
+	then
+		# if not set , set to expected default
+		CacheDirVar=/var/cache/pacman/pkg/
+	fi
+	msgFunc norm "Pacman cache = $CacheDirVar"
+	msgFunc norm "Space used by pkg downloaded in cache: $(du -sh "$CacheDirVar" 2>/dev/null|awk '{print $1}'
+	)"
+	msgFunc norm "Hold packages: $(grep "HoldPkg" /etc/pacman.conf | cut -d "=" -f 2 )"
+	msgFunc norm "Number of orphan packages not required as dependencies: $(pacman -Qtdq | wc -l)"
 
-clear
+	#system information section page 2
+	msgFunc green "Do you want to display System information page 2? [y/n]"
+	if msgFunc yesno
+		then #yes 
+		clear
+		msgFunc green "System information page 2"
+		msgFunc norm "All installed packages: $(pacman -Q | wc -l)" 
+		msgFunc norm "All native packages: $(pacman -Qn | wc -l)" 
+		msgFunc norm "All explicitly installed packages: $(pacman -Qe | wc -l)" 
+		msgFunc norm "All explicitly installed native packages that are"
+		msgFunc norm "not direct or optional dependencies: $(pacman -Qqent | wc -l)"
+		msgFunc norm "All foreign installed packages: $(pacman -Qm | wc -l)"
+		msgFunc norm "All foreign explicitly installed packages: $(pacman -Qme | wc -l)"
+		msgFunc norm "All packages installed as dependencies: $(pacman -Qd | wc -l) "
+		msgFunc norm "5 Largest packages :"
+		expac -H M '%m\t%n' | sort -hr |head -5
+		msgFunc norm "5 Newest updated packages :"
+		expac --timefmt='%Y-%m-%d %T' '%l\t%n' | sort -hr |head -5 
+	fi
+
+	#system information section page 2
+	msgFunc green "Do you want to display System information page 3? [y/n]"
+	if msgFunc yesno
+	then
+		#yes 
+		clear
+		msgFunc green "System information page 3"
+		msgFunc norm "Packages Count by repositories:-"
+		msgFunc norm "Core: $(paclist core | wc -l)"
+		msgFunc norm "Extra: $(paclist extra | wc -l)"
+		msgFunc norm "Multilib: $(paclist multilib | wc -l)"
+		msgFunc norm "Foreign: $(pacman -Qm | wc -l)"
+		msgFunc norm "Total: $(pacman -Q | wc -l)"
+		msgFunc norm " "
+		msgFunc norm "Packages Installed size by repositories:-"
+		msgFunc norm "Core: $(paclist core | awk '{print $1}' | xargs pacman -Qi | awk '/Installed Size/ {if ($5=="MiB") {sum+=$4} else if ($5=="KiB") {sum+=($4/1024)}} END {print sum " MiB"}')"
+		msgFunc norm "Extra: $(paclist extra | awk '{print $1}' | xargs pacman -Qi | awk '/Installed Size/ {if ($5=="MiB") {sum+=$4} else if ($5=="KiB") {sum+=($4/1024)}} END {print sum " MiB"}')"
+		if [ "$(paclist multilib | wc -l)" != "0" ]
+		then
+			msgFunc norm "Multilib: $(paclist multilib | awk '{print $1}' | xargs pacman -Qi | awk '/Installed Size/ {if ($5=="MiB") {sum+=$4} else if ($5=="KiB") {sum+=($4/1024)}} END {print sum " MiB"}')"
+		fi
+		msgFunc norm "Foreign: $(pacman -Qmq | xargs pacman -Qi | awk '/Installed Size/ {if ($5=="MiB") {sum+=$4} else if ($5=="KiB") {sum+=($4/1024)}} END {print sum " MiB"}')"
+		msgFunc norm "Total: $(pacman -Qi  | awk '/Installed Size/ {if ($5=="MiB") {sum+=$4} else if ($5=="KiB") {sum+=($4/1024)}} END {print sum " MiB"}')"
+		msgFunc anykey
+	fi
+
+	clear
 }
 
-#FUNCTION HEADER
+# FUNCTION HEADER
 # NAME :           readconfigFunc
 # DESCRIPTION:read the config file into program if not there   
-#use hardcoded defaults
-#Called when needed by program also can be called by user option or main menu
+# use hardcoded defaults
+# Called when needed by program also can be called by user option or main menu
 # passed USERCALL
 # INPUTS $1 USERCALL when called by user
 # PROCESS : read $CYLON_CONFIG/cylonCfg.conf
@@ -403,7 +416,7 @@ fi
 source ./cylonCfg.conf || exitHandlerFunc fileerror "$CYLON_CONFIG/cylonCfg.conf"
 }
 
-#FUNCTION HEADER
+# FUNCTION HEADER
 # NAME :           checkinputFunc
 # DESCRIPTION:CHECK INPUT OPTIONS from linux command line arguments passed to program on call
 # INPUTS :  $1 user input option
@@ -477,10 +490,10 @@ fi
 clear
 }
 
-#FUNCTION HEADER
+# FUNCTION HEADER
 # NAME : makeDirFunc
 # DESCRIPTION :  makes a directory with time/date stamp and enters it
-#Directory used for program output. 
+# Directory used for program output. 
 # INPUTS : $1 text is appended to name  $2 bit flag  to change dir or not
 function makeDirFunc
 {
@@ -494,7 +507,7 @@ function makeDirFunc
 	pwd	 
 }
 
-#FUNCTION HEADER
+# FUNCTION HEADER
 # NAME :  AsciiArtFunc
 # DESCRIPTION:display asciiArt
 # INPUTS : $1 text to pick art

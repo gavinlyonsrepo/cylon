@@ -119,7 +119,8 @@ while true; do # loop until user exit
 					msgFunc norm "Do you want to remove them? [y/n]"
 					if msgFunc yesno
 					then
-						sudo pacman -Rns $(pacman -Qtdq)
+						mapfile -t _orphans < <(pacman -Qtdq)
+						sudo pacman -Rns "${_orphans[@]}"
 					fi
 				fi
 			;;
@@ -178,7 +179,7 @@ while true; do # loop until user exit
 			;;
 			"${optionsPMArr[18]}") #edit pacman conf file
 				msgFunc green "Edit Pacman.conf file."
-				sudo $EDITOR /etc/pacman.conf
+				sudo "$EDITOR" "/etc/pacman.conf"
 			;;
 			"${optionsPMArr[19]}") #view pacman log
 				msgFunc green "View pacman log /var/log/pacman.log"
@@ -198,19 +199,51 @@ msgFunc anykey
 done
 }
 
-#FUNCTION HEADER
+# FUNCTION HEADER
 # NAME :  RssFunc
-# DESCRIPTION : Display 4 Arch Linux News Rss feed
+# DESCRIPTION : Display Arch Linux News Rss feed
+# NOTES :
+#   This function fetches and renders the Arch Linux RSS news feed in the terminal.
+#   It operates in four stages:
+#
+#   1. FETCH (curl):
+#      curl silently downloads the raw RSS/XML feed from CYLON_RSS_URL.
+#
+#   2. EXTRACT (first awk block):
+#      Reads the XML from line 1 and extracts the first N <item> entries,
+#      where N is controlled by the CYLON_RSS_NUM config variable.
+#      It counts down closing </item> tags to know when each news item ends.
+#      countVar here is an awk variable, not a bash variable.
+#
+#   3. STRIP (second awk block):
+#      Removes unwanted RSS/XML wrapper tags such as <lastBuildDate>,
+#      <language>, <title>, <link>, <guid>, <dc:creator> and <description>
+#      channel-level tags, leaving only the item content.
+#      Newlines are collapsed to a single line with sed.
+#
+#   4. RENDER (long sed block):
+#      Converts the remaining HTML/XML into coloured terminal output using
+#      ANSI escape codes. Handles:
+#        - HTML entities  : &amp; &lt; &gt; converted to real characters
+#        - Headings       : <title> rendered in bold red
+#        - Links          : <link> and <a href> rendered in cyan/blue with underline
+#        - Text styling   : <b><strong> bold, <i><em> highlighted, <u> underlined
+#        - Line breaks    : <p> and <br> converted to newlines
+#        - List items     : <li> rendered with a bold blue * bullet
+#        - CDATA sections : <![CDATA[ ]]> markers stripped
+#        - Any remaining  : unrecognised tags stripped, leaving plain text
 function RssFunc
 {
 	msgFunc green "Arch Linux News Rss feed"
-	local newsVar countVar
+	local newsVar
 	[ -z "${CYLON_RSS_NUM}" ] && CYLON_RSS_NUM=1
 	[ -z "$CYLON_RSS_URL" ] && CYLON_RSS_URL="https://archlinux.org/feeds/news/" 
 	
 	intchkFunc "$CYLON_RSS_NUM"
 	
 	# Set CYLON_RSS_NUM" to N in awk  to be the number of latest news to fetch
+	# RE SC disable next line:  The word splitting from the unquoted $(...) is actually intentional here
+	# shellcheck disable=SC2046
 	newsVar=$(echo -e $(curl --silent "$CYLON_RSS_URL" | awk -v N="$CYLON_RSS_NUM=" ' NR == 1 {countVar = N; while (countVar) {print;getline; if($0 ~ /<\/item>/) countVar=countVar-1} ; sub(/<\/item>.*/,"</item>") ;print}'))
 	#  THE RSS PARSER Remove some tags 
 	newsVar=$(echo -e "$newsVar" | \
@@ -298,13 +331,15 @@ function pkglistFunc
 	#expac
 	msgFunc norm "13: All explicitly installed packages not in the meta package "
 	msgFunc norm "base nor package group xorg with size and description: pkgNonBase.txt"
-	expac -H M "%011m\t%-20n\t%10d" $(comm -23 <(pacman -Qqen | sort) <({ pacman -Qqg xorg; expac -l '\n' '%E' base; } \
-	| sort -u)) | sort -n > pkgNonBase.txt #13
+	mapfile -t _pkgList < <(comm -23 <(pacman -Qqen | sort) <({ pacman -Qqg xorg; expac -l '\n' '%E' base; } \
+	| sort -u))
+	expac -H M "%011m\t%-20n\t%10d" "${_pkgList[@]}" | sort -n > pkgNonBase.txt #13
 	
 	msgFunc norm "14: All explicitly installed packages that are not direct or optional dependencies" 
 	msgFunc norm "not in the meta package base nor package group xorg with size and description: pkgexpNonBase.txt"
-	expac -H M "%011m\t%-20n\t%10d" $(comm -23 <(pacman -Qqent | sort) <({ pacman -Qqg xorg; expac -l '\n' '%E' base; } \
-	| sort -u)) | sort -n  > pkgexpNonBase.txt #14
+	mapfile -t _pkgList < <(comm -23 <(pacman -Qqent | sort) <({ pacman -Qqg xorg; expac -l '\n' '%E' base; } \
+	| sort -u))
+	expac -H M "%011m\t%-20n\t%10d" "${_pkgList[@]}" | sort -n > pkgexpNonBase.txt #14
 	
 	msgFunc norm "15: All installed packages sorted by size: pkgSize.txt"
 	expac -H M '%m\t%n' | sort -hr > pkgSize.txt #15
@@ -317,14 +352,17 @@ function pkglistFunc
 	
 	#paclist
 	msgFunc norm "Packages by repositories:-"
-	msgFunc norm "18: Core: $(paclist core > pkgCore.txt ) : pkgCore.txt" #18
-	msgFunc norm "19: Extra: $(paclist extra > pkgExtra.txt ) : pkgExtra.txt" #19
-	msgFunc norm "21: Multilib: $(paclist multilib > pkgMulib.txt ): pkgMulib.txt" #21
+	#paclist
+	msgFunc norm "Packages by repositories:-"
+	paclist core > pkgCore.txt
+	msgFunc norm "18: Core: pkgCore.txt" #18
+	paclist extra > pkgExtra.txt
+	msgFunc norm "19: Extra: pkgExtra.txt" #19
+	paclist multilib > pkgMulib.txt
+	msgFunc norm "21: Multilib: pkgMulib.txt" #21
 	msgFunc norm "22: All installed packages sorted by very first install date: pkginstall.txt" #22
-	local pacQArr 
-	pacQArr=$(pacman -Qq)
-	IFS=$'\n' pacQArr=($(sort <<<"${pacQArr[*]}"))
-	unset IFS
+	local pacQArr
+	mapfile -t pacQArr < <(pacman -Qq | sort)
 	# get length of an array
 	tLen="${#pacQArr[@]}"
 	for (( i=0; i<"${tLen}"; i++ ));
