@@ -284,7 +284,7 @@ function HelpFunc
 	msgFunc norm "User name = $USER"
 	msgFunc norm "Shell = $SHELL"
 	if type -p xrandr >/dev/null; then
-		msgFunc norm "Screen Resolution = $(xrandr |grep "\*" | cut -c 1-15)"  2>/dev/null
+		msgFunc norm "Screen Resolution = $(xrandr 2>/dev/null | grep "\*" | cut -c 1-15)"
 	elif type -p xdpyinfo >/dev/null; then
 		msgFunc norm "Screen Resolution = $(xdpyinfo | awk -F '[ x]+' '/dimensions:/{print $3}') x $(xdpyinfo | awk -F '[ x]+' '/dimensions:/{print $4}')"
 	fi

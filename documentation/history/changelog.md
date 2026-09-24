@@ -22,3 +22,9 @@
 
 ### Version 6.4-5 01-2025
 	* Update PKGBUILD to spdx license identifier as per Arch Guidelines.
+
+### Version 6.5.0 04-2026
+	* Added github work flow for Shellcheck
+
+### Version 6.5.1 09-2026
+	* Minor update to resolve github issue 12 for wayland users 

@@ -49,7 +49,7 @@ clear
 msgFunc line
 AsciiArtFunc "ARCH"
 msgFunc line
-drawBoxFunc "$(pacman -Qs cylon | head -1 | cut -c 7-20): Arch Linux Maintenance Program" \
+drawBoxFunc "$(pacman -Qs cylon | head -1 | cut -c 7-17): Arch Linux Maintenance Program" \
 "Date Time:   $(date +%T" "%d-%a-Week%U-%b-%Y)" "Unix epoch:  $(date +%s)"
 
 #Loop the display main menu function until user exit
